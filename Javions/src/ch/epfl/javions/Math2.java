@@ -11,9 +11,8 @@ public final class Math2 {
 
         else {
 
-            v = Math.min(v,max);
+            v = Math.min(v, max);
             v = Math.max(v, min);
-
 
             return v;
         }
