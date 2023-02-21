@@ -16,7 +16,7 @@ public record GeoPos(int longitudet32, int latitudet32) {
 	}
 
 	static boolean isValidLatitudeT32(int latitudeT32) {
-		return ( -Math.pow(2, 30) <= latitudeT32 && latitudeT32 <= Math.pow(2, 30) ) ;
+		return (Math.scalb(-1., 30) <= latitudeT32 && latitudeT32 <= Math.scalb(1., 30)) ;
 	}
 	
 	double longitude() {
