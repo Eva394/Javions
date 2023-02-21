@@ -1,2 +1,0 @@
-# Javions
-project prog BA"
