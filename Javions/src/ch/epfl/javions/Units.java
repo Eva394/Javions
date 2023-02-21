@@ -17,15 +17,15 @@ public final class Units {
 	}
 	
 	
-	double convert(double value, double fromUnit, double toUnit) {
+	static double convert(double value, double fromUnit, double toUnit) {
 		return value*(fromUnit/toUnit) ;
 	}
 	
-	double convertFrom(double value, double fromUnit) {
+	static double convertFrom(double value, double fromUnit) {
 		return value*fromUnit ;
 	}
 	
-	double convertTo(double value, double toUnit) {
+	static double convertTo(double value, double toUnit) {
 		return value*(1/toUnit) ;
 	}
 	
@@ -66,7 +66,7 @@ public final class Units {
 		private Time() {}
 	}
 	
-	public final class SPEED {
+	public final class Speed {
 		public final static double KNOT = Length.NAUTICAL_MILE/Time.HOUR ;
 		public final static double KILOMETER_PER_HOUR = Length.KILOMETER/Time.HOUR ;
 	}
