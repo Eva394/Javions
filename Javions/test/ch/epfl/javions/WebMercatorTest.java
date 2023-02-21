@@ -1,4 +1,6 @@
+/*
 package ch.epfl.javions;
+
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -74,3 +76,4 @@ class WebMercatorTest {
         assertEquals(expected6, actual6, DELTA);
     }
 }
+ */

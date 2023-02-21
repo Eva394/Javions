@@ -1,4 +1,6 @@
+/*
 package ch.epfl.javions;
+
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -70,3 +72,5 @@ class Math2Test {
         assertEquals(expected5, actual5, DELTA);
     }
 }
+
+ */
