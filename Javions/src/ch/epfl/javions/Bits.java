@@ -22,37 +22,25 @@ public class Bits {
 	
 	
 	public int extractUInt(long value, int start, int size) {
-//		if ( ! (size > 0 && size < 32) ) {                  //replce with use of
-//			// checkFromIndexSize and checkIndex, using attributes Integer.SIZE and Long.SIZE
-//		throw new IllegalArgumentException() ;
-//		}
-		try {
-			if ( ! (Objects.checkIndex(size, Integer.SIZE) && (size > 0)) ) {
-				throw new IllegalArgumentException() ;
-			}
-		}
-		catch ( IndexOutOfBoundsException ignored ) {
 		
-		}
+		Preconditions.checkArgument(! (size > 0 && size < Integer.SIZE));
 		
+		Objects.checkFromIndexSize(start, size, Long.SIZE) ;
 		
-		if ( ! Objects.checkFromIndexSize(start, size, Long.SIZE) ) {
-			throw new
-		}
-		
-		if ( ! ((size-start) >= 0 && (size-start) < 64) ) {
-			throw new IndexOutOfBoundsException() ;
-		}
-		
-		
-		return ( );        //use shifting bits operators << >> >>> seen in class
-		//https://stackoverflow.com/questions/8011700/how-do-i-extract-specific-n-bits-of-a-32-bit
-		// -unsigned-integer-in-c
+		value
 	}
 	
-	Objects.checkIndex()
 	public boolean testBit(long value, int index) {
-		if (  )
+		
+		Objects.checkIndex(index, Long.SIZE) ;
+		
+		long mask = 1L << index ;
+		
+		if ( (value & mask) == mask ) {
+			return true ;
+		}
+		
+		return false ;
 	}
 	
 }
