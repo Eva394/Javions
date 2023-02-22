@@ -5,7 +5,7 @@ package ch.epfl.javions;
  */
 
 
-
+import java.util.Objects;
 
 public class Bits {
 	
@@ -22,8 +22,22 @@ public class Bits {
 	
 	
 	public int extractUInt(long value, int start, int size) {
-		if ( ! (size > 0 && size < 32) ) {
-		throw new IllegalArgumentException() ;
+//		if ( ! (size > 0 && size < 32) ) {                  //replce with use of
+//			// checkFromIndexSize and checkIndex, using attributes Integer.SIZE and Long.SIZE
+//		throw new IllegalArgumentException() ;
+//		}
+		try {
+			if ( ! (Objects.checkIndex(size, Integer.SIZE) && (size > 0)) ) {
+				throw new IllegalArgumentException() ;
+			}
+		}
+		catch ( IndexOutOfBoundsException ignored ) {
+		
+		}
+		
+		
+		if ( ! Objects.checkFromIndexSize(start, size, Long.SIZE) ) {
+			throw new
 		}
 		
 		if ( ! ((size-start) >= 0 && (size-start) < 64) ) {
@@ -31,7 +45,14 @@ public class Bits {
 		}
 		
 		
-		//return ();        //use shifting bits operators << >> >>> seen in class
+		return ( );        //use shifting bits operators << >> >>> seen in class
+		//https://stackoverflow.com/questions/8011700/how-do-i-extract-specific-n-bits-of-a-32-bit
+		// -unsigned-integer-in-c
+	}
+	
+	Objects.checkIndex()
+	public boolean testBit(long value, int index) {
+		if (  )
 	}
 	
 }
