@@ -32,15 +32,14 @@ public class Bits {
 	
 	public static boolean testBit(long value, int index) {
 		
-		Objects.checkIndex(index, Long.SIZE) ;
+		Objects.checkIndex(index, Long.SIZE);
 		
-		long mask = 1L << index ;
+		long mask = 1L << index;
 		
 		if ( (value & mask) == mask ) {
-			return true ;
+			return true;
 		}
 		
-		return false ;
+		return false;
 	}
-	
 }
