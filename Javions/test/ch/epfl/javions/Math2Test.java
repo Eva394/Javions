@@ -1,4 +1,4 @@
-/*
+
 package ch.epfl.javions;
 
 
@@ -74,5 +74,3 @@ class Math2Test {
 }
 
 
-
- */
