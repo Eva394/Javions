@@ -1,15 +1,18 @@
 package ch.epfl.javions;
 
 public class WebMercator {
-    public double x(int zoomlevel, double logitude){
+    public static double x(int zoomlevel, double longitude){
 
-        double x = Math.pow(2, 8+zoomlevel) * (logitude/Math.PI + 1/2);
+        double l = Units.convertTo(longitude, Units.Angle.RADIAN);
+        double x = Math.pow(2, 8+zoomlevel) * (l/(2*Math.PI) + 0.5);
         return x ;
     }
 
-    public double y(int zoomlevel, double latitude){
+    public static double y(int zoomlevel, double latitude){
 
-        double y = Math.pow(2,8+zoomlevel)*(-Math2.asinh(Math.tan(latitude)))/2*Math.PI + 1/2;
+        double lat = Units.convertTo(latitude, Units.Angle.RADIAN);
+        double y = Math.pow(2,8+zoomlevel)*((-Math2.asinh(Math.tan(lat)))/(2*Math.PI) + 0.5);
+        return y ;
 
     }
 }

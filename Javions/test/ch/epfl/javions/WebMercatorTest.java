@@ -1,4 +1,4 @@
-/*
+
 package ch.epfl.javions;
 
 
@@ -76,4 +76,3 @@ class WebMercatorTest {
         assertEquals(expected6, actual6, DELTA);
     }
 }
- */
