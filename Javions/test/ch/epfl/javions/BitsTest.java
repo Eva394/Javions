@@ -1,4 +1,4 @@
-/*
+
 package ch.epfl.javions;
 
 
@@ -54,4 +54,3 @@ class BitsTest {
     }
 }
 
- */

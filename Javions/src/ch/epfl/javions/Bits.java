@@ -21,16 +21,16 @@ public class Bits {
 	}
 	
 	
-	public int extractUInt(long value, int start, int size) {
+	public static int extractUInt(long value, int start, int size) {
 		
-		Preconditions.checkArgument(! (size > 0 && size < Integer.SIZE));
-		
+		Preconditions.checkArgument( (size > 0 && size < Integer.SIZE) ) ;
 		Objects.checkFromIndexSize(start, size, Long.SIZE) ;
 		
-		value
+		
+		return (int)((value << (Long.SIZE - (start + size)) >>> (Long.SIZE - size))) ;
 	}
 	
-	public boolean testBit(long value, int index) {
+	public static boolean testBit(long value, int index) {
 		
 		Objects.checkIndex(index, Long.SIZE) ;
 		
