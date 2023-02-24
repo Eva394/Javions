@@ -55,15 +55,15 @@ public final class ByteString {
     }
 
 
-    /*@Override
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof ByteString object) {
-            Arrays.equals(object, this) ;
+            return Arrays.equals(object.bytes, this.bytes) ;
         }
         else {
-
+            return  false ;
         }
-    }*/
+    }
 
     @Override
     public int hashCode() {
