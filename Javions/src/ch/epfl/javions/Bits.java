@@ -4,23 +4,28 @@ package ch.epfl.javions;
  *  Date :          21/02/2023
  */
 
-
 import java.util.Objects;
 
+/**
+ * @author Eva Mangano 345375
+ * Contains methods for extracting a subset of a 64bit long value
+ */
 public class Bits {
+	
 	
 	private Bits() {
 	
 	}
 	
 	
-	@Override
-	public String toString() {
-		
-		return super.toString();
-	}
-	
-	
+	/**
+	 * Extracts a range of bits from the given valuel, from the index start and of given size.
+	 * @author Eva Mangano 345375
+	 * @param value value given form which to extract the range
+	 * @param start index of the start of the range to be extracted
+	 * @param size size of the range to be extracted
+	 * @return the int value of the extracted range of bits
+	 */
 	public static int extractUInt(long value, int start, int size) {
 		
 		Preconditions.checkArgument( (size > 0 && size < Integer.SIZE) ) ;
@@ -30,6 +35,14 @@ public class Bits {
 		return (int)((value << (Long.SIZE - (start + size)) >>> (Long.SIZE - size))) ;
 	}
 	
+	
+	/**
+	 * Returns true if the bit at the index is 1
+	 * @param value given value
+	 * @param index index of the bit to look at
+	 * @throws IndexOutOfBoundsException if the index is not between 0 (included) and 64 (excluded)
+	 * @return a boolean, true if the bit at the index is 1
+	 */
 	public static boolean testBit(long value, int index) {
 		
 		Objects.checkIndex(index, Long.SIZE);
