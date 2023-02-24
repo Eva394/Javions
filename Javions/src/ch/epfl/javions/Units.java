@@ -17,15 +17,15 @@ public final class Units {
 	}
 	
 	
-	static double convert(double value, double fromUnit, double toUnit) {
+	public static double convert(double value, double fromUnit, double toUnit) {
 		return value*(fromUnit/toUnit) ;
 	}
 	
-	static double convertFrom(double value, double fromUnit) {
+	public static double convertFrom(double value, double fromUnit) {
 		return value*fromUnit ;
 	}
 	
-	static double convertTo(double value, double toUnit) {
+	public static double convertTo(double value, double toUnit) {
 		return value*(1/toUnit) ;
 	}
 	

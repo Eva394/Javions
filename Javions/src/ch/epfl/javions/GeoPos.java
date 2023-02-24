@@ -7,28 +7,28 @@ package ch.epfl.javions;
 
 
 
-public record GeoPos(int longitudet32, int latitudet32) {
+public record GeoPos(int longitudeT32, int latitudeT32) {
 	
 	public GeoPos {
-		Preconditions.checkArgument(isValidLatitudeT32(latitudet32)) ;
+		Preconditions.checkArgument(isValidLatitudeT32(latitudeT32)) ;
 	}
 
-	static boolean isValidLatitudeT32(int latitudeT32) {
+	public static boolean isValidLatitudeT32(int latitudeT32) {
 		return (Math.scalb(-1., 30) <= latitudeT32 && latitudeT32 <= Math.scalb(1., 30)) ;
 	}
 	
-	double longitude() {
-		return Units.convertFrom(longitudet32, Units.Angle.T32) ;
+	public double longitude() {
+		return Units.convertFrom(longitudeT32, Units.Angle.T32) ;
 	}
 	
-	double latitude() {
-		return Units.convertFrom(latitudet32, Units.Angle.T32) ;
+	public double latitude() {
+		return Units.convertFrom(latitudeT32, Units.Angle.T32) ;
 	}
 	
 	
 	@Override
 	public String toString() {
 		
-		return  ("(" + Units.convert(longitudet32, Units.Angle.T32, Units.Angle.DEGREE) + "°, " + Units.convert(latitudet32, Units.Angle.T32, Units.Angle.DEGREE) + "°)") ;
+		return  ("(" + Units.convert(longitudeT32, Units.Angle.T32, Units.Angle.DEGREE) + "°, " + Units.convert(latitudeT32, Units.Angle.T32, Units.Angle.DEGREE) + "°)") ;
 	}
 }
