@@ -1,4 +1,4 @@
-/*
+
 package ch.epfl.javions;
 
 
@@ -24,4 +24,3 @@ class PreconditionsTest {
 }
 
 
- */

@@ -30,7 +30,8 @@ public final class ByteString {
 
     public int byteAt(int index) {
         Preconditions.checkArgument(index > 0 && index <= bytes.length);
-        int i = bytes[index];
+        return bytes[index];
+        
     }
 
     public long bytesInRange(int fromIndex, int toIndex) {
