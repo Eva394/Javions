@@ -19,7 +19,7 @@ public final class ByteString {
     public ByteString ofHexadecimalString(String hexString) {
         Preconditions.checkArgument(hexString.length() % 2 == 0) ;
     
-        HexFormat hexFormat =
+        HexFormat hexFormat
     }
 
    public int size(){
