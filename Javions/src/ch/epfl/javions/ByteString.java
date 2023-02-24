@@ -23,6 +23,7 @@ public final class ByteString {
     }
 
     /**
+     * copy the array which passed the constructor
      * @return a copy of the array which passed the constructor
      */
 
@@ -40,7 +41,7 @@ public final class ByteString {
     }
 
     /**
-     *
+     * returns the size of the string (the number of bytes it contains)
      * @return the size of the string (the number of bytes it contains)
      */
 
@@ -50,7 +51,7 @@ public final class ByteString {
     }
 
     /**
-     *
+     * shows the bytes at the given index
      * @param index
      *          index
      * @return the byte at the given index
@@ -69,7 +70,7 @@ public final class ByteString {
     }
 
     /**
-     *
+     * shows the bytes between the fromIndex and toIndex
      * @param fromIndex
      *          the index indicates the start of the range (inclusive)
      * @param toIndex
@@ -98,7 +99,8 @@ public final class ByteString {
     }
 
     /**
-     * @return a represnetation of the bytes of the string in hexadecimal
+     * shows a representation of the bytes of the string in hexadecimal
+     * @return a representation of the bytes of the string in hexadecimal
      */
 
 
@@ -121,6 +123,7 @@ public final class ByteString {
     }
 
     /**
+     * returns the value returned by the hashCode method of Arrays
      * @return the value returned by the hashCode method of Arrays
      * applied to the array containing the bytes
      */

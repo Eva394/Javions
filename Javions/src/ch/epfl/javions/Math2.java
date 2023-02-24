@@ -6,6 +6,9 @@ public final class Math2 {
     private Math2() {}
 
     /**
+     * Restricts the range of value v in between min and max
+     * and gives min when v is smaller than v
+     * and gives max when v is bigger than v
      *
      * @param min
      *          the minimum value that v can be
