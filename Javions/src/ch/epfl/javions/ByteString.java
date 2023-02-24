@@ -24,14 +24,14 @@ public final class ByteString {
         return new ByteString(tempBytes);
     }
 
+
     public int size() {
         return bytes.length;
     }
 
     public int byteAt(int index) {
-        Preconditions.checkArgument(index > 0 && index <= bytes.length);
-        return bytes[index];
-        
+        Preconditions.checkArgument(index > 0 || index <= bytes.length);
+        return Byte.toUnsignedInt(bytes[index]);
     }
 
     public long bytesInRange(int fromIndex, int toIndex) {
@@ -40,7 +40,7 @@ public final class ByteString {
         Preconditions.checkArgument(numBytes < Long.SIZE);
 
         long result = 0;
-        for (int i = toIndex - 1; i >= fromIndex; i--) {
+        for (int i = 0; i < toIndex; i++) {
             result = (result << 8) | Byte.toUnsignedLong(bytes[i]);
         }
         return result;
@@ -48,8 +48,27 @@ public final class ByteString {
 
 
     @Override
-    public int hashCode() {
+    public String toString(){
+        HexFormat hf = HexFormat.of().withUpperCase();
+        String string = hf.formatHex(bytes);
+        return string;
+    }
 
+
+    /*@Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ByteString object) {
+            Arrays.equals(object, this) ;
+        }
+        else {
+
+        }
+    }*/
+
+    @Override
+    public int hashCode() {
         return Arrays.hashCode(bytes);
     }
+
+
 }
