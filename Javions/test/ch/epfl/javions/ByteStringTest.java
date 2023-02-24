@@ -1,4 +1,4 @@
-/*
+
 package ch.epfl.javions;
 
 
@@ -95,4 +95,3 @@ class ByteStringTest {
     }
 }
 
- */
