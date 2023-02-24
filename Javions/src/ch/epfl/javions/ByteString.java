@@ -1,5 +1,8 @@
 package ch.epfl.javions;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.HexFormat;
 import java.util.Objects;
 
 public final class ByteString {
@@ -11,6 +14,12 @@ public final class ByteString {
 
     public byte[] getBytes() {
         return bytes.clone();
+    }
+    
+    public ByteString ofHexadecimalString(String hexString) {
+        Preconditions.checkArgument(hexString.length() % 2 == 0) ;
+    
+        HexFormat hexFormat =
     }
 
    public int size(){
@@ -29,16 +38,26 @@ public final class ByteString {
     public long bytesInRange(int fromIndex, int toIndex) {
         Objects.checkFromToIndex(fromIndex, toIndex, bytes.length);
         int numBytes = toIndex - fromIndex;
-        Preconditions.checkArgument(numBytes < 8);
-
-        }
-        long result = 0;
+        Preconditions.checkArgument(numBytes < Long.SIZE );
+        
+        long result = 0 ;
         for (int i = toIndex - 1; i >= fromIndex; i--) {
             result = (result << 8) | Byte.toUnsignedLong(bytes[i]);
         }
         return result;
     }
-
-
-
+    
+    
+    @Override
+    public int hashCode() {
+        
+        return Arrays.hashCode(bytes);
+    }
+    
+    
+    @Override
+    public boolean equals(Object obj) {
+        
+        return Arrays.equals(obj);
+    }
 }
