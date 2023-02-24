@@ -139,15 +139,40 @@ public final class Units {
 	 * Defines the units of time
 	 */
 	public final class Time {
+		
+		/**
+		 * Value of a second (reference unit)
+		 */
 		public final static double SECOND = 1 ;
+		/**
+		 * Value of a minute
+		 */
 		public final static double MINUTE = 60*SECOND ;
+		/**
+		 * Value of an hour
+		 */
 		public final static double HOUR = 60*MINUTE ;
 		
 		private Time() {}
 	}
 	
+	
+	
+	
+	/**
+	 * @author Eva Mangano 345375
+	 * Defines the units of speed
+	 */
+	
 	public final class Speed {
+		
+		/**
+		 * Value of a knot
+		 */
 		public final static double KNOT = Length.NAUTICAL_MILE/Time.HOUR ;
+		/**
+		 * Value of a kilometer per hour
+		 */
 		public final static double KILOMETER_PER_HOUR = Length.KILOMETER/Time.HOUR ;
 	}
 	
