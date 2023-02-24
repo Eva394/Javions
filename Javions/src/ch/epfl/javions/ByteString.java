@@ -15,55 +15,40 @@ public final class ByteString {
     public byte[] getBytes() {
         return bytes.clone();
     }
-    
-    public ByteString ofHexadecimalString(String hexString) {
-        Preconditions.checkArgument(hexString.length() % 2 == 0) ;
-    
-        HexFormat hexFormat = HexFormat.of().withUpperCase() ;
-        byte[] tempBytes = hexFormat.parseHex(hexString) ;
-        if ( Arrays.equals(bytes, tempBytes) ) {
-            throw new NumberFormatException() ;
-        }
-        
-        return new ByteString(tempBytes) ;
+
+    public static ByteString ofHexadecimalString(String hexString) {
+        Preconditions.checkArgument(hexString.length() % 2 == 0);
+
+        HexFormat hexFormat = HexFormat.of().withUpperCase();
+        byte[] tempBytes = hexFormat.parseHex(hexString);
+        return new ByteString(tempBytes);
     }
 
-   public int size(){
+    public int size() {
         return bytes.length;
-   }
+    }
 
-   public int byteAt(int index){
-        if ( index<0 || index >= bytes.length){
-            throw new IndexOutOfBoundsException();
-        }
-        else {
-            return bytes[index];
-        }
-   }
+    public int byteAt(int index) {
+        Preconditions.checkArgument(index > 0 && index <= bytes.length);
+        int i = bytes[index];
+    }
 
     public long bytesInRange(int fromIndex, int toIndex) {
         Objects.checkFromToIndex(fromIndex, toIndex, bytes.length);
         int numBytes = toIndex - fromIndex;
-        Preconditions.checkArgument(numBytes < Long.SIZE );
-        
-        long result = 0 ;
+        Preconditions.checkArgument(numBytes < Long.SIZE);
+
+        long result = 0;
         for (int i = toIndex - 1; i >= fromIndex; i--) {
             result = (result << 8) | Byte.toUnsignedLong(bytes[i]);
         }
         return result;
     }
-    
-    
+
+
     @Override
     public int hashCode() {
-        
+
         return Arrays.hashCode(bytes);
-    }
-    
-    
-    @Override
-    public boolean equals(Object obj) {
-        
-        return Arrays.equals(obj);
     }
 }
