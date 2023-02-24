@@ -1,12 +1,16 @@
 package ch.epfl.javions;
 
-/** @author Nagyung Kim (339628)*/
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.Objects;
 
+/**
+ *  @author Eva Mangano 345375
+ *  @author Nagyung Kim (339628)
+ *  A byte string (string of octets)
+ */
 public final class ByteString {
     private final byte[] bytes;
 
@@ -30,8 +34,14 @@ public final class ByteString {
     public byte[] getBytes() {
         return bytes.clone();
     }
-
-
+    
+    
+    /**
+     * Converts the given hexadecimal representation to a byte string of octets
+     * hexadecimal representation
+     * @param hexString hexadecimal representation of the value
+     * @return a byte string which is equal to the given hexadecimal representation
+     */
     public static ByteString ofHexadecimalString(String hexString) {
         Preconditions.checkArgument(hexString.length() % 2 == 0);
 
@@ -110,8 +120,16 @@ public final class ByteString {
         String string = hf.formatHex(bytes);
         return string;
     }
-
-
+    
+    
+    /**
+     * Checks if the object is a ByteString and calls the Arrays equals method on the instance
+     * and the object, returns true in that case. Returns false if the object is not a ByteString
+     * or is not equal to the instance.
+     * @author Eva Mangano 345375
+     * @param obj object to compare to the instance
+     * @return a boolean, true if the object and the instance are equal
+     */
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ByteString object) {
