@@ -16,11 +16,13 @@ package ch.epfl.javions;
 public record GeoPos(int longitudeT32, int latitudeT32) {
 	
 	/**
-	 * Constructor. Builds an instance of GeoPos.
-	 * @author Eva Mangano 345375
-	 * @param longitudeT32 longitude, expressed in T32
-	 * @param latitudeT32 latitude, expressed in T32
-	 */
+     * Constructor. Builds an instance of GeoPos.
+     *
+     * @param longitudeT32 longitude, expressed in T32
+     * @param latitudeT32  latitude, expressed in T32
+     * @throws IllegalArgumentException if the latitude is not between -2^30 and 2^30
+     * @author Eva Mangano 345375
+     */
 	public GeoPos {
 		Preconditions.checkArgument(isValidLatitudeT32(latitudeT32)) ;
 	}

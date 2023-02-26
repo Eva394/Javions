@@ -1,7 +1,6 @@
 package ch.epfl.javions;
 
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.Objects;
@@ -37,10 +36,11 @@ public final class ByteString {
     
     
     /**
-     * Converts the given hexadecimal representation to a byte string of octets
-     * hexadecimal representation
+     * Converts the given hexadecimal representation to a byte string of octets hexadecimal representation
+     *
      * @param hexString hexadecimal representation of the value
      * @return a byte string which is equal to the given hexadecimal representation
+     * @throws IllegalArgumentException if the length of hexString is not even
      */
     public static ByteString ofHexadecimalString(String hexString) {
         Preconditions.checkArgument(hexString.length() % 2 == 0);

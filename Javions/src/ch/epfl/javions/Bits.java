@@ -19,13 +19,15 @@ public class Bits {
 	
 	
 	/**
-	 * Extracts a range of bits from the given valuel, from the index start and of given size.
-	 * @author Eva Mangano 345375
-	 * @param value value given form which to extract the range
-	 * @param start index of the start of the range to be extracted
-	 * @param size size of the range to be extracted
-	 * @return the int value of the extracted range of bits
-	 */
+     * Extracts a range of bits from the given valuel, from the index start and of given size.
+     *
+     * @param value value given form which to extract the range
+     * @param start index of the start of the range to be extracted
+     * @param size  size of the range to be extracted
+     * @return the int value of the extracted range of bits
+     * @throws IllegalArgumentException if the size is less than 1 or more than 32 (size of an int)
+     * @author Eva Mangano 345375
+     */
 	public static int extractUInt(long value, int start, int size) {
 		
 		Preconditions.checkArgument( (size > 0 && size < Integer.SIZE) ) ;
