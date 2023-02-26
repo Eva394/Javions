@@ -17,20 +17,21 @@ import java.util.regex.Pattern;
  */
 public record IcaoAddress(String string) {
 
-	/**
-	 * ICAO address
-	 */
-	private static Pattern addressPattern;
+    /**
+     * ICAO address
+     */
+    //TODO find out if this is public or private
+    private static Pattern addressPattern;
 
 
-	/**
-	 * Constructor. Builds an instance of IcaoAcdress
-	 *
-	 * @param string textual representation of the ICAO address
-	 * @throws IllegalArgumentException if the string is not a valid ICAO address
-	 */
-	public IcaoAddress {
-		addressPattern = Pattern.compile( "[0-9A-F]{6}" );
-		Preconditions.checkArgument( addressPattern.matcher( string ).matches() );
-	}
+    /**
+     * Constructor. Builds an instance of IcaoAcdress
+     *
+     * @param string textual representation of the ICAO address
+     * @throws IllegalArgumentException if the string is not a valid ICAO address or is empty
+     */
+    public IcaoAddress {
+        addressPattern = Pattern.compile( "[0-9A-F]{6}" );
+        Preconditions.checkArgument( addressPattern.matcher( string ).matches() );
+    }
 }
