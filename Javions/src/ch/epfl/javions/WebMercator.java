@@ -1,6 +1,8 @@
 package ch.epfl.javions;
 
-/** @author Nagyung Kim (339628)*/
+/**
+ * Define coordinates x and y
+ * @author Nagyung Kim (339628)*/
 
 
 public class WebMercator {

@@ -1,6 +1,8 @@
 package ch.epfl.javions;
 
-/** @author Nagyung Kim (339628) */
+/**
+ * Defining Clamp and asinh
+ * @author Nagyung Kim (339628) */
 
 public final class Math2 {
     private Math2() {}
