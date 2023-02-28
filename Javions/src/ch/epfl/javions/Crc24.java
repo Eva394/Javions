@@ -54,3 +54,6 @@ public final class Crc24 {
         return 0;
     }
 }
+
+////METHOD TO CALCULATE A CRC
+////METHOD TO TRANSFORM WHATEVER WE RECEIVE INTO 'A BYTE[] SO THAT WE CAN DO THE CRC
