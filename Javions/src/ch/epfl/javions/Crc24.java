@@ -18,6 +18,7 @@ public final class Crc24 {
      * Contains the 24 lesser bits of the generator used to calculate the CRC24 of the ADS-B messages of the aircraft
      */
     public static int GENERATOR = 0xFFF409;
+    private int generator;
 
 
     /**
@@ -27,22 +28,28 @@ public final class Crc24 {
      * @author Eva Mangano 345375
      */
     public Crc24(int generator) {
-
+        //this.generator = ;
     }
 
 
-    //TODO wtf is this
-    //TODO use the optimized version (3rd)
-    private static Crc24 crc_bitwise(byte[] bytes) {
-/*        int crc = 0;
+    private static int crc_bitwise(byte[] bytes, int generator) {
+        int crc = 0;
+        int[] augmented = new int[24];
 
-        byte[] augmentedBytes = new byte[bytes.length + 24];
+        for ( int i = bytes.length ; i > 0 ; i-- ) {
+            crc = ( ( crc << Byte.SIZE ) | bytes[i] ) ^ bytes[bytes.length - 1];
+        }
 
-        for ( int i = 0 ; i < augmentedBytes.length ; i++ ) {
+        for ( int i = augmented.length ; i > 0 ; i-- ) {
+            crc = ( ( crc << Byte.SIZE ) | bytes[i] ) ^ augmented[augmented.length - 1];
+        }
 
-        }*/
+        return crc;
+    }
 
-        return null;
+
+    private static void buildtable() {
+        for ( int i = 0 ; i < )
     }
 
 
@@ -51,7 +58,8 @@ public final class Crc24 {
      * @return
      */
     public int crc(byte[] bytes) {
-        return 0;
+
+        return crc_bitwise( bytes, generator );
     }
 }
 

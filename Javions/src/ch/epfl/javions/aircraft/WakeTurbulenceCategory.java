@@ -1,17 +1,24 @@
 package ch.epfl.javions.aircraft;
 
-public enum  WakeTurbulenceCategory {
+public enum WakeTurbulenceCategory {
 
-    LIGHT, MEDIUM, HEAVY, UNKNOWN;
+    LIGHT,
+    MEDIUM,
+    HEAVY,
+    UNKNOWN;
 
-    public WakeTurbulenceCategory of(String s) {
-        if (s.equals("L")) {
+
+    public static WakeTurbulenceCategory of(String s) {
+        if ( s.equals( "L" ) ) {
             return LIGHT;
-        } else if (s.equals("M")) {
+        }
+        else if ( s.equals( "M" ) ) {
             return MEDIUM;
-        } else if (s.equals("H")) {
+        }
+        else if ( s.equals( "H" ) ) {
             return HEAVY;
-        } else {
+        }
+        else {
             return UNKNOWN;
         }
     }
