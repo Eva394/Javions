@@ -78,6 +78,6 @@ public final class Crc24 {
      * @return
      */
     public int crc(byte[] bytes) {
-        return crc_bitwise( table, Crc24.GENERATOR );
+        return crc_bitwise( bytes, Crc24.GENERATOR );
     }
 }
