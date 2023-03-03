@@ -14,6 +14,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public final class AircraftDatabase {
 
+    public static final int WAKETURBULENCECATEGORY = 5;
+    public static final int DESCRIPTION = 4;
+    public static final int MODEL = 3;
+    public static final int TYPEDESIGNATOR = 2;
+    public static final int REGISTRATION = 1;
     private final String fileName;
 
     /**
@@ -44,7 +49,7 @@ public final class AircraftDatabase {
 
     public AircraftData get(IcaoAddress address) throws IOException {
         String addressString = address.string();
-        try (ZipFile z = new ZipFile(fileName);
+        try (ZipFile z = new ZipFile("fileName");
              InputStream s = z.getInputStream(z.getEntry(address.string().substring(4) + ".csv"));
              Reader r = new InputStreamReader(s, UTF_8);
              BufferedReader b = new BufferedReader(r)) {
@@ -52,20 +57,22 @@ public final class AircraftDatabase {
 
             while ((l = b.readLine()) != null)  {
 
-                if (l.compareTo(addressString) > 0) {
-                    return null;
-                }
+
 
                 if (l.startsWith(addressString)) {
                     String[] data = l.split(",",-1);
 
-                    AircraftRegistration registration = new AircraftRegistration(data[0]);
-                    AircraftTypeDesignator typeDesignator = new AircraftTypeDesignator(data[1]);
-                    String model = data[2];
-                    AircraftDescription description = new AircraftDescription(data[3]);
-                    WakeTurbulenceCategory wakeTurbulenceCategory = WakeTurbulenceCategory.of(data[4]);
+                    AircraftRegistration registration = new AircraftRegistration(data[REGISTRATION]);
+                    AircraftTypeDesignator typeDesignator = new AircraftTypeDesignator(data[TYPEDESIGNATOR]);
+                    String model = data[MODEL];
+                    AircraftDescription description = new AircraftDescription(data[DESCRIPTION]);
+                    WakeTurbulenceCategory wakeTurbulenceCategory = WakeTurbulenceCategory.of(data[WAKETURBULENCECATEGORY]);
 
                     return new AircraftData(registration, typeDesignator, model, description, wakeTurbulenceCategory);
+                }
+
+                if (l.compareTo(addressString) > 0) {
+                    return null;
                 }
             }
             return null;
