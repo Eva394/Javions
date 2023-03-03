@@ -31,7 +31,7 @@ public record AircraftRegistration(String string) {
      * @throws IllegalArgumentException if the string is not a valid immatriculation or is empty
      */
     public AircraftRegistration {
-        immatriculationPattern = Pattern.compile( "[A-Z0-9 .?/_+-]+" );
+        immatriculationPattern = Pattern.compile("[A-Z0-9 .?/_+-]+");
         Preconditions.checkArgument( immatriculationPattern.matcher( string ).matches() );
     }
 }
