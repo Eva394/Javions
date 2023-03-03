@@ -17,7 +17,7 @@ class Crc24Test {
             Crc24 crc24 = new Crc24( Crc24.GENERATOR );
             String mS = messages[i];
             String cS = crc24s[i];
-            int c = Integer.parseInt( cS, 16 ); // == 0x035DB8
+            int c = Integer.parseInt( cS, 16 );
 
             byte[] mAndC = HexFormat.of().parseHex( mS + cS );
             assertEquals( 0, crc24.crc( mAndC ) );
@@ -26,4 +26,6 @@ class Crc24Test {
             assertEquals( c, crc24.crc( mOnly ) );
         }
     }
+
+
 }
