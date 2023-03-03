@@ -15,7 +15,7 @@ public final class AircraftDatabase {
         this.fileName = Objects.requireNonNull(fileName);
     }
 
-    //TODO why get file is suggesting to replace even though it is already written above (line 15)?
+    // TODO why get file is suggesting to replace even though it is already written above (line 15)?
 
     public AircraftData get(IcaoAddress address) throws IOException {
         fileName = getClass().getResource("/aircraft.zip").getFile();
