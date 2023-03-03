@@ -58,6 +58,7 @@ public final class ByteString {
 
 
     public int size() {
+
         return bytes.length;
     }
 

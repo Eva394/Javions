@@ -1,25 +1,48 @@
 package ch.epfl.javions.aircraft;
 
 import java.io.*;
-import java.net.URLDecoder;
 import java.util.Objects;
 import java.util.zip.ZipFile;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+
+/**
+ * mictronics database of aircraft
+ *
+ * @author Nagyung KIM (339628)
+ */
+
 public final class AircraftDatabase {
 
-    private String fileName;
+    private final String fileName;
 
+    /**
+     * construct an object representing the mictronics database
+     * stored in the given file name
+     * and check whether is null or not
+     *
+     * @param fileName
+     *          file name
+     * @throws NullPointerException if fileName is null
+     */
     public AircraftDatabase(String fileName) {
 
         this.fileName = Objects.requireNonNull(fileName);
     }
 
-    // TODO why get file is suggesting to replace even though it is already written above (line 15)?
+    /**
+     * returns the data of the aircraft whose ICAO address is the given one
+     * or null if no entry exists in the database of the address
+     *
+     * @param address
+     *          ICAO Address
+     * @return the data of the aircraft whose ICAO address is the given one
+     *          or null if no entry exists in the database of the address
+     * @throws IOException in case of input/output error
+     *
+     */
 
     public AircraftData get(IcaoAddress address) throws IOException {
-        fileName = getClass().getResource("/aircraft.zip").getFile();
-        fileName = URLDecoder.decode(fileName, UTF_8);
         String addressString = address.string();
         try (ZipFile z = new ZipFile(fileName);
              InputStream s = z.getInputStream(z.getEntry(address.string().substring(4) + ".csv"));
