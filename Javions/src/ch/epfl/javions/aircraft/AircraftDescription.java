@@ -20,7 +20,6 @@ public record AircraftDescription(String string) {
     /**
      * Description
      */
-    //TODO find out if this is public or private
     private static Pattern descriptionPattern;
 
 
