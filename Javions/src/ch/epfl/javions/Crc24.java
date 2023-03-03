@@ -8,7 +8,7 @@ package ch.epfl.javions;
 
 
 /**
- * Represents a crc calculator oof 24 bits
+ * Represents a crc calculator of 24 bits
  *
  * @author Eva Mangano 345375
  */
@@ -33,6 +33,13 @@ public final class Crc24 {
     }
 
 
+    /**
+     * Treats the crc bit by bit
+     *
+     * @param bytes
+     * @param generator
+     * @return
+     */
     private static int crc_bitwise(byte[] bytes, int generator) {
         long crc = 0;
         int[] generatorTable = new int[]{0, generator};
@@ -62,9 +69,7 @@ public final class Crc24 {
         for ( int i = 0 ; i < 256 ; i++ ) {
             generatorTable[i] = crc_bitwise( new byte[]{(byte)i}, generator );
         }
-        //        for ( int i = 0 ; i < generatorTable.length ; i++ ) {
-        //            System.out.println( generatorTable[i] );
-        //        }
+
         return generatorTable;
     }
 
