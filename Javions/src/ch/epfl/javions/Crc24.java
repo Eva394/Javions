@@ -36,9 +36,10 @@ public final class Crc24 {
     /**
      * Treats the crc bit by bit
      *
-     * @param bytes
-     * @param generator
-     * @return
+     * @param bytes     array of bytes to be treated
+     * @param generator 24 lesser bits of the generator
+     * @return the crc
+     * @author Eva Mangano 345375
      */
     private static int crc_bitwise(byte[] bytes, int generator) {
         long crc = 0;
@@ -63,6 +64,12 @@ public final class Crc24 {
     }
 
 
+    /**
+     * Builds a table of
+     *
+     * @param generator
+     * @return
+     */
     private static int[] buildtable(int generator) {
         int[] generatorTable = new int[256];
 
