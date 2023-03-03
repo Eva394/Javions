@@ -19,7 +19,7 @@ public final class Crc24 {
      */
     public final static int GENERATOR = 0xFFF409;
     private final static int CRC_SIZE = 24;
-    private byte[] table;
+    private int[] table;
 
 
     /**
@@ -29,48 +29,44 @@ public final class Crc24 {
      * @author Eva Mangano 345375
      */
     public Crc24(int generator) {
-        // this.table = buildtable(generator); ;
+        this.table = buildtable( generator );
     }
 
 
     private static int crc_bitwise(byte[] bytes, int generator) {
         long crc = 0;
+        int[] generatorTable = new int[]{0, generator};
 
         for ( int i = 0 ; i < bytes.length ; i++ ) {
             for ( int bit = Byte.SIZE - 1 ; bit >= 0 ; bit-- ) {
                 int b = Bits.extractUInt( bytes[i], bit, 1 );
-                crc = ( crc << 1 ) | b;
-                //System.out.println( Bits.extractUInt( crc, CRC_SIZE, 24 ) );
+                int crcHighOrderBit = Bits.extractUInt( crc, CRC_SIZE - 1, 1 );
 
-                if ( Bits.extractUInt( crc, CRC_SIZE, 1 ) == 1 ) {
-                    crc = crc ^ generator;
-                }
+                crc = ( ( crc << 1 ) | b ) ^ generatorTable[crcHighOrderBit];
             }
         }
 
         for ( int i = 0 ; i < CRC_SIZE ; i++ ) {
-            crc = crc << 1;
+            int crcHighOrderBit = Bits.extractUInt( crc, CRC_SIZE - 1, 1 );
 
-            if ( Bits.extractUInt( crc, CRC_SIZE, 1 ) == 1 ) {
-                crc = crc ^ generator;
-            }
+            crc = ( crc << 1 ) ^ generatorTable[crcHighOrderBit];
         }
-
-        //        for ( int i = 0 ; i < bytes.length ; i++ )
-        //            for ( int j = bytes.length ; j > 0 ; j-- ) {
-        //                crc = ( ( crc << 1 ) | bytes[i] ) ^ bytes[table.length - 1] ;
-        //            }
-        ////
-        //        for ( int i = augmented.length ; i > 0 ; i-- ) {
-        //            crc = ( ( crc << Byte.SIZE ) | bytes[i] ) ^ table[table.length - 1];
-        //        }
 
         return Bits.extractUInt( crc, 0, CRC_SIZE );
     }
 
-    //    private static int[] buildtable(int generator) {
-    //        // for ( int i = 0 ; i < )
-    //    }
+
+    private static int[] buildtable(int generator) {
+        int[] generatorTable = new int[256];
+
+        for ( int i = 0 ; i < 256 ; i++ ) {
+            generatorTable[i] = crc_bitwise( new byte[]{(byte)i}, generator );
+        }
+        //        for ( int i = 0 ; i < generatorTable.length ; i++ ) {
+        //            System.out.println( generatorTable[i] );
+        //        }
+        return generatorTable;
+    }
 
 
     /**
@@ -78,7 +74,21 @@ public final class Crc24 {
      * @return
      */
     public int crc(byte[] bytes) {
+        int crc = 0;
 
-        return crc_bitwise( table, Crc24.GENERATOR );
+        for ( int octet = 0 ; octet < bytes.length ; octet++ ) {
+            int o = Byte.toUnsignedInt( bytes[octet] );
+            int crcHighOrderByte = Bits.extractUInt( crc, CRC_SIZE - Byte.SIZE, Byte.SIZE );
+
+            crc = ( ( crc << 8 ) | o ) ^ table[crcHighOrderByte];
+        }
+
+        for ( int octet = 0 ; octet < CRC_SIZE / Byte.SIZE ; octet++ ) {
+            int crcHighOrderByte = Bits.extractUInt( crc, CRC_SIZE - Byte.SIZE, Byte.SIZE );
+
+            crc = ( crc << 8 ) ^ table[crcHighOrderByte];
+        }
+
+        return Bits.extractUInt( crc, 0, CRC_SIZE );
     }
 }
