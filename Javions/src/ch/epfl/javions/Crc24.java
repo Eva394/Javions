@@ -65,10 +65,10 @@ public final class Crc24 {
 
 
     /**
-     * Builds a table of
+     * Builds a table of 256 inputs corresponding to the generator
      *
-     * @param generator
-     * @return
+     * @param generator 24 lesser bits of the generator
+     * @return array of ints containing the generator
      */
     private static int[] buildtable(int generator) {
         int[] generatorTable = new int[256];
@@ -82,8 +82,10 @@ public final class Crc24 {
 
 
     /**
-     * @param bytes
-     * @return
+     * Computes the crc of the array </bytes>
+     *
+     * @param bytes array to be treated
+     * @return the crc
      */
     public int crc(byte[] bytes) {
         int crc = 0;
