@@ -58,7 +58,6 @@ public final class AircraftDatabase {
             while ((l = b.readLine()) != null)  {
 
 
-
                 if (l.startsWith(addressString)) {
                     String[] data = l.split(",",-1);
 

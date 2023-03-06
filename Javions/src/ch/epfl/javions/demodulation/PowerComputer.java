@@ -11,8 +11,7 @@ public final class PowerComputer {
         Preconditions.checkArgument((batchSize > 0) && (batchSize % 8 == 0));
     }
 
-    public int readBatch(int[] Batch) throws IOException {
-
+    public readBatch(short[] batch){
 
 
     }
