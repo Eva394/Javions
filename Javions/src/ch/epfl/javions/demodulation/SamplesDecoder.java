@@ -26,12 +26,19 @@ public final class SamplesDecoder {
             throw new NullPointerException();
         }
 
-        this.sample = new byte[batchSize];
+
         this.stream = stream;
+        this.sample = new byte[batchSize];
+        //I think it's this.sample = new byte[batchSize*2] because
+        // "La AirSpy transmet ces échantillons de 12 bits à l'ordinateur
+        // auquel elle est connectée sous la forme d'une séquence d'octets,
+        // en utilisant 2 octets par échantillon."
+        // so the length of sample is twice of the length of batchSize, no?
+
     }
 
 
-    public int readBatch(short[] batch) throws IOException {
+    public readBatch(short[] batch) throws IOException {
         stream.readNBytes( sample, 0, 12 );
     }
 }
