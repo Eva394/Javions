@@ -17,7 +17,7 @@ import java.io.InputStream;
  */
 public final class SamplesDecoder {
 
-    private static final int BIAIS = 2048;
+    private static final int BIAIS = 1 << 11;
     private byte[] sample;
     private InputStream stream;
     private int batchSize;
@@ -36,13 +36,16 @@ public final class SamplesDecoder {
 
 
     public void readBatch(short[] batch) throws IOException {
+        if ( batch.length != batchSize ) {
+            throw new IllegalArgumentException();
+        }
         stream.readNBytes( sample, 0, batchSize );
 
         for ( int i = 0 ; i < batch.length / 2 ; i++ ) {
             for ( int j = 0 ; j < batchSize ; j++ ) {
                 int a = Byte.toUnsignedInt( sample[j] );
                 int b = Byte.toUnsignedInt( sample[j + 1] );
-                batch[i] = (short)( ( ( b << Byte.SIZE ) | a ) - ( 1 << 11 ) );
+                batch[i] = (short)( ( ( b << Byte.SIZE ) | a ) - BIAIS );
             }
         }
     }
