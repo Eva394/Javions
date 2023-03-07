@@ -51,11 +51,13 @@ public final class SamplesDecoder {
      * @param batch array to fill with the samples
      * @throws IOException              if there is an input/output error
      * @throws IllegalArgumentException if the size of <code>batch</code> is not equal to <code>batchSize</code>
+     * @author Eva Mangano 345375
      */
-    public void readBatch(short[] batch) throws IOException {
+    public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument( batch.length == batchSize );
 
-        stream.readNBytes( sample, 0, batchSize );
+        int bytesRead;
+        bytesRead = stream.readNBytes( sample, 0, batchSize );
 
         for ( int i = 0 ; i < batch.length / 2 ; i++ ) {
             for ( int j = 0 ; j < batchSize ; j++ ) {
@@ -64,5 +66,7 @@ public final class SamplesDecoder {
                 batch[i] = (short)( ( ( b << Byte.SIZE ) | a ) - BIAIS );
             }
         }
+
+        return bytesRead;
     }
 }
