@@ -11,13 +11,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * @author Eva Mangano 345375 Represents a sample decoder, which transforms the bytes from the AirSpy into signed 12-bit
- * samples
+ * Represents a sample decoder, which transforms the bytes from the AirSpy into signed 12-bit samples
+ *
+ * @author Eva Mangano 345375
  */
 public final class SamplesDecoder {
 
+    private static final int BIAIS = 2048;
     private byte[] sample;
     private InputStream stream;
+    private int batchSize;
 
 
     public SamplesDecoder(InputStream stream, int batchSize) {
@@ -26,19 +29,21 @@ public final class SamplesDecoder {
             throw new NullPointerException();
         }
 
-
         this.stream = stream;
-        this.sample = new byte[batchSize];
-        //I think it's this.sample = new byte[batchSize*2] because
-        // "La AirSpy transmet ces échantillons de 12 bits à l'ordinateur
-        // auquel elle est connectée sous la forme d'une séquence d'octets,
-        // en utilisant 2 octets par échantillon."
-        // so the length of sample is twice of the length of batchSize, no?
-
+        this.sample = new byte[batchSize * 2];
+        this.batchSize = batchSize;
     }
 
 
-    public readBatch(short[] batch) throws IOException {
-        stream.readNBytes( sample, 0, 12 );
+    public void readBatch(short[] batch) throws IOException {
+        stream.readNBytes( sample, 0, batchSize );
+
+        for ( int i = 0 ; i < batch.length / 2 ; i++ ) {
+            for ( int j = 0 ; j < batchSize ; j++ ) {
+                int a = Byte.toUnsignedInt( sample[j] );
+                int b = Byte.toUnsignedInt( sample[j + 1] );
+                batch[i] = (short)( ( ( b << Byte.SIZE ) | a ) - ( 1 << 11 ) );
+            }
+        }
     }
 }

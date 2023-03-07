@@ -9,6 +9,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Crc24Test {
 
+    private static final HexFormat HEX_FORMAT = HexFormat.of();
+    private static final List<String> ADSB_MESSAGES = List.of( "8D392AE499107FB5C00439035DB8",
+                                                               "8D39DD4158B511FDC118E1A835FE",
+                                                               "8D346083F8230006004BB862B42C",
+                                                               "8D506CA358B982DBAD9595A23761",
+                                                               "8D3CDD2158AF85CA4125E4620E46",
+                                                               "8D39CE6B990D91126808450C6A94",
+                                                               "8D49411499113AA890044A80894B",
+                                                               "8D4CA4EEEA466867791C0845193E",
+                                                               "8D484C5058353646A147292758A9",
+                                                               "8D47BA78EA4C4864013C084ABCAA",
+                                                               "8D0A009C9908673B1808408A5B0D" );
+
+
     @Test
     void Crc24Crc_bitwiseReturnsCorrectCrc() {
         String[] messages = {"8D392AE499107FB5C00439", "8D4D2286EA428867291C08", "8D3950C69914B232880436",
@@ -27,20 +41,6 @@ class Crc24Test {
             assertEquals( c, crc24.crc( mOnly ) );
         }
     }
-
-
-    private static final HexFormat HEX_FORMAT = HexFormat.of();
-    private static final List<String> ADSB_MESSAGES = List.of( "8D392AE499107FB5C00439035DB8",
-                                                               "8D39DD4158B511FDC118E1A835FE",
-                                                               "8D346083F8230006004BB862B42C",
-                                                               "8D506CA358B982DBAD9595A23761",
-                                                               "8D3CDD2158AF85CA4125E4620E46",
-                                                               "8D39CE6B990D91126808450C6A94",
-                                                               "8D49411499113AA890044A80894B",
-                                                               "8D4CA4EEEA466867791C0845193E",
-                                                               "8D484C5058353646A147292758A9",
-                                                               "8D47BA78EA4C4864013C084ABCAA",
-                                                               "8D0A009C9908673B1808408A5B0D" );
 
 
     @Test
