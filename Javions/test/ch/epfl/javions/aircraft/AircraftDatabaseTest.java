@@ -8,24 +8,24 @@ import java.net.URLDecoder;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
+//TODO this doesn't pass (idk how we got 18 out of 18 then ???)
 public class AircraftDatabaseTest {
 
     @Test
     void AircraftDatabaseWorksForValidInput() throws IOException {
-        assertEquals(new AircraftData( new AircraftRegistration("HB-JDC"),
-                                       new AircraftTypeDesignator("A20N"),
-                                       "AIRBUS A-320neo", new AircraftDescription( "L2J" ),
-                                       WakeTurbulenceCategory.of( "M" ) ), new AircraftDatabase(
-                "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\aircraft.zip" ).get(
+        assertEquals( new AircraftData( new AircraftRegistration( "HB-JDC" ), new AircraftTypeDesignator( "A20N" ),
+                                        "AIRBUS A-320neo", new AircraftDescription( "L2J" ),
+                                        WakeTurbulenceCategory.of( "M" ) ), new AircraftDatabase(
+                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft.zip" ).get(
                 new IcaoAddress( "4B1814" ) ) );
     }
 
 
     @Test
     void AircraftDatabaseWorksForInValidInput() throws IOException {
-        assertNull(
-                new AircraftDatabase( "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\aircraft.zip" ).get(
-                        new IcaoAddress( "4B9912" ) ) );
+        assertNull( new AircraftDatabase(
+                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft.zip" ).get(
+                new IcaoAddress( "4B9912" ) ) );
     }
 
 
@@ -93,7 +93,7 @@ public class AircraftDatabaseTest {
     }
 
 
-    //    @Test
+    @Test
     void aircraftDatabaseGetWorksWithEmptyColumns() throws IOException {
         var aircraftDatabase = getDatabase();
         var aircraftData = aircraftDatabase.get( new IcaoAddress( "AAAAAA" ) );

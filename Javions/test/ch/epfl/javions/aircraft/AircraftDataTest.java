@@ -10,8 +10,8 @@ class AircraftDataTest {
     @Test
     void AircraftDataTestConstraints() {
 
-        AircraftRegistration registration = new AircraftRegistration("HB-JDC");
-        AircraftTypeDesignator typeDesignator = new AircraftTypeDesignator("A20N");
+        AircraftRegistration registration = new AircraftRegistration( "HB-JDC" );
+        AircraftTypeDesignator typeDesignator = new AircraftTypeDesignator( "A20N" );
         String model = "";
         AircraftDescription description = new AircraftDescription( "L2J" );
         WakeTurbulenceCategory wakeTurbulenceCategory = WakeTurbulenceCategory.of( "M" );
