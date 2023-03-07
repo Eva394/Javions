@@ -23,6 +23,13 @@ public final class SamplesDecoder {
     private int batchSize;
 
 
+    /**
+     * Constructor. Builds an instance of SamplesDecoder.
+     *
+     * @param stream
+     * @param batchSize
+     * @author Eva Mangano 345375
+     */
     public SamplesDecoder(InputStream stream, int batchSize) {
         Preconditions.checkArgument( batchSize > 0 );
         if ( stream == null ) {
