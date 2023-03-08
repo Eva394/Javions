@@ -19,68 +19,63 @@ public final class PowerComputer {
     private final int batchSize;
     private int index = 0;
 
+
     /**
-     * Construct a power calculator using the given input stream
-     * and produce batch power samples of given size
+     * Construct a power calculator using the given input stream and produce batch power samples of given size
      *
-     * @param stream
-     *          input stream containing the bytes from the AirSpy radio
-     * @param batchSize
-     *          size of the batches
+     * @param stream    input stream containing the bytes from the AirSpy radio
+     * @param batchSize size of the batches
      */
 
 
     public PowerComputer(InputStream stream, int batchSize) {
 
-        Preconditions.checkArgument(batchSize > 0 && batchSize % 8 == 0);
+        Preconditions.checkArgument( batchSize > 0 && batchSize % Byte.SIZE == 0 );
 
-
-        this.samplesDecoder = new SamplesDecoder(stream, batchSize*2);
+        this.samplesDecoder = new SamplesDecoder( stream, batchSize * 2 );
         this.stream = stream;
-        this.sample = new short[8];
+        this.sample = new short[Byte.SIZE];
         this.batchSize = batchSize;
-
     }
+
 
     /**
      * returns the number of power samples placed in the array
      *
      * @param batch array to fill with the power samples
      * @return the number of power samples placed in the array
-     * @throws IOException if input/output error
-     * @throws IllegalArgumentException
-     *          if the size of the array passed in argument is not equal to the size of a batch
+     * @throws IOException              if input/output error
+     * @throws IllegalArgumentException if the size of the array passed in argument is not equal to the size of a batch
      */
 
-    public int readBatch(int[] batch) throws IOException{
+    public int readBatch(int[] batch) throws IOException {
 
-        Preconditions.checkArgument(batch.length == batchSize);
+        Preconditions.checkArgument( batch.length == batchSize );
 
-        short[] newSamples = new short[batchSize*2];
+        short[] newSamples = new short[batchSize * 2];
 
-        int numberOfNewSamples = samplesDecoder.readBatch(newSamples);
+        int numberOfNewSamples = samplesDecoder.readBatch( newSamples );
 
-        for (int i = 0; i < batchSize ; i +=2){
+        for ( int i = 0 ; i < batchSize ; i += 2 ) {
 
             short a = newSamples[i];
-            short b = newSamples[i+1];
+            short b = newSamples[i + 1];
 
             sample[index] = a;
-            sample[index+1] = b;
+            sample[index + 1] = b;
 
             int inPhase = sample[0] - sample[2] + sample[4] - sample[6];
             int quadrature = sample[1] - sample[3] + sample[5] - sample[7];
 
             index = index + 2;
 
-            if (index == 8){
+            if ( index == 8 ) {
                 index = 0;
             }
 
             batch[i] = inPhase * inPhase + quadrature * quadrature;
         }
 
-        return numberOfNewSamples/2;
+        return numberOfNewSamples / 2;
     }
-
 }
