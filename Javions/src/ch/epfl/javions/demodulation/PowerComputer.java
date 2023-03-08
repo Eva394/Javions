@@ -68,7 +68,7 @@ public final class PowerComputer {
             sample[index] = a;
             sample[index+1] = b;
 
-            int inphase = sample[0] - sample[2] + sample[4] - sample[6];
+            int inPhase = sample[0] - sample[2] + sample[4] - sample[6];
             int quadrature = sample[1] - sample[3] + sample[5] - sample[7];
 
             index = index + 2;
@@ -77,7 +77,7 @@ public final class PowerComputer {
                 index = 0;
             }
 
-            batch[i] = inphase * inphase + quadrature * quadrature;
+            batch[i] = inPhase * inPhase + quadrature * quadrature;
         }
 
         return numberOfNewSamples/2;
