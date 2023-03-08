@@ -21,6 +21,7 @@ public final class SamplesDecoder {
     private byte[] sample;
     private InputStream stream;
     private int batchSize;
+    private int bytesRead;
 
 
     /**
@@ -56,7 +57,6 @@ public final class SamplesDecoder {
     public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument( batch.length == batchSize );
 
-        int bytesRead;
         bytesRead = stream.readNBytes( sample, 0, batchSize );
 
         for ( int i = 0 ; i < batch.length / 2 ; i++ ) {
