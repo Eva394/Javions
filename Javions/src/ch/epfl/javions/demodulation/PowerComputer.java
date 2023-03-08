@@ -17,10 +17,4 @@ public final class PowerComputer {
     }
 
 
-    public int getBytesRead() {
-        return samplesDecoder.getBytesRead;
-        //TODO i think my way of doing this is not the right one
-        //TODO when everything is pulled get the right name for the
-        // instance of SamplesDecoder
-    }
-}
+

@@ -36,7 +36,7 @@ public final class PowerWindow {
 
 
     public boolean isFull() {
-        return ( windowSize == powerComputer.getBytesRead() );
+        return ( );
         //TODO idk if this is the right way and if it is
         // should i divide by 2 or 4 ?
     }

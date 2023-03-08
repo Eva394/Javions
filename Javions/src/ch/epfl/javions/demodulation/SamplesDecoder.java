@@ -45,11 +45,6 @@ public final class SamplesDecoder {
     }
 
 
-    protected int getBytesRead() {
-        return bytesRead;
-    }
-
-
     /**
      * Reads and converts the batches of bytes from the stream to an array of samples of signed shorts. Stores it in the
      * array <code>batch</code>
