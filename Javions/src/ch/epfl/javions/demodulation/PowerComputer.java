@@ -5,14 +5,29 @@ import ch.epfl.javions.Preconditions;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Power Calculator
+ *
+ * @autor Nagyung Kim (339628)
+ */
 
 public final class PowerComputer {
 
     private final InputStream stream;
     private final short[] sample;
     private final SamplesDecoder samplesDecoder;
-    private int batchSize;
+    private final int batchSize;
     private int index = 0;
+
+    /**
+     * Construct a power calculator using the given input stream
+     * and produce batch power samples of given size
+     *
+     * @param stream
+     *          input stream containing the bytes from the AirSpy radio
+     * @param batchSize
+     *          size of the batches
+     */
 
 
     public PowerComputer(InputStream stream, int batchSize) {
@@ -26,6 +41,16 @@ public final class PowerComputer {
         this.batchSize = batchSize;
 
     }
+
+    /**
+     * returns the number of power samples placed in the array
+     *
+     * @param batch array to fill with the power samples
+     * @return the number of power samples placed in the array
+     * @throws IOException if input/output error
+     * @throws IllegalArgumentException
+     *          if the size of the array passed in argument is not equal to the size of a batch
+     */
 
     public int readBatch(int[] batch) throws IOException{
 
