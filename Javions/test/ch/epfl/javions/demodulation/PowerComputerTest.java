@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.sql.SQLOutput;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,8 +34,26 @@ class PowerComputerTest {
 
     @Test
     public void testReadbatchReturnsCorrectValue() throws IOException {
-        int[] batch = new int [batchSize];
+        //int[] batch = new int [batchSize];
+
+        int[] batch = new int[batchSize];
+
+        batch[0] = 3;
+        batch[1] = 8;
+        batch[2] = -9;
+        batch[3] = -8;
+        batch[4] = -5;
+        batch[5] = -8;
+        batch[6] = -12;
+        batch[7] = -16;
+        batch[8] = -23;
+        batch[9] = -9;
+
+        System.out.println(batch[0]);
+        System.out.println(batch[1]);
+
         powerComputer.readBatch(batch);
+
         for (int i = 0; i < 10; i++) {
             System.out.println(batch[i]);
         }

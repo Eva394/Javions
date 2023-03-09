@@ -15,7 +15,7 @@ class SamplesDecoderTest {
 
     @BeforeEach
     public void setUp() throws FileNotFoundException {
-        //InputStream inputStream = new FileInputStream(new File("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin"));
+        //InputStream stream = new FileInputStream(new File("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin"));
         DataInputStream stream = new DataInputStream(
                 new BufferedInputStream(
                         new FileInputStream(new File("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin"))));
@@ -27,7 +27,7 @@ class SamplesDecoderTest {
     public void testReadbatchReturnsCorrectValue() throws IOException {
         short[] batch = new short [batchSize];
         sampleDecoder.readBatch(batch);
-        for (int i = 0; i < batchSize; i++) {
+        for (int i = 0; i < 10; i++) {
             System.out.println(batch[i]);
         }
     }
