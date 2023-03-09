@@ -58,23 +58,25 @@ public final class SamplesDecoder {
         Preconditions.checkArgument( batch.length == batchSize );
 
         bytesRead = stream.readNBytes( sample, 0, batchSize );
-
-        for ( int i = 0 ; i < sample.length ; i += 2 ) {
-            System.out.println( sample[i] );
-        }
+        //
+        //        for ( int i = 0 ; i < sample.length ; i += 2 ) {
+        //            System.out.println( sample[i] );
+        //        }
 
         for ( int i = 0 ; i < batch.length / 2 ; i++ ) {
-            int aBis = 0;
-            int bBis = 0;
+            //            int aBis = 0;
+            //            int bBis = 0;
             for ( int j = 0 ; j < batchSize ; j += 2 ) {
+                //                aBis = ( sample[j] );
+                //                bBis = ( Byte.toUnsignedInt( sample[j] ) );
                 int a = Byte.toUnsignedInt( sample[j] );
                 int b = Byte.toUnsignedInt( sample[j + 1] );
-                aBis = a;
-                bBis = b;
+                //                aBis = a;
+                //                bBis = b;
                 batch[i] = (short)( ( ( b << Byte.SIZE ) | a ) - BIAIS );
-                //System.out.print( Byte.toUnsignedInt( sample[j] ) + " " );
+                //                System.out.print( Byte.toUnsignedInt( sample[j] ) + " " );
             }
-            //System.out.println( bBis );
+            //            System.out.println( aBis + " " + bBis );
         }
 
         return bytesRead;
