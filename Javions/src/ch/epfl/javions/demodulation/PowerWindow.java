@@ -35,6 +35,7 @@ public final class PowerWindow {
      */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
         Preconditions.checkArgument( ( windowSize > 0 ) && ( windowSize <= SAMPLE_SIZE ) );
+
         this.stream = stream;
         this.powerComputer = new PowerComputer( stream, windowSize );
         this.windowSize = windowSize;
@@ -52,7 +53,7 @@ public final class PowerWindow {
      *
      * @return the value of <code>windowSize</code>
      */
-    public int getWindowSize() {
+    public int size() {
         return windowSize;
     }
 
@@ -62,7 +63,7 @@ public final class PowerWindow {
      *
      * @return the value of <code>position</code>
      */
-    public int getPosition() {
+    public int position() {
         return position;
     }
 
