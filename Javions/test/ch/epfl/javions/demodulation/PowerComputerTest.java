@@ -20,7 +20,7 @@ class PowerComputerTest {
     public void setUp() throws FileNotFoundException {
         //InputStream inputStream = new FileInputStream(new File("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin"));
         DataInputStream stream = new DataInputStream( new BufferedInputStream( new FileInputStream( new File(
-                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\samples.bin" ) ) ) );
+                "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin" ) ) ) );
         powerComputer = new PowerComputer( stream, batchSize );
     }
 
@@ -37,7 +37,7 @@ class PowerComputerTest {
 
         int[] batch = new int[batchSize];
 
-        batch[0] = 3;
+        /*batch[0] = 3;
         batch[1] = 8;
         batch[2] = -9;
         batch[3] = -8;
@@ -48,13 +48,15 @@ class PowerComputerTest {
         batch[8] = -23;
         batch[9] = -9;
 
-        System.out.println( batch[0] );
-        System.out.println( batch[1] );
+         */
 
-        powerComputer.readBatch( batch );
+        System.out.println(batch[0]);
+        System.out.println(batch[1]);
+
+        powerComputer.readBatch(batch);
 
         for ( int i = 0 ; i < 10 ; i++ ) {
-            System.out.println( batch[i] );
+            System.out.println(batch[i]);
         }
     }
 

@@ -58,11 +58,11 @@ public final class PowerComputer {
 
         for (int i = 0; i < numberOfNewSamples; i += 2) {
 
-            short a = newSamples[i];
-            short b = newSamples[i + 1];
+            short even = newSamples[i];
+            short odd = newSamples[i + 1];
 
-            sample[index] = a;
-            sample[index + 1] = b;
+            sample[index] = even;
+            sample[index + 1] = odd;
 
 
             int inphase = sample[0] - sample[2] + sample[4] - sample[6];

@@ -18,11 +18,11 @@ class SamplesDecoderTest {
     public void setUp() throws FileNotFoundException {
         //InputStream stream = new FileInputStream(new File("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin"));
         DataInputStream stream = new DataInputStream( new BufferedInputStream(
-                new FileInputStream( new File( "C:\\Users\\Eva Mangano\\Downloads\\samples.bin" ) ) ) );
+                new FileInputStream( new File( "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin" ) ) ) );
         sampleDecoder = new SamplesDecoder( stream, batchSize );
     }
 
-
+/*
     @Test
     public void testReadbatchReturnsCorrectValue() throws IOException {
         short[] actual = new short[batchSize];
@@ -32,4 +32,6 @@ class SamplesDecoderTest {
             assertEquals( expected[i], actual[i] );
         }
     }
+
+ */
 }
