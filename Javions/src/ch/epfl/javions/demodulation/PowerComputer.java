@@ -30,9 +30,9 @@ public final class PowerComputer {
 
     public PowerComputer(InputStream stream, int batchSize) {
 
-        Preconditions.checkArgument( batchSize > 0 && batchSize % Byte.SIZE == 0 );
+        Preconditions.checkArgument(batchSize > 0 && batchSize % Byte.SIZE == 0);
 
-        this.samplesDecoder = new SamplesDecoder( stream, batchSize * 2 );
+        this.samplesDecoder = new SamplesDecoder(stream, batchSize * 2);
         this.stream = stream;
         this.sample = new short[Byte.SIZE];
         this.batchSize = batchSize;
@@ -50,13 +50,13 @@ public final class PowerComputer {
 
     public int readBatch(int[] batch) throws IOException {
 
-        Preconditions.checkArgument( batch.length == batchSize );
+        Preconditions.checkArgument(batch.length == batchSize);
 
         short[] newSamples = new short[batchSize * 2];
 
-        int numberOfNewSamples = samplesDecoder.readBatch( newSamples );
+        int numberOfNewSamples = samplesDecoder.readBatch(newSamples);
 
-        for ( int i = 0 ; i < batchSize ; i += 2 ) {
+        for (int i = 0; i < numberOfNewSamples; i += 2) {
 
             short a = newSamples[i];
             short b = newSamples[i + 1];
@@ -64,18 +64,19 @@ public final class PowerComputer {
             sample[index] = a;
             sample[index + 1] = b;
 
-            int inPhase = sample[0] - sample[2] + sample[4] - sample[6];
+
+            int inphase = sample[0] - sample[2] + sample[4] - sample[6];
             int quadrature = sample[1] - sample[3] + sample[5] - sample[7];
 
             index = index + 2;
 
-            if ( index == 8 ) {
+            if (index == 8) {
                 index = 0;
             }
 
-            batch[i] = inPhase * inPhase + quadrature * quadrature;
+            batch[i] = inphase * inphase + quadrature * quadrature;
         }
 
-        return numberOfNewSamples / 2;
+        return numberOfNewSamples/2;
     }
 }

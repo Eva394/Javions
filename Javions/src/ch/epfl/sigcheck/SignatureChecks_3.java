@@ -5,10 +5,28 @@ package ch.epfl.sigcheck;
 // possible, que les noms et les types des différentes entités à définir
 // pour cette étape du projet sont corrects.
 
-
-
-
 final class SignatureChecks_3 {
+    private SignatureChecks_3() {}
+
+    void checkSamplesDecoder() throws Exception {
+        v01 = new ch.epfl.javions.demodulation.SamplesDecoder(v02, v03);
+        v03 = v01.readBatch(v04);
+    }
+
+    void checkPowerComputer() throws Exception {
+        v05 = new ch.epfl.javions.demodulation.PowerComputer(v02, v03);
+        v03 = v05.readBatch(v06);
+    }
+
+    void checkPowerWindow() throws Exception {
+        v07 = new ch.epfl.javions.demodulation.PowerWindow(v02, v03);
+        v07.advance();
+        v07.advanceBy(v03);
+        v03 = v07.get(v03);
+        v08 = v07.isFull();
+        v09 = v07.position();
+        v03 = v07.size();
+    }
 
     ch.epfl.javions.demodulation.SamplesDecoder v01;
     java.io.InputStream v02;
@@ -19,29 +37,4 @@ final class SignatureChecks_3 {
     ch.epfl.javions.demodulation.PowerWindow v07;
     boolean v08;
     long v09;
-    private SignatureChecks_3() {
-    }
-
-
-    void checkSamplesDecoder() throws Exception {
-        v01 = new ch.epfl.javions.demodulation.SamplesDecoder( v02, v03 );
-        v03 = v01.readBatch( v04 );
-    }
-
-
-    void checkPowerComputer() throws Exception {
-        v05 = new ch.epfl.javions.demodulation.PowerComputer( v02, v03 );
-        v03 = v05.readBatch( v06 );
-    }
-
-
-    void checkPowerWindow() throws Exception {
-        v07 = new ch.epfl.javions.demodulation.PowerWindow( v02, v03 );
-        v07.advance();
-        v07.advanceBy( v03 );
-        v03 = v07.get( v03 );
-        v08 = v07.isFull();
-        v09 = v07.position();
-        v03 = v07.size();
-    }
 }
