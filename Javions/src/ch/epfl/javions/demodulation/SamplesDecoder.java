@@ -66,16 +66,6 @@ public final class SamplesDecoder {
             batch[i / 2] = (short)( ( ( b << Byte.SIZE ) | a ) - BIAIS );
         }
 
-        //        for ( int i = 0 ; i < batch.length / 2 ; i++ ) {
-        //
-        //            for ( int j = 0 ; j < batchSize ; j += 2 ) {
-        //
-        //                int a = Byte.toUnsignedInt( sample[j] );
-        //                int b = Byte.toUnsignedInt( sample[j + 1] );
-        //
-        //                batch[i] = (short)( ( ( b << Byte.SIZE ) | a ) - BIAIS );
-        //            }
-        //        }
         return bytesRead;
     }
 }

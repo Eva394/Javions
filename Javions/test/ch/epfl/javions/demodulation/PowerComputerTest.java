@@ -50,13 +50,13 @@ class PowerComputerTest {
 
          */
 
-        System.out.println(batch[0]);
-        System.out.println(batch[1]);
+        System.out.println( batch[0] );
+        System.out.println( batch[1] );
 
-        powerComputer.readBatch(batch);
+        powerComputer.readBatch( batch );
 
         for ( int i = 0 ; i < 10 ; i++ ) {
-            System.out.println(batch[i]);
+            System.out.println( batch[i] );
         }
     }
 
