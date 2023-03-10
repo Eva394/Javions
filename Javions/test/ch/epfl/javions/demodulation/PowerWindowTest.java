@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PowerWindowTest {
 
+    private final int batchSize = 1 << 16;
     byte[] data = new byte[1024];
     InputStream stream = new ByteArrayInputStream( data );
-    private final int batchSize = 1 << 16;
 
 
     @Test
@@ -32,51 +32,68 @@ class PowerWindowTest {
     }
 
 
-
     @Test
     public void testPowerWindowPosition() throws IOException {
 
-        PowerWindow powerWindow = new PowerWindow(stream, 80);
+        PowerWindow powerWindow = new PowerWindow( stream, 80 );
 
-        assertEquals(0, powerWindow.position());
+        assertEquals( 0, powerWindow.position() );
 
         int offset = 10;
-        powerWindow.advanceBy(offset);
-        assertEquals(offset, powerWindow.position());
+        powerWindow.advanceBy( offset );
+        assertEquals( offset, powerWindow.position() );
 
         offset = 50;
-        powerWindow.advanceBy(offset);
-        assertEquals(offset + 10, powerWindow.position());
-
-
+        powerWindow.advanceBy( offset );
+        assertEquals( offset + 10, powerWindow.position() );
     }
+
+    //    void testIsFullReturnsTrueWhenWindowIsFull() {
+    //        PowerWindow powerWindow = null;
+    //        try {
+    //            powerWindow = new PowerWindow( stream, 24 );
+    //        }catch (  )
+    //    }
+
 
     @Test
-    public void testPowerWindowGet(){
-        assertThrows( IndexOutOfBoundsException.class, () -> new get());
+    public void testPowerWindowGet() throws IOException {
+        PowerWindow powerWindow = new PowerWindow( stream, 80 );
+
+        assertThrows( IndexOutOfBoundsException.class, () -> powerWindow.get( 80 ) );
     }
 
-
-    @Test
-    void testIsFullReturnsTrueWhenWindowIsFull() {
-        PowerWindow powerWindow = null;
-        try {
-            powerWindow = new PowerWindow(stream, batchSize);
-
-            int i = 0 ;
-
-        while (powerWindow.isFull()) {
-            powerWindow.advance();
-            System.out.println(powerWindow.position());
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        } finally {
-            System.out.println(powerWindow.position());
-
-        }
-
-    }
+    //    void testIsFullReturnsTrueWhenWindowIsFull() {
+    //        PowerWindow powerWindow = null;
+    //        try {
+    //            powerWindow = new PowerWindow(stream, batchSize);
+    //
+    //            int i = 0 ;
+    //
+    //        while (powerWindow.isFull()) {
+    //            powerWindow.advance();
+    //            System.out.println(powerWindow.position());
+    //            }
+    //
+    //        } catch (IOException e) {
+    //            e.printStackTrace();
+    //
+    //        } finally {
+    //            System.out.println(powerWindow.position());
+    //
+    //        }
+    //
+    //            int i = 0;
+    //
+    //            while ( powerWindow.isFull() ) {
+    //                powerWindow.advance();
+    //                System.out.println( powerWindow.position() );
+    //            }
+    //        }
+    //        catch ( IOException e ) {
+    //            e.printStackTrace();
+    //        }
+    //        finally {
+    //            //System.out.println( powerWindow.position() );
+    //        }
 }
