@@ -38,7 +38,7 @@ public final class PowerWindow {
         Preconditions.checkArgument( ( windowSize > 0 ) && ( windowSize <= SAMPLE_SIZE ) );
 
         this.stream = stream;
-        this.powerComputer = new PowerComputer( stream, windowSize );
+        this.powerComputer = new PowerComputer( stream, SAMPLE_SIZE );
         this.windowSize = windowSize;
         this.tab1 = new int[SAMPLE_SIZE];
         this.tab2 = new int[SAMPLE_SIZE];
@@ -55,6 +55,7 @@ public final class PowerWindow {
      * @return the value of <code>windowSize</code>
      */
     public int size() {
+        System.out.println(windowSize);
         return windowSize;
     }
 
