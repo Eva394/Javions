@@ -23,7 +23,7 @@ public final class PowerWindow {
     private int windowSize;
     private int position;
     private int positionInTab;
-    private int bytesRead;
+    private int bytesLeft;
 
 
     /**
@@ -45,7 +45,7 @@ public final class PowerWindow {
         this.position = 0;
         this.positionInTab = 0;
 
-        bytesRead = powerComputer.readBatch( tab1 );
+        bytesLeft = powerComputer.readBatch( tab1 );
     }
 
 
@@ -77,7 +77,7 @@ public final class PowerWindow {
      * @author Eva Mangano 345375
      */
     public boolean isFull() {
-        return ( windowSize <= bytesRead );
+        return ( windowSize <= bytesLeft);
     }
 
 
@@ -112,10 +112,10 @@ public final class PowerWindow {
 
         positionInTab++;
         position++;
-        bytesRead--;
+        bytesLeft--;
 
         if ( windowSize + positionInTab > tab1.length ) {
-            bytesRead += powerComputer.readBatch( tab2 );
+            bytesLeft += powerComputer.readBatch( tab2 );
         }
 
         if ( positionInTab == tab1.length ) {

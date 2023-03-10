@@ -20,7 +20,7 @@ class PowerWindowTest {
 
         assertThrows( IllegalArgumentException.class, () -> new PowerWindow( stream, 0 ) );
         assertThrows( IllegalArgumentException.class, () -> new PowerWindow( stream, 1 << 16 + 1 ) );
-        assertDoesNotThrow( () -> new PowerWindow( stream, 1 << 16 ) );
+        assertDoesNotThrow( () -> new PowerWindow( stream, batchSize ) );
     }
 
 
@@ -48,6 +48,35 @@ class PowerWindowTest {
         powerWindow.advanceBy(offset);
         assertEquals(offset + 10, powerWindow.position());
 
+
+    }
+
+    @Test
+    public void testPowerWindowGet(){
+        assertThrows( IndexOutOfBoundsException.class, () -> new get());
+    }
+
+
+    @Test
+    void testIsFullReturnsTrueWhenWindowIsFull() {
+        PowerWindow powerWindow = null;
+        try {
+            powerWindow = new PowerWindow(stream, batchSize);
+
+            int i = 0 ;
+
+        while (powerWindow.isFull()) {
+            powerWindow.advance();
+            System.out.println(powerWindow.position());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        } finally {
+            System.out.println(powerWindow.position());
+
+        }
 
     }
 }
