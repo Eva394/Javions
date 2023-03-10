@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SamplesDecoderTest {
 
@@ -30,5 +30,44 @@ class SamplesDecoderTest {
         for ( int i = 1 ; i < expected.length ; i++ ) {
             assertEquals( expected[i], actual[i] );
         }
+    }
+
+
+    @Test
+    public void testSamplesDecoderCreationWithValidBatchSize() {
+        InputStream stream = new ByteArrayInputStream( new byte[100] );
+        int batchSize = 100;
+        SamplesDecoder decoder = new SamplesDecoder( stream, batchSize );
+        assertNotNull( decoder );
+    }
+
+
+    @Test
+    public void testSamplesDecoderCreationWithZeroBatchSize() {
+        assertThrows( IllegalArgumentException.class, () -> {
+            InputStream stream = new ByteArrayInputStream( new byte[100] );
+            int batchSize = 0;
+            SamplesDecoder decoder = new SamplesDecoder( stream, batchSize );
+        } );
+    }
+
+
+    @Test
+    public void testSamplesDecoderCreationWithNegativeBatchSize() {
+        assertThrows( IllegalArgumentException.class, () -> {
+            InputStream stream = new ByteArrayInputStream( new byte[100] );
+            int batchSize = -1;
+            SamplesDecoder decoder = new SamplesDecoder( stream, batchSize );
+        } );
+    }
+
+
+    @Test
+    public void testSamplesDecoderCreationWithNullInputStream() {
+        assertThrows( NullPointerException.class, () -> {
+            InputStream stream = null;
+            int batchSize = 100;
+            SamplesDecoder decoder = new SamplesDecoder( stream, batchSize );
+        } );
     }
 }
