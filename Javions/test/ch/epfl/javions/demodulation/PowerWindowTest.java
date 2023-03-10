@@ -2,9 +2,7 @@ package ch.epfl.javions.demodulation;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,6 +27,9 @@ class PowerWindowTest {
 
         PowerWindow powerWindow = new PowerWindow( stream, 80 );
         assertEquals( 80, powerWindow.size() );
+
+        PowerWindow Window = new PowerWindow( stream, 16 );
+        assertEquals( 16, Window.size() );
     }
 
 
@@ -52,9 +53,52 @@ class PowerWindowTest {
     }
 
     @Test
+    public void testAdvance() throws IOException {
+
+/*
+
+        byte[] bytes = new byte[]{1, 2, 3, 4, 5, 6, 7, 8};
+        ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
+        /*for (int i=0; i<bytes.length; i++){
+            System.out.println(bytes[i] + " ");
+        }
+
+        for (int i=0; i<bytes.length; i++){
+            int data = stream.read();
+            System.out.print(data + " ");
+        }
+        */
+
+        DataInputStream stream = new DataInputStream( new BufferedInputStream(
+                new FileInputStream( new File( "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin" ) ) ) );
+
+        System.out.println(stream);
+        PowerWindow window = new PowerWindow(stream, 8);
+
+        window.advance();
+        window.advance();
+        window.advance();
+
+        assertEquals(3, window.position());
+
+        assertEquals(745, window.get(0));
+
+        assertEquals(98, window.get(1));
+
+        window.advance();
+
+        assertEquals(4, window.position());
+
+        assertEquals(98, window.get(0));
+    }
+
+    /*
+    @Test
     public void testPowerWindowGet(){
         assertThrows( IndexOutOfBoundsException.class, () -> new get());
     }
+
+     */
 
 
     @Test

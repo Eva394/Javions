@@ -55,7 +55,6 @@ public final class PowerWindow {
      * @return the value of <code>windowSize</code>
      */
     public int size() {
-        System.out.println(windowSize);
         return windowSize;
     }
 
@@ -94,11 +93,13 @@ public final class PowerWindow {
 
         int j = positionInTab + i;
 
+
         if ( j < SAMPLE_SIZE ) {
-            return tab1[i];
+            return tab1[j];
         }
 
         return tab2[j - SAMPLE_SIZE];
+
     }
 
 
