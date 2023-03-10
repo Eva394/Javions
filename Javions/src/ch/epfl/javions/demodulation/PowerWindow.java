@@ -117,9 +117,9 @@ public final class PowerWindow {
 
         if ( positionInTab == tab1.length ) {
             positionInTab = 0;
-            //int[] temp = tab1 ;
+            int[] temp = tab1;
             tab1 = tab2;
-            //tab2 = temp ;
+            tab2 = temp;
         }
     }
 

@@ -34,8 +34,8 @@ public final class SamplesDecoder {
      * @author Eva Mangano 345375
      */
     public SamplesDecoder(InputStream stream, int batchSize) {
-        Preconditions.checkArgument(batchSize > 0);
-        if (stream == null) {
+        Preconditions.checkArgument( batchSize > 0 );
+        if ( stream == null ) {
             throw new NullPointerException();
         }
 
@@ -55,51 +55,28 @@ public final class SamplesDecoder {
      * @author Eva Mangano 345375
      */
     public int readBatch(short[] batch) throws IOException {
-        Preconditions.checkArgument(batch.length == batchSize);
+        Preconditions.checkArgument( batch.length == batchSize );
 
-        bytesRead = stream.readNBytes(sample, 0, batchSize);
+        bytesRead = stream.readNBytes( sample, 0, batchSize );
 
-        /*if (stream.available() < sample.length) {
-            // Wait for more data to become available
-            return 0;
+        for ( int i = 0 ; i < sample.length / 2 ; i += 2 ) {
+            int a = Byte.toUnsignedInt( sample[i] );
+            int b = Byte.toUnsignedInt( sample[i + 1] );
+
+            batch[i / 2] = (short)( ( ( b << Byte.SIZE ) | a ) - BIAIS );
         }
 
-         */
-
-        //bytesRead = stream.readNBytes( sample, 0, sample.length );
-
+        //        for ( int i = 0 ; i < batch.length / 2 ; i++ ) {
         //
-        for (int i = 0; i < sample.length; i += 2) {
-            System.out.println(sample[i]);
-        }
-
-
-        for ( int i = 0 ; i < batch.length / 2 ; i++ ) {
-        //System.out.print("sample: ");
-        //for (int i=0; i <sample.length; i++){
-            //            int aBis = 0;
-            //            int bBis = 0;
-            for ( int j = 0 ; j < batchSize ; j += 2 ) {
-            //for (int j=0; j<batchSize; j++){
-                //System.out.println(sample[j]);
-                //This is keep printing out 0
-                //System.out.println(sample[j+1]);
-                //                aBis = ( sample[j] );
-                //                bBis = ( Byte.toUnsignedInt( sample[j] ) );
-                int a = Byte.toUnsignedInt( sample[j] );
-                int b = Byte.toUnsignedInt( sample[j + 1] );
-                //System.out.println("a: " + a + ", b: " + b);
-                //System.out.println("batch[i]: " + batch[i]);
-                //                aBis = a;
-                //                bBis = b;
-                batch[i] = (short)( ( ( b << Byte.SIZE ) | a ) - BIAIS );
-                //                System.out.print( Byte.toUnsignedInt( sample[j] ) + " " );
-            }
-            //            System.out.println( aBis + " " + bBis );
-        }
-
+        //            for ( int j = 0 ; j < batchSize ; j += 2 ) {
+        //
+        //                int a = Byte.toUnsignedInt( sample[j] );
+        //                int b = Byte.toUnsignedInt( sample[j + 1] );
+        //
+        //                batch[i] = (short)( ( ( b << Byte.SIZE ) | a ) - BIAIS );
+        //            }
+        //        }
         return bytesRead;
-
     }
 }
 

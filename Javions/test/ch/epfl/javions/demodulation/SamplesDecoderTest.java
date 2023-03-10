@@ -16,15 +16,14 @@ class SamplesDecoderTest {
 
     @BeforeEach
     public void setUp() throws FileNotFoundException {
-        //InputStream stream = new FileInputStream(new File("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin"));
         DataInputStream stream = new DataInputStream( new BufferedInputStream(
-                new FileInputStream( new File( "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin" ) ) ) );
+                new FileInputStream( new File( "C:\\Users\\Eva Mangano\\Downloads\\samples.bin" ) ) ) );
         sampleDecoder = new SamplesDecoder( stream, batchSize );
     }
 
-/*
+
     @Test
-    public void testReadbatchReturnsCorrectValue() throws IOException {
+    public void SamplesDecoderReadBatchReturnsCorrectValue() throws IOException {
         short[] actual = new short[batchSize];
         short[] expected = new short[]{-3, 8, -9, -8, -5, -8, -12, -16, -23, -9};
         sampleDecoder.readBatch( actual );
@@ -32,6 +31,4 @@ class SamplesDecoderTest {
             assertEquals( expected[i], actual[i] );
         }
     }
-
- */
 }
