@@ -35,28 +35,13 @@ class PowerComputerTest {
     @Test
     public void testReadbatchReturnsCorrectValue() throws IOException {
 
-        int[] batch = new int[batchSize];
+        int[] actual = new int[batchSize];
+        int[] expected = new int[]{73, 292, 65, 745, 98, 4226, 12244, 25722, 36818, 23825};
 
-        /*batch[0] = 3;
-        batch[1] = 8;
-        batch[2] = -9;
-        batch[3] = -8;
-        batch[4] = -5;
-        batch[5] = -8;
-        batch[6] = -12;
-        batch[7] = -16;
-        batch[8] = -23;
-        batch[9] = -9;
+        powerComputer.readBatch( actual );
 
-         */
-
-        System.out.println( batch[0] );
-        System.out.println( batch[1] );
-
-        powerComputer.readBatch( batch );
-
-        for ( int i = 0 ; i < 10 ; i++ ) {
-            System.out.println( batch[i] );
+        for ( int i = 0 ; i < expected.length ; i++ ) {
+            assertEquals( expected[i], actual[i] );
         }
     }
 
