@@ -5,25 +5,31 @@ import org.junit.jupiter.api.Test;
 
 import java.io.*;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 class PowerWindowTest {
 
-    private final int batchSize = 1 << 16;
-    private PowerWindow powerWindow;
-
-
-    @BeforeEach
-    void setUp() throws IOException {
-        DataInputStream stream = new DataInputStream( new BufferedInputStream(
-                new FileInputStream( new File( "C:\\Users\\Eva Mangano\\Downloads\\samples.bin" ) ) ) );
-
-        powerWindow = new PowerWindow( stream, batchSize );
-    }
+    byte[] data = new byte[1024];
+    InputStream stream = new ByteArrayInputStream(data);
 
 
     @Test
-    void PowerWindowConstructorThrowsIllegalArgumentExceptionForInvalidWindowSize() {
+    public void testPowerWindowConstructorWithIllegalWindowSize() throws IOException {
 
-        int[] batch = new int[batchSize + 1];
-        //assertThrows( IllegalArgumentException.class, () -> powerWindow. )
+        assertThrows(IllegalArgumentException.class, () -> new PowerWindow(stream, 0));
+        assertThrows(IllegalArgumentException.class, () -> new PowerWindow(stream, 1 << 16+1));
+        assertDoesNotThrow(() -> new PowerWindow(stream,1 << 16 ));
+    }
+
+    @Test
+    public void testPowerWindowSize() throws IOException {
+
+        PowerWindow powerWindow = new PowerWindow(stream, 100);
+        assertEquals(100, powerWindow.size());
+    }
+
+    @Test
+    public void testPowerWindowPosition(){
+
     }
 }

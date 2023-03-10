@@ -17,9 +17,7 @@ class AircraftDescriptionTest {
 
     @Test
     void aircraftDescriptionConstructorAcceptsEmptyDescription() {
-        assertDoesNotThrow( () -> {
-            new AircraftDescription( "" );
-        } );
+        assertDoesNotThrow( () -> {new AircraftDescription( "" );} );
     }
 
 

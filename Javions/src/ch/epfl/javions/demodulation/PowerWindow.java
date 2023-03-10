@@ -64,7 +64,7 @@ public final class PowerWindow {
      *
      * @return the value of <code>position</code>
      */
-    public int position() {
+    public long position() {
         return position;
     }
 

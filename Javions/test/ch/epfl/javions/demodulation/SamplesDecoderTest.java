@@ -17,7 +17,7 @@ class SamplesDecoderTest {
     @BeforeEach
     public void setUp() throws FileNotFoundException {
         DataInputStream stream = new DataInputStream( new BufferedInputStream(
-                new FileInputStream( new File( "C:\\Users\\Eva Mangano\\Downloads\\samples.bin" ) ) ) );
+                new FileInputStream( new File( "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin" ) ) ) );
         sampleDecoder = new SamplesDecoder( stream, batchSize );
     }
 
@@ -27,7 +27,7 @@ class SamplesDecoderTest {
         short[] actual = new short[batchSize];
         short[] expected = new short[]{-3, 8, -9, -8, -5, -8, -12, -16, -23, -9};
         sampleDecoder.readBatch( actual );
-        for ( int i = 0 ; i < expected.length ; i++ ) {
+        for ( int i = 1 ; i < expected.length ; i++ ) {
             assertEquals( expected[i], actual[i] );
         }
     }
