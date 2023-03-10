@@ -4,6 +4,7 @@ import ch.epfl.javions.Preconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 
 /**
@@ -75,7 +76,7 @@ public final class PowerWindow {
      * @author Eva Mangano 345375
      */
     public boolean isFull() {
-        return ( position + windowSize < bytesRead );
+        return ( windowSize <= bytesRead );
     }
 
 
@@ -88,15 +89,15 @@ public final class PowerWindow {
      */
     public int get(int i) {
 
-        if ( i < 0 || i >= windowSize ) {
-            throw new IndexOutOfBoundsException();
-        }
+        Objects.checkIndex( i, windowSize );
 
-        if ( positionInTab + i < SAMPLE_SIZE ) {
+        int j = positionInTab + i;
+
+        if ( j < SAMPLE_SIZE ) {
             return tab1[i];
         }
 
-        return tab2[i - ( SAMPLE_SIZE - positionInTab )];
+        return tab2[j - SAMPLE_SIZE];
     }
 
 
@@ -110,9 +111,10 @@ public final class PowerWindow {
 
         positionInTab++;
         position++;
+        bytesRead--;
 
         if ( windowSize + positionInTab > tab1.length ) {
-            powerComputer.readBatch( tab2 );
+            bytesRead += powerComputer.readBatch( tab2 );
         }
 
         if ( positionInTab == tab1.length ) {
