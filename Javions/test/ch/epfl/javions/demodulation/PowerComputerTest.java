@@ -19,8 +19,8 @@ class PowerComputerTest {
     @BeforeEach
     public void setUp() throws FileNotFoundException {
         //InputStream inputStream = new FileInputStream(new File("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin"));
-        DataInputStream stream = new DataInputStream( new BufferedInputStream( new FileInputStream( new File(
-                "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin" ) ) ) );
+        DataInputStream stream = new DataInputStream( new BufferedInputStream(
+                new FileInputStream( new File( "C:\\Users\\Eva Mangano\\Downloads\\samples.bin" ) ) ) );
         powerComputer = new PowerComputer( stream, batchSize );
     }
 
