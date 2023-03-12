@@ -18,7 +18,7 @@ public class Bits {
 
 
     /**
-     * Extracts a range of bits from the given valuel, from the index start and of given size.
+     * Extracts a range of bits from the given value, from the index start and of given size.
      *
      * @param value value given form which to extract the range
      * @param start index of the start of the range to be extracted

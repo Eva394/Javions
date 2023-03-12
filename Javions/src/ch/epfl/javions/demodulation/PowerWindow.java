@@ -15,7 +15,7 @@ import java.util.Objects;
 public final class PowerWindow {
 
 
-    private static final int SAMPLE_SIZE = 1 << 16;
+    public static final int SAMPLE_SIZE = 1 << 16;
     private InputStream stream;
     private PowerComputer powerComputer;
     private int[] tab1;
@@ -76,7 +76,7 @@ public final class PowerWindow {
      * @author Eva Mangano 345375
      */
     public boolean isFull() {
-        return ( windowSize <= bytesLeft);
+        return ( windowSize <= bytesLeft );
     }
 
 
@@ -93,13 +93,11 @@ public final class PowerWindow {
 
         int j = positionInTab + i;
 
-
         if ( j < SAMPLE_SIZE ) {
             return tab1[j];
         }
 
         return tab2[j - SAMPLE_SIZE];
-
     }
 
 
