@@ -57,16 +57,15 @@ public final class SamplesDecoder {
     public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument( batch.length == batchSize );
 
-        bytesRead = stream.readNBytes( sample, 0, batchSize );
+        bytesRead = stream.readNBytes( sample, 0, batchSize * 2 );
 
-        for ( int i = 0 ; i < sample.length / 2 ; i += 2 ) {
+        for ( int i = 0 ; i < sample.length ; i += 2 ) {
             int a = Byte.toUnsignedInt( sample[i] );
             int b = Byte.toUnsignedInt( sample[i + 1] );
 
             batch[i / 2] = (short)( ( ( b << Byte.SIZE ) | a ) - BIAIS );
         }
-
-        return bytesRead;
+        return bytesRead / 2;
     }
 }
 
