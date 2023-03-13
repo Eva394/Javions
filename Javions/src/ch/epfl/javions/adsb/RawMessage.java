@@ -116,8 +116,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
 
         int numberOfHex = 6;
         long icaoAddressBytes = bytes.bytesInRange( 1, 4 );
+        HexFormat hexFormat = HexFormat.of();
 
-        return new IcaoAddress( HexFormat.toHexDigits( icaoAddressBytes, numberOfHex ) );
+        return new IcaoAddress( hexFormat.toHexDigits( icaoAddressBytes, numberOfHex ) );
     }
 
 
