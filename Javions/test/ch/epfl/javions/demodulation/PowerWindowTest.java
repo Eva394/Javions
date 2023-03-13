@@ -85,22 +85,8 @@ class PowerWindowTest {
     @Test
     public void testAdvance() throws IOException {
 
-/*
-
-        byte[] bytes = new byte[]{1, 2, 3, 4, 5, 6, 7, 8};
-        ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-        /*for (int i=0; i<bytes.length; i++){
-            System.out.println(bytes[i] + " ");
-        }
-
-        for (int i=0; i<bytes.length; i++){
-            int data = stream.read();
-            System.out.print(data + " ");
-        }
-        */
-
-        DataInputStream stream = new DataInputStream( new BufferedInputStream( new FileInputStream(
-                new File( "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples.bin" ) ) ) );
+        DataInputStream stream = new DataInputStream( new BufferedInputStream( new FileInputStream( new File(
+                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft.zip" ) ) ) );
 
         System.out.println( stream );
         PowerWindow window = new PowerWindow( stream, 8 );

@@ -16,7 +16,7 @@ public class AircraftDatabaseTest {
         assertEquals( new AircraftData( new AircraftRegistration( "HB-JDC" ), new AircraftTypeDesignator( "A20N" ),
                                         "AIRBUS A-320neo", new AircraftDescription( "L2J" ),
                                         WakeTurbulenceCategory.of( "M" ) ), new AircraftDatabase(
-                "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\aircraft.zip" ).get(
+                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft.zip" ).get(
                 new IcaoAddress( "4B1814" ) ) );
     }
 
@@ -24,7 +24,7 @@ public class AircraftDatabaseTest {
     @Test
     void AircraftDatabaseWorksForInValidInput() throws IOException {
         assertNull( new AircraftDatabase(
-                "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\aircraft.zip" ).get(
+                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft.zip" ).get(
                 new IcaoAddress( "4B9912" ) ) );
     }
 
