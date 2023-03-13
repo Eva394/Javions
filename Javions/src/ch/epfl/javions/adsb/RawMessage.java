@@ -73,9 +73,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public static int size(byte byte0) {
 
-        int DFSize = 5;
+        int dfSize = 5;
 
-        if ( Bits.extractUInt( byte0, 0, DFSize ) != 17 ) {
+        if ( Bits.extractUInt( byte0, 0, dfSize ) != 17 ) {
             return 0;
         }
 
