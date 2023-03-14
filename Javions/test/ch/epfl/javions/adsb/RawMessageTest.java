@@ -5,6 +5,8 @@ import ch.epfl.javions.ByteString;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -68,23 +70,115 @@ class RawMessageTest {
 
     @Test
     void testOfReturnsTheCorrectMessageAndHorodatage() {
-        long expectedHorodatage = 100;
-        byte[] expectedBytes = new byte[]{(byte)0x8D, (byte)0x39, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10,
-                                          (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x03,
-                                          (byte)0x5D, (byte)0xB8};
-        ByteString expectedByteString = new ByteString( expectedBytes );
+        byte[][] bytes = new byte[][]{
+                {(byte)0x8D, (byte)0x39, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x03, (byte)0x5D, (byte)0xB8},
+                {(byte)0x8D, (byte)0xFC, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x18, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x01, (byte)0x5D, (byte)0xB8},
+                {(byte)0x8D, (byte)0x99, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7B, (byte)0xB4,
+                 (byte)0xC0, (byte)0x04, (byte)0x29, (byte)0x03, (byte)0x5D, (byte)0x98},
+                {(byte)0x8D, (byte)0xB1, (byte)0x2A, (byte)0x64, (byte)0x19, (byte)0x10, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x01, (byte)0x5C, (byte)0xB8},
+                {(byte)0x8D, (byte)0xBA, (byte)0x0A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xA5,
+                 (byte)0xC0, (byte)0x84, (byte)0x39, (byte)0x03, (byte)0x5D, (byte)0xB8}};
 
-        RawMessage expectedRawMessage = new RawMessage( expectedHorodatage, expectedByteString );
-        RawMessage actualRawMessage = RawMessage.of( expectedHorodatage, expectedBytes );
+        ByteString[] expectedByteString = new ByteString[bytes.length];
 
-        assertEquals( expectedRawMessage, actualRawMessage );
+        for ( int i = 0 ; i < expectedByteString.length ; i++ ) {
+            expectedByteString[i] = new ByteString( bytes[i] );
+        }
+
+        for ( int i = 0 ; i < bytes.length ; i++ ) {
+            RawMessage expectedRawMessage = new RawMessage( validHorodatage, expectedByteString[i] );
+            RawMessage actualRawMessage = RawMessage.of( validHorodatage, bytes[i] );
+
+            assertEquals( expectedRawMessage, actualRawMessage );
+        }
     }
 
+
+    @Test
+    void testOfRetrunsNullForInvalidCrc() {
+        byte[][] bytes = new byte[][]{
+                {(byte)0x8D, (byte)0x56, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x0A, (byte)0x03, (byte)0x5D, (byte)0xB8},
+                {(byte)0x8D, (byte)0xFC, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x18, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x34, (byte)0x01, (byte)0x8D, (byte)0xB8},
+                {(byte)0x8D, (byte)0x99, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7B, (byte)0xB4,
+                 (byte)0xC0, (byte)0x04, (byte)0x29, (byte)0x03, (byte)0x6D, (byte)0x4E},
+                {(byte)0x67, (byte)0xB1, (byte)0x3A, (byte)0x64, (byte)0x19, (byte)0x10, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x01, (byte)0x5D, (byte)0x28},
+                {(byte)0x8D, (byte)0xBB, (byte)0x0A, (byte)0xE4, (byte)0x49, (byte)0x10, (byte)0x7F, (byte)0xA5,
+                 (byte)0xC0, (byte)0x84, (byte)0x79, (byte)0x03, (byte)0x5F, (byte)0xB8}};
+
+        for ( int i = 0 ; i < bytes.length ; i++ ) {
+            RawMessage actualRawMessage = RawMessage.of( validHorodatage, bytes[i] );
+
+            assertEquals( null, actualRawMessage );
+        }
+    }
+
+
+    @Test
+    void testSizeReturnsZeroIfInvalidDf() {
+        byte theByte = 0x00;
+        for ( int i = 0 ; i < ( 2 * Byte.SIZE ) * ( 2 * Byte.SIZE ) ; i++ ) {
+            if ( theByte != 0x11 ) {
+                assertEquals( 0, rawMessage.size( theByte ) );
+                theByte++;
+            }
+        }
+    }
+
+
+    @Test
+    void testSizeReturnsCorrectLengthForValidDf() {
+        int expectedValue = 17;
+        byte theByte = 0x11;
+        assertEquals( expectedValue, theByte );
+    }
+
+
+    @Test
+    void testTypeCodeReturnsCorrectValue() {
+        byte[] expectedValues = new byte[]{(byte)0b10011, (byte)0b10011, (byte)0b10011, (byte)0b00011, (byte)0b10011};
+        byte[][] bytes = new byte[][]{
+                {(byte)0x8D, (byte)0x39, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x03, (byte)0x5D, (byte)0xB8},
+                {(byte)0x8D, (byte)0xFC, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x18, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x01, (byte)0x5D, (byte)0xB8},
+                {(byte)0x8D, (byte)0x99, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7B, (byte)0xB4,
+                 (byte)0xC0, (byte)0x04, (byte)0x29, (byte)0x03, (byte)0x5D, (byte)0x98},
+                {(byte)0x8D, (byte)0xB1, (byte)0x2A, (byte)0x64, (byte)0x19, (byte)0x10, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x01, (byte)0x5C, (byte)0xB8},
+                {(byte)0x8D, (byte)0xBA, (byte)0x0A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xA5,
+                 (byte)0xC0, (byte)0x84, (byte)0x39, (byte)0x03, (byte)0x5D, (byte)0xB8}};
+        byte[][] payloads = new byte[][]{
+                {(byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04, (byte)0x39},
+                {(byte)0x99, (byte)0x18, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04},
+                {(byte)0x99, (byte)0x10, (byte)0x7B, (byte)0xB4, (byte)0xC0, (byte)0x04},
+                {(byte)0x19, (byte)0x10, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04},
+                {(byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xA5, (byte)0xC0, (byte)0x84}};
+
+        for ( int i = 0 ; i < expectedValues.length ; i++ ) {
+            ByteString actualByteString = new ByteString( bytes[i] );
+            RawMessage actualRawMessage = new RawMessage( validHorodatage, actualByteString );
+
+            long payload = new BigInteger( payloads[i] ).longValue();
+            int actualValue = actualRawMessage.typeCode( payload );
+
+            assertEquals( expectedValues[i], actualValue );
+        }
+    }
+
+    //array of bytes that have a crc equal to 0
     //8D392AE499107FB5C00439035DB8
     //8DFC2AE499187FB5C00439015DB8
     //8D992AE499107BB4C00429035D98
     //8DB12A6419107FB5C00439015CB8
     //8DBA0AE499107FA5C08439035DB8
+
+    //samples from the prof
     //    RawMessage[timeStampNs=8096200, bytes=8D4B17E5F8210002004BB8B1F1AC]
     //    RawMessage[timeStampNs=75898000, bytes=8D49529958B302E6E15FA352306B]
     //    RawMessage[timeStampNs=100775400, bytes=8D39D300990CE72C70089058AD77]
