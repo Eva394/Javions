@@ -31,8 +31,9 @@ class SamplesDecoderTest {
 
     @BeforeEach
     public void setUp() throws FileNotFoundException {
-        DataInputStream stream = new DataInputStream( new BufferedInputStream(
-                new FileInputStream( new File( "C:\\Users\\Eva Mangano\\Downloads\\samples.bin" ) ) ) );
+        DataInputStream stream = new DataInputStream( new BufferedInputStream( new FileInputStream( new File(
+                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\samples"
+                + ".bin" ) ) ) );
         sampleDecoder = new SamplesDecoder( stream, batchSize );
     }
 
