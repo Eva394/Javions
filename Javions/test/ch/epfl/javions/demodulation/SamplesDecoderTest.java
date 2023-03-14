@@ -31,9 +31,8 @@ class SamplesDecoderTest {
 
     @BeforeEach
     public void setUp() throws FileNotFoundException {
-        DataInputStream stream = new DataInputStream( new BufferedInputStream( new FileInputStream( new File(
-                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\samples"
-                + ".bin" ) ) ) );
+        DataInputStream stream = new DataInputStream( new BufferedInputStream(
+                new FileInputStream( new File( "C:\\Users\\Eva Mangano\\Downloads\\samples" + ".bin" ) ) ) );
         sampleDecoder = new SamplesDecoder( stream, batchSize );
     }
 
@@ -119,6 +118,9 @@ class SamplesDecoderTest {
     void samplesDecoderReadBatchCorrectlyReadsSamples() throws IOException {
         try ( var byteStream = new ByteArrayInputStream( getSampleBytes() ) ) {
             var expectedSamples = new short[SAMPLES_COUNT];
+            for ( int i = 0 ; i < SAMPLES_COUNT ; i += 1 ) {
+                expectedSamples[i] = (short)( i - BIAS );
+            }
 
             var actualSamples = new short[SAMPLES_COUNT];
             var samplesDecoder = new SamplesDecoder( byteStream, actualSamples.length );
