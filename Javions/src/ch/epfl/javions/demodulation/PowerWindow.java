@@ -135,6 +135,7 @@ public final class PowerWindow {
      */
     public void advanceBy(int offset) throws IOException {
         Preconditions.checkArgument( offset >= 0 );
+
         for ( int i = 0 ; i < offset ; i++ ) {
             advance();
         }

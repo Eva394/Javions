@@ -199,6 +199,11 @@ class PowerWindowTest {
             for ( var i = 0 ; i < STANDARD_WINDOW_SIZE ; i += 1 ) {
                 actual[i] = w.get( i );
             }
+
+            for ( int i = 0 ; i < expected.length ; i++ ) {
+                System.out.println( i + " -- expected : " + expected[i] + " -- actual : " + actual[i] );
+            }
+
             assertArrayEquals( expected, actual );
         }
     }
