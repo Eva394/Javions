@@ -9,6 +9,7 @@ import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 class PowerComputerTest {
 
     static final String SAMPLES_BIN_BASE64 = """

@@ -130,6 +130,9 @@ class PowerWindowTest {
         }
     }
 
+    /*************************/
+    /****** PROF TESTS *******/
+    /*************************/
 
     @Test
     void powerWindowConstructorThrowsWithInvalidWindowSize() throws IOException {

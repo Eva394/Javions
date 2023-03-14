@@ -41,7 +41,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @author Eva Mangano 345375
      */
     public RawMessage {
-        Preconditions.checkArgument( ( timeStampNs >= 0 ) || ( bytes.size() == LENGTH ) );
+        Preconditions.checkArgument( ( timeStampNs >= 0 ) && ( bytes.size() == LENGTH ) );
     }
 
 
