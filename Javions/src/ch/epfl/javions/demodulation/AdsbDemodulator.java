@@ -11,7 +11,6 @@ public final class AdsbDemodulator {
 
     private final long timeStampNs;
     private InputStream stream;
-    private byte[] samples;
     private int index =0;
     private RawMessage rawMessage;
 
@@ -28,7 +27,7 @@ public final class AdsbDemodulator {
                 return null;
             }
 
-            byte a = samples[i];
+            return new RawMessage(timeStampNs, samples[i]);
 
         }
 
