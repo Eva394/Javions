@@ -1,4 +1,6 @@
+/*
 package ch.epfl.javions.demodulation;
+
 
 import ch.epfl.javions.ByteString;
 import ch.epfl.javions.adsb.RawMessage;
@@ -29,9 +31,10 @@ public final class AdsbDemodulator {
             }
 
             byte a = samples[i];
-
         }
 
 
     }
 }
+
+ */
