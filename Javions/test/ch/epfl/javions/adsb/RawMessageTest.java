@@ -69,9 +69,9 @@ class RawMessageTest {
     @Test
     void testOfReturnsTheCorrectMessageAndHorodatage() {
         long expectedHorodatage = 100;
-        byte[] expectedBytes = new byte[]{0x8D, 0x39, 0x2A, 0xE4, 0x99, 0x10, 0x7F, 0xB5, 0xC0, 0x04, 0x39, 0x03, 0x5D,
-                                          0xB8};
-        System.out.println( expectedBytes.length );
+        byte[] expectedBytes = new byte[]{(byte)0x8D, (byte)0x39, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10,
+                                          (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x03,
+                                          (byte)0x5D, (byte)0xB8};
         ByteString expectedByteString = new ByteString( expectedBytes );
 
         RawMessage expectedRawMessage = new RawMessage( expectedHorodatage, expectedByteString );
