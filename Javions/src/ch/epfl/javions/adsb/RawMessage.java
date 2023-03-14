@@ -21,7 +21,7 @@ import java.util.HexFormat;
  * @author Eva Mangano 345275
  */
 
-public record RawMessage(long timeStampNs, ByteString bytes) {
+public record RawMessage(long timeStampNs, byte[] bytes) {
 
     /**
      * length of an ADS-B message
