@@ -93,7 +93,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     public static int typeCode(long payload) {
         int typeCodeSize = 5;
         int msbPosition = Long.SIZE - ( Byte.SIZE + typeCodeSize );
-        
+
         return Bits.extractUInt( payload, msbPosition, typeCodeSize );
     }
 
@@ -105,7 +105,10 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @author Eva Mangano 345375
      */
     public int downLinkFormat() {
-        return Bits.extractUInt( bytes.byteAt( 0 ), 0, 1 );
+        int dlSize = 5;
+        int dlPosition = Byte.SIZE - dlSize;
+
+        return Bits.extractUInt( bytes.byteAt( 0 ), dlPosition, dlSize );
     }
 
 
@@ -120,7 +123,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
         long icaoAddressBytes = bytes.bytesInRange( 1, 4 );
         HexFormat hexFormat = HexFormat.of();
 
-        return new IcaoAddress( hexFormat.toHexDigits( icaoAddressBytes, numberOfHex ) );
+        return new IcaoAddress( hexFormat.withUpperCase()
+                                         .toHexDigits( icaoAddressBytes, numberOfHex ) );
     }
 
 
