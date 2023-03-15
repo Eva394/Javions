@@ -209,9 +209,9 @@ class RawMessageTest {
         HexFormat hexFormat = HexFormat.of();
 
         for ( int i = 0 ; i < icaoAddresses.length ; i++ ) {
-            ByteString byteString = new ByteString( icaoAddresses[i] );
+            ByteString expectedByteString = new ByteString( icaoAddresses[i] );
             int expectedNumberOfHex = 6;
-            long expectedBytes = byteString.bytesInRange( 0, byteString.size() );
+            long expectedBytes = expectedByteString.bytesInRange( 0, expectedByteString.size() );
             IcaoAddress expectedIcaoAddress = new IcaoAddress( hexFormat.withUpperCase()
                                                                         .toHexDigits( expectedBytes,
                                                                                       expectedNumberOfHex ) );
@@ -221,6 +221,39 @@ class RawMessageTest {
             IcaoAddress actualIcaoAddress = actualRawMessage.icaoAddress();
 
             assertEquals( expectedIcaoAddress, actualIcaoAddress );
+        }
+    }
+
+
+    @Test
+    void testPayloadReturnsCorrectValue() {
+        byte[][] mes = new byte[][]{
+                {(byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04, (byte)0x39},
+                {(byte)0x99, (byte)0x18, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04, (byte)0x39},
+                {(byte)0x99, (byte)0x10, (byte)0x7B, (byte)0xB4, (byte)0xC0, (byte)0x04, (byte)0x29},
+                {(byte)0x19, (byte)0x10, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04, (byte)0x39},
+                {(byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xA5, (byte)0xC0, (byte)0x84, (byte)0x39}};
+        byte[][] bytes = new byte[][]{
+                {(byte)0x8D, (byte)0x39, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x03, (byte)0x5D, (byte)0xB8},
+                {(byte)0x8D, (byte)0xFC, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x18, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x01, (byte)0x5D, (byte)0xB8},
+                {(byte)0x8D, (byte)0x99, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7B, (byte)0xB4,
+                 (byte)0xC0, (byte)0x04, (byte)0x29, (byte)0x03, (byte)0x5D, (byte)0x98},
+                {(byte)0x8D, (byte)0xB1, (byte)0x2A, (byte)0x64, (byte)0x19, (byte)0x10, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x01, (byte)0x5C, (byte)0xB8},
+                {(byte)0x8D, (byte)0xBA, (byte)0x0A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xA5,
+                 (byte)0xC0, (byte)0x84, (byte)0x39, (byte)0x03, (byte)0x5D, (byte)0xB8}};
+
+        for ( int i = 0 ; i < mes.length ; i++ ) {
+            ByteString expectedByteString = new ByteString( mes[i] );
+            long expectedPayload = expectedByteString.bytesInRange( 0, expectedByteString.size() );
+
+            ByteString actualByteString = new ByteString( bytes[i] );
+            RawMessage actualRawMessage = new RawMessage( validHorodatage, actualByteString );
+            long actualPayload = actualRawMessage.payload();
+
+            assertEquals( expectedPayload, actualPayload );
         }
     }
 
