@@ -21,7 +21,8 @@ import java.io.InputStream;
 
 
 
-
+//I couldn't get my head into the code so I started again from scratch to see if I understood what to do, but I got
+// nowhere
 public final class AdsbDemodulator {
 
     /**
