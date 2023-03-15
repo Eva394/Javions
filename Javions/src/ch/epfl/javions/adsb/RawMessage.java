@@ -92,7 +92,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public static int typeCode(long payload) {
         int typeCodeSize = 5;
-        return Bits.extractUInt( payload, 0, typeCodeSize );
+        int msbPosition = Long.SIZE - ( Byte.SIZE + typeCodeSize );
+        
+        return Bits.extractUInt( payload, msbPosition, typeCodeSize );
     }
 
 

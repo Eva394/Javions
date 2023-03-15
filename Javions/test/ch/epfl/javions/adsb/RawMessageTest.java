@@ -5,8 +5,6 @@ import ch.epfl.javions.ByteString;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -154,19 +152,18 @@ class RawMessageTest {
                 {(byte)0x8D, (byte)0xBA, (byte)0x0A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xA5,
                  (byte)0xC0, (byte)0x84, (byte)0x39, (byte)0x03, (byte)0x5D, (byte)0xB8}};
         byte[][] payloads = new byte[][]{
-                {(byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04, (byte)0x39},
-                {(byte)0x99, (byte)0x18, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04},
-                {(byte)0x99, (byte)0x10, (byte)0x7B, (byte)0xB4, (byte)0xC0, (byte)0x04},
-                {(byte)0x19, (byte)0x10, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04},
-                {(byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xA5, (byte)0xC0, (byte)0x84}};
+                {(byte)0x00, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04, (byte)0x39},
+                {(byte)0x00, (byte)0x99, (byte)0x18, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04, (byte)0x39},
+                {(byte)0x00, (byte)0x99, (byte)0x10, (byte)0x7B, (byte)0xB4, (byte)0xC0, (byte)0x04, (byte)0x29},
+                {(byte)0x00, (byte)0x19, (byte)0x10, (byte)0x7F, (byte)0xB5, (byte)0xC0, (byte)0x04, (byte)0x39},
+                {(byte)0x00, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xA5, (byte)0xC0, (byte)0x84, (byte)0x39}};
 
         for ( int i = 0 ; i < expectedValues.length ; i++ ) {
-            ByteString actualByteString = new ByteString( bytes[i] );
-            RawMessage actualRawMessage = new RawMessage( validHorodatage, actualByteString );
 
-            long payload = new BigInteger( payloads[i] ).longValue();
-            int actualValue = actualRawMessage.typeCode( payload );
+            ByteString byteString = new ByteString( payloads[i] );
+            long payload = byteString.bytesInRange( 0, byteString.getBytes().length );
 
+            int actualValue = RawMessage.typeCode( payload );
             assertEquals( expectedValues[i], actualValue );
         }
     }
