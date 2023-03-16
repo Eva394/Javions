@@ -153,7 +153,7 @@ class RawMessageTest {
         for ( int i = 0 ; i < expectedValues.length ; i++ ) {
 
             ByteString byteString = new ByteString( payloads[i] );
-            long payload = byteString.bytesInRange( 0, byteString.getBytes().length );
+            long payload = byteString.bytesInRange( 0, byteString.size() );
 
             int actualValue = RawMessage.typeCode( payload );
             assertEquals( expectedValues[i], actualValue );
@@ -252,9 +252,36 @@ class RawMessageTest {
             ByteString actualByteString = new ByteString( bytes[i] );
             RawMessage actualRawMessage = new RawMessage( validHorodatage, actualByteString );
             long actualPayload = actualRawMessage.payload();
-            System.out.println( actualPayload );
 
             assertEquals( expectedPayload, actualPayload );
+        }
+    }
+
+
+    @Test
+    void testTypeCodeReturnsCorrectValue2() {
+        byte[] typeCodes = new byte[]{(byte)0b10011, (byte)0b10011, (byte)0b10011, (byte)0b00011, (byte)0b10011};
+        byte[][] bytes = new byte[][]{
+                {(byte)0x8D, (byte)0x39, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x03, (byte)0x5D, (byte)0xB8},
+                {(byte)0x8D, (byte)0xFC, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x18, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x01, (byte)0x5D, (byte)0xB8},
+                {(byte)0x8D, (byte)0x99, (byte)0x2A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7B, (byte)0xB4,
+                 (byte)0xC0, (byte)0x04, (byte)0x29, (byte)0x03, (byte)0x5D, (byte)0x98},
+                {(byte)0x8D, (byte)0xB1, (byte)0x2A, (byte)0x64, (byte)0x19, (byte)0x10, (byte)0x7F, (byte)0xB5,
+                 (byte)0xC0, (byte)0x04, (byte)0x39, (byte)0x01, (byte)0x5C, (byte)0xB8},
+                {(byte)0x8D, (byte)0xBA, (byte)0x0A, (byte)0xE4, (byte)0x99, (byte)0x10, (byte)0x7F, (byte)0xA5,
+                 (byte)0xC0, (byte)0x84, (byte)0x39, (byte)0x03, (byte)0x5D, (byte)0xB8}};
+
+        for ( int i = 0 ; i < typeCodes.length ; i++ ) {
+
+            long expectedTypeCode = typeCodes[i];
+
+            ByteString actualByteString = new ByteString( bytes[i] );
+            RawMessage actualRawMessage = new RawMessage( validHorodatage, actualByteString );
+            long actualTypeCode = actualRawMessage.typeCode();
+
+            assertEquals( expectedTypeCode, actualTypeCode );
         }
     }
 

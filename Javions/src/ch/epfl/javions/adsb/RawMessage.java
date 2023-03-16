@@ -134,9 +134,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return the ME attribute
      */
     public long payload() {
-        long temp = bytes.bytesInRange( 4, 11 );
-        System.out.println( temp );
-        return temp;
+
+        return bytes.bytesInRange( 4, 11 );
     }
 
 
@@ -147,6 +146,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public int typeCode() {
         int typeCodeSize = 5;
-        return Bits.extractUInt( payload(), 0, typeCodeSize );
+        int msbPosition = Long.SIZE - ( Byte.SIZE + typeCodeSize );
+        return Bits.extractUInt( payload(), msbPosition, typeCodeSize );
     }
 }
