@@ -252,6 +252,7 @@ class RawMessageTest {
             ByteString actualByteString = new ByteString( bytes[i] );
             RawMessage actualRawMessage = new RawMessage( validHorodatage, actualByteString );
             long actualPayload = actualRawMessage.payload();
+            System.out.println( actualPayload );
 
             assertEquals( expectedPayload, actualPayload );
         }

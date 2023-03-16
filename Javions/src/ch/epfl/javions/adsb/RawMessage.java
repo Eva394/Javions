@@ -134,8 +134,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return the ME attribute
      */
     public long payload() {
-
-        return bytes.bytesInRange( 4, 11 );
+        long temp = bytes.bytesInRange( 4, 11 );
+        System.out.println( temp );
+        return temp;
     }
 
 
