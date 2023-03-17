@@ -130,6 +130,9 @@ class PowerWindowTest {
         }
     }
 
+    /*************************/
+    /****** PROF TESTS *******/
+    /*************************/
 
     @Test
     void powerWindowConstructorThrowsWithInvalidWindowSize() throws IOException {
@@ -187,7 +190,8 @@ class PowerWindowTest {
         var batchesToSkipOver = 2;
         var inBatchOffset = 37;
         var offset = batchesToSkipOver * BATCH_SIZE + inBatchOffset;
-        var sampleBytes = Base64.getDecoder().decode( PowerComputerTest.SAMPLES_BIN_BASE64 );
+        var sampleBytes = Base64.getDecoder()
+                                .decode( PowerComputerTest.SAMPLES_BIN_BASE64 );
         System.arraycopy( sampleBytes, 0, bytes, bytesForPowerSamples( offset ), sampleBytes.length );
 
         try ( var s = new ByteArrayInputStream( bytes ) ) {
@@ -198,10 +202,6 @@ class PowerWindowTest {
             var actual = new int[STANDARD_WINDOW_SIZE];
             for ( var i = 0 ; i < STANDARD_WINDOW_SIZE ; i += 1 ) {
                 actual[i] = w.get( i );
-            }
-
-            for ( int i = 0 ; i < expected.length ; i++ ) {
-                System.out.println( i + " -- expected : " + expected[i] + " -- actual : " + actual[i] );
             }
 
             assertArrayEquals( expected, actual );
@@ -252,7 +252,8 @@ class PowerWindowTest {
         byte[] bytes = bytesForZeroSamples( 2 );
         var firstBatchSamples = STANDARD_WINDOW_SIZE / 2 - 13;
         var offset = BATCH_SIZE_BYTES - bytesForPowerSamples( firstBatchSamples );
-        var sampleBytes = Base64.getDecoder().decode( PowerComputerTest.SAMPLES_BIN_BASE64 );
+        var sampleBytes = Base64.getDecoder()
+                                .decode( PowerComputerTest.SAMPLES_BIN_BASE64 );
         System.arraycopy( sampleBytes, 0, bytes, offset, sampleBytes.length );
         try ( var s = new ByteArrayInputStream( bytes ) ) {
             var w = new PowerWindow( s, STANDARD_WINDOW_SIZE );

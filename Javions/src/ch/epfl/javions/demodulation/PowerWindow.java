@@ -113,11 +113,12 @@ public final class PowerWindow {
         position++;
         bytesLeft--;
 
-        if ( windowSize + positionInTab > tab1.length ) {
+        if ( windowSize + positionInTab - 1 == SAMPLE_SIZE ) {
             bytesLeft += powerComputer.readBatch( tab2 );
         }
 
         if ( positionInTab == tab1.length ) {
+
             positionInTab = 0;
             int[] temp = tab1;
             tab1 = tab2;
