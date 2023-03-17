@@ -40,15 +40,14 @@ public final class AdsbDemodulator {
             powerWindow.advance();
         }
 
-        byte[] messageBytes = new byte[14];
-        for (int i = 0; i < 14; i++) {
-            messageBytes[i] = (byte) (powerWindow.get(i + 34) >> 8);
+        long [] samples = new long[powerWindow.size()];
+        for (int i = 0; i < powerWindow.size(); i++) {
+            samples[i] = powerWindow.get(i);
         }
-
 
         powerWindow.advanceBy(8);
 
-        return new RawMessage(timestampNs, powerWindow.position() - powerWindow.size());
+        return new RawMessage(samples, powerWindow.position() - powerWindow.size());
     }
 }
 
