@@ -21,56 +21,93 @@ import java.io.InputStream;
 //  if ( i == 1200 ) { return null; }
 //  byte a = samples[i]; } } }
 
-
-
 //I couldn't get my head into the code so I started again from scratch to see if I understood what to do, but I got
 // nowhere
 
+
+
+
 public final class AdsbDemodulator {
 
+    /**
+     * the size of a window
+     */
+    public static final int WINDOW_SIZE = 1200;
     private final PowerWindow powerWindow;
-    private long timestampNs =0;
-
-    public AdsbDemodulator(InputStream samplesStream) throws IOException {
-        this.powerWindow = new PowerWindow(samplesStream, 1200);
-    }
-
-    public RawMessage nextMessage() throws IOException {
-        while (!powerWindow.isFull()) {
-            powerWindow.advance();
-        }
-
-        long [] samples = new long[powerWindow.size()];
-        for (int i = 0; i < powerWindow.size(); i++) {
-            samples[i] = powerWindow.get(i);
-        }
-
-        byte[] messageBytes = new byte[14];
-        for (int i = 0; i < 14; i++) {
-            messageBytes[i] = (byte) (powerWindow.get(i + 34) >> 8);
-        }
-
-        powerWindow.advanceBy(8);
-
-
-        return new RawMessage(samples, powerWindow.position() - powerWindow.size());
-    }
-}
-
+    private long timestampNs = 0;
 
 
     /**
-     * Size of the window
+     * Constructor. Builds an instance of AdsbDemodulator
+     *
+     * @param samplesStream input stream
+     * @throws IOException if there is an input/output error
      */
-    /*public static final int ADS_B_SAMPLE_SIZE = 1200;
-
-    private PowerWindow powerWindow;
-
-
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
-
-        this.powerWindow = new PowerWindow( samplesStream, ADS_B_SAMPLE_SIZE );
+        this.powerWindow = new PowerWindow( samplesStream, WINDOW_SIZE );
     }
 
+    /*
+     while ( !powerWindow.isFull() ) {
+            powerWindow.advance();
+        }
+    long[] samples = new long[powerWindow.size()];
+
+        for ( int i = 0 ; i < powerWindow.size() ; i++ ) {
+            samples[i] = powerWindow.get( i );
+        }
+
+        byte[] messageBytes = new byte[RawMessage.LENGTH];
+
+        for ( int i = 0 ; i < RawMessage.LENGTH ; i++ ) {
+            messageBytes[i] = (byte)( powerWindow.get( i + 34 ) >> Byte.SIZE );
+        }
+
+        powerWindow.advanceBy( Byte.SIZE );
+
+        return new RawMessage( samples, powerWindow.position() - powerWindow.size() );
      */
+
+
+    public RawMessage nextMessage() throws IOException {
+
+        boolean foundPreamble = false;
+
+        int[] spikesIndexes = new int[]{0, 10, 35, 45};
+        int[] valleyIndexes = new int[]{5, 15, 20, 25, 30, 40};
+
+        int currentSpikesSum = 0;
+
+        for ( int i = 0 ; i < spikesIndexes.length ; i++ ) {
+            currentSpikesSum += powerWindow.get( spikesIndexes[i] );
+        }
+        int previousSpikesSum = currentSpikesSum;
+
+        while ( powerWindow.isFull() && !foundPreamble ) {
+            int nextSpikesSum = 0;
+            int currentValleySum = 0;
+
+            for ( int i = 0 ; i < spikesIndexes.length ; i++ ) {
+                currentSpikesSum += powerWindow.get( spikesIndexes[i] );
+                nextSpikesSum += powerWindow.get( spikesIndexes[i + 1] );
+            }
+
+            for ( int i = 0 ; i < valleyIndexes.length ; i++ ) {
+                currentValleySum += powerWindow.get( valleyIndexes[i] );
+            }
+
+            if ( ( previousSpikesSum < currentSpikesSum ) && ( currentSpikesSum > nextSpikesSum ) && ( currentSpikesSum
+                                                                                                       >= 2
+                                                                                                          * currentValleySum ) ) {
+                foundPreamble = true;
+            }
+
+            else {
+                previousSpikesSum = currentSpikesSum;
+                currentSpikesSum = nextSpikesSum;
+                powerWindow.advance();
+            }
+        }
+        return null;
+    }
 }
