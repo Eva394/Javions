@@ -1,6 +1,5 @@
 package ch.epfl.javions.demodulation;
 
-import ch.epfl.javions.ByteString;
 import ch.epfl.javions.adsb.RawMessage;
 
 import java.io.IOException;
@@ -102,8 +101,7 @@ public final class AdsbDemodulator {
             if ( ( previousSpikesSum < currentSpikesSum ) && ( currentSpikesSum > nextSpikesSum ) && ( currentSpikesSum
                                                                                                        >= 2
                                                                                                           * currentValleySum ) ) {
-                foundPreamble = true;
-                timestampNs = powerWindow.position() / 10;
+                timestampNs = powerWindow.position() * 100;
 
                 for ( int i = 0 ; i < WINDOW_SIZE / 10 ; i++ ) {
                     if ( powerWindow.get( 80 + 10 * i ) < powerWindow.get( 85 + 10 * i ) ) {
@@ -112,6 +110,10 @@ public final class AdsbDemodulator {
                     else {
                         bytes[i] = 1;
                     }
+                }
+
+                if ( bytes.length == RawMessage.LENGTH ) {
+                    foundPreamble = true;
                 }
             }
 
@@ -122,8 +124,6 @@ public final class AdsbDemodulator {
             }
         }
 
-        ByteString byteString = new ByteString( bytes );
-
-        return new RawMessage( timestampNs, byteString );
+        return RawMessage.of( timestampNs, bytes );
     }
 }
