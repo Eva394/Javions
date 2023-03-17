@@ -29,9 +29,10 @@ import java.io.InputStream;
 public final class AdsbDemodulator {
 
     private final PowerWindow powerWindow;
+    private long timestampNs =0;
 
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
-        powerWindow = new PowerWindow(samplesStream, 1200);
+        this.powerWindow = new PowerWindow(samplesStream, 1200);
     }
 
     public RawMessage nextMessage() throws IOException {
@@ -39,13 +40,15 @@ public final class AdsbDemodulator {
             powerWindow.advance();
         }
 
-        int[] samples = new int[powerWindow.size()];
-        for (int i = 0; i < powerWindow.size(); i++) {
-            samples[i] = powerWindow.get(i);
+        byte[] messageBytes = new byte[14];
+        for (int i = 0; i < 14; i++) {
+            messageBytes[i] = (byte) (powerWindow.get(i + 34) >> 8);
         }
+
+
         powerWindow.advanceBy(8);
 
-        return new RawMessage(samples, powerWindow.position() - powerWindow.size());
+        return new RawMessage(timestampNs, powerWindow.position() - powerWindow.size());
     }
 }
 
