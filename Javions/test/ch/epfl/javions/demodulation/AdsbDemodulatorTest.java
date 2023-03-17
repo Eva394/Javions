@@ -41,7 +41,7 @@ class AdsbDemodulatorTest {
 
 
     public static void main(String[] args) throws IOException {
-        String f = "samples_20230304_1442.bin";
+        String f = "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\samples_0304.zip";
         try ( InputStream s = new FileInputStream( f ) ) {
             AdsbDemodulator d = new AdsbDemodulator( s );
             RawMessage m;
