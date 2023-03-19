@@ -41,12 +41,15 @@ class AdsbDemodulatorTest {
 
 
     public static void main(String[] args) throws IOException {
-        String f = "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\samples_0304.zip";
+        String f = "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\samples_20230304_1442bis.bin";
         try ( InputStream s = new FileInputStream( f ) ) {
             AdsbDemodulator d = new AdsbDemodulator( s );
             RawMessage m;
+
+            int index = 0;
             while ( ( m = d.nextMessage() ) != null ) {
-                System.out.println( m );
+                index++;
+                System.out.println( index + " : " + m );
             }
         }
     }
