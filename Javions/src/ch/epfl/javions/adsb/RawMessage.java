@@ -57,6 +57,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
         Crc24 crc24 = new Crc24( Crc24.GENERATOR );
 
         if ( crc24.crc( bytes ) != 0 ) {
+
             return null;
         }
 
@@ -74,8 +75,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     public static int size(byte byte0) {
 
         int dfSize = 5;
+        int dfStart = 3;
 
-        if ( Bits.extractUInt( byte0, 0, dfSize ) != 17 ) {
+        if ( Bits.extractUInt( byte0, dfStart, dfSize ) != DOWNLINK_FORMAT ) {
             return 0;
         }
 

@@ -4,15 +4,10 @@ package ch.epfl.javions.adsb;
  *  Date :          19/03/2023
  */
 
-
-import ch.epfl.javions.GeoPos;
-import ch.epfl.javions.Preconditions;
-import ch.epfl.javions.Units;
-
 /**
  * Decoder of CPR positions
  */
-public class CprDecoder {
+/*public class CprDecoder {
 
 
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
@@ -55,3 +50,4 @@ public class CprDecoder {
         return new GeoPos( (int)longitude, (int)latitude );
     }
 }
+*/
