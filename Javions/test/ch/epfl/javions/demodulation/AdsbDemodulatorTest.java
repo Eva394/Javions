@@ -558,7 +558,8 @@ class AdsbDemodulatorTest {
     @Test
     void adsbDemodulatorNextMessageWorksOnGivenSamples() throws IOException {
         var expectedIt = EXPECTED_RAW_MESSAGE_DATA.iterator();
-        try ( var s = new FileInputStream( "samples_20230304_1442.bin" ) ) {
+        try ( var s = new FileInputStream(
+                "C:\\Users\\Eva Mangano\\Downloads\\samples_0304d\\samples_20230304_1442.bin" ) ) {
             var demodulator = new AdsbDemodulator( s );
             while ( expectedIt.hasNext() ) {
                 var expected = expectedIt.next();
