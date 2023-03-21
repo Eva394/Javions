@@ -29,7 +29,8 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
         int typeCode = rawMessage.typeCode();
         int temp = 14 - typeCode;
 
-        String Category = Integer.toHexString(temp) + CA;
+        String strCategory = Integer.toHexString(temp) + CA;
+        int Category = Integer.parseInt(strCategory, 16);
 
 
 
@@ -47,7 +48,7 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
 
         }
 
-        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), Category,callSign);
+        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), Category, callSign);
     }
 }
 
