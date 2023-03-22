@@ -27,33 +27,55 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     public static AirbornePositionMessage of(RawMessage rawMessage) {
 
+        //        int attributeALT = 0b011001001010;
+        //        int q = 0;
         int attributeALT = Bits.extractUInt( rawMessage.payload(), 36, 12 );
         int q = Bits.extractUInt( rawMessage.payload(), 40, 1 );
         int alt;
 
         if ( q == 1 ) {
+            int baseAltitude = -1000;
             int left = Bits.extractUInt( attributeALT, 5, 7 );
             int right = Bits.extractUInt( attributeALT, 0, 4 );
-            int a = right | ( left << 4 );
-            alt = -1000 + a * 25;
+            int multipleOf25 = right | ( left << 4 );
+            alt = baseAltitude + multipleOf25 * 25;
         }
+
         else {
+            int baseAltitude = -1300;
             int untangled = untangle( attributeALT );
 
-            int multipleOf500 = Bits.extractUInt( untangled, 3, 9 );
-            int multipleOf100 = Bits.extractUInt( untangled, 0, 3 );
+            int msBits = Bits.extractUInt( untangled, 3, 9 );
+            int lsBits = Bits.extractUInt( untangled, 0, 3 );
 
-            int msBits = decodeGrey( multipleOf500, 9 );
-            int lsBits = decodeGrey( multipleOf100, 3 );
+            msBits = decodeGray( msBits, 9 );
+            lsBits = decodeGray( lsBits, 3 );
 
-            //if (  )
+            if ( lsBits == 0 || lsBits == 5 || lsBits == 6 ) {
+                return null;
+            }
+            if ( lsBits == 7 ) {
+                lsBits = 5;
+            }
+
+            if ( msBits % 2 != 0 ) {
+                msBits = mirrorBits( msBits );
+            }
+            System.out.println( lsBits );
+            System.out.println( msBits );
+            alt = baseAltitude + lsBits * 100 + msBits * 500;
         }
 
         return null;
     }
 
 
-    public static int decodeGrey(int value, int n) {
+    private static int mirrorBits(int bits) {
+        return 6 - bits;
+    }
+
+
+    public static int decodeGray(int value, int n) {
 
         int binaryValue = value;
 
@@ -74,8 +96,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
                                   Bits.extractUInt( attributeALT, 7, 1 )};
 
         int untangled = 0;
-        for ( int i = ME_SIZE - 2 ; i > 0 ; i -= 1 ) {
-            untangled = ( untangled ) | ( tangled[i] << ( i - 1 ) );
+        for ( int i = 0 ; i < ME_SIZE - 2 ; i += 1 ) {
+            untangled = ( untangled ) | ( tangled[i] << ( ME_SIZE - 2 - i ) );
         }
         return untangled;
     }

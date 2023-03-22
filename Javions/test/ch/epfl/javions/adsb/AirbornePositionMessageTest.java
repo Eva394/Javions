@@ -1,5 +1,6 @@
 package ch.epfl.javions.adsb;
 
+import ch.epfl.javions.ByteString;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AirbornePositionMessageTest {
 
     @Test
-    void testDecodeGreyReturnsCorrectValue() {
+    void testDecodeGrayReturnsCorrectValue() {
 
         int numberLength = 3;
 
@@ -15,8 +16,15 @@ class AirbornePositionMessageTest {
 
         for ( int i = 0 ; i < 8 ; i++ ) {
             int expected = i;
-            int actual = AirbornePositionMessage.decodeGrey( actuals[i], numberLength );
+            int actual = AirbornePositionMessage.decodeGray( actuals[i], numberLength );
             assertEquals( expected, actual );
         }
+    }
+
+
+    @Test
+    void testOfReturnsCorrectAltitude() {
+        //TODO this is a bullshit test i just print out the values lol we'll have to change that
+        AirbornePositionMessage.of( new RawMessage( 100, new ByteString( new byte[14] ) ) );
     }
 }
