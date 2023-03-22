@@ -36,8 +36,6 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
         int category = Integer.parseInt(strCategory, 16);
 
 
-
-
         String callSignString = rawMessage.toString().substring(0, 47);
         CallSign callSign = new CallSign(callSignString);
 
