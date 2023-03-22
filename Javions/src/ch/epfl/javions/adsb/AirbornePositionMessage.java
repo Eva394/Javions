@@ -39,11 +39,11 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
                                       Bits.extractUInt( attributeALT, 6, 1 ), Bits.extractUInt( attributeALT, 5, 1 ),
                                       Bits.extractUInt( attributeALT, 3, 1 ), Bits.extractUInt( attributeALT, 1, 1 ),
                                       Bits.extractUInt( attributeALT, 11, 1 ), Bits.extractUInt( attributeALT, 9, 1 ),
-                                      Bits.extractUInt( attributeALT, 7, 1 )}
+                                      Bits.extractUInt( attributeALT, 7, 1 )};
 
             int untangled = 0;
-            for ( int i = 1 ; i < 12 ; i++ ) {
-                untangled = untangled | ( tangled[i] << i );
+            for ( int i = 12 ; i > 0 ; i-- ) {
+                untangled = ( untangled << i - 1 ) | ( tangled[i] );
             }
         }
 
