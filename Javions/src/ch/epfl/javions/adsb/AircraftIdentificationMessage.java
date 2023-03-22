@@ -9,7 +9,7 @@ import java.math.BigInteger;
 public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAddress, int category, CallSign callSign) implements Message {
 
 
-    public AircraftIdentificationMessage() {
+    public AircraftIdentificationMessage {
         Preconditions.checkArgument(timeStampNs >= 0);
 
         if (icaoAddress == null || callSign == null) {
