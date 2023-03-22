@@ -1,5 +1,6 @@
 package ch.epfl.javions.adsb;
 
+import ch.epfl.javions.Bits;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
@@ -19,12 +20,34 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
 
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
 
-        /*
-        if (rawMessage.typeCode() != 1 && rawMessage.typeCode() != 2 && rawMessage.typeCode() != 3 && rawMessage.typeCode() != 4) {
+        int typeCode = rawMessage.typeCode();
+
+        if (typeCode != 1 && typeCode != 2 && typeCode != 3 && typeCode != 4) {
             return null;
         }
 
-         */
+        int CA = Bits.extractUInt(rawMessage.payload(),0,2);
+        int temp = 14 - typeCode;
+        String strCategory = Integer.toHexString(temp).toUpperCase() + Integer.toHexString(CA).toUpperCase();
+        int category = Integer.parseInt(strCategory, 16);
+
+        String callSignString = rawMessage.toString().substring(3, 50);
+        CallSign callSign = new CallSign(callSignString);
+
+        for (int i = 0; i < 8; i++) {
+
+            int a = Bits.extractUInt(rawMessage.payload(),45 - (6 * i), 6);
+
+            if (a == 0 || (a >= 27 && a <= 47)) {
+                return null;
+            }
+        }
+        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign);
+    }
+}
+
+
+        /*
 
         String strCA = rawMessage.toString().substring(48, 50);
         int intCA = Integer.parseInt(strCA,2);
@@ -50,9 +73,8 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
 
         }
 
-        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign);
-    }
-}
+         */
+
 
         /*
         char[] callSign = new char[8];
@@ -64,15 +86,15 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
         char[] C1 = new char[6];
         rawMessage.toString().getChars(42,47,C1,0);
 
-        String CA = rawMessage.toString().substring(48, 50);
-        String C1 = rawMessage.toString().substring(42, 47);
-        String C2 = rawMessage.toString().substring(36, 41);
-        String C3 = rawMessage.toString().substring(30, 35);
-        String C4 = rawMessage.toString().substring(24, 29);
-        String C5 = rawMessage.toString().substring(18, 23);
-        String C6 = rawMessage.toString().substring(12, 17);
-        String C7 = rawMessage.toString().substring(6, 11);
-        String C8 = rawMessage.toString().substring(0, 5);
+        String CA = rawMessage.toString().substring(0, 2);
+        String C1 = rawMessage.toString().substring(3, 8);
+        String C2 = rawMessage.toString().substring(9, 14);
+        String C3 = rawMessage.toString().substring(15, 20);
+        String C4 = rawMessage.toString().substring(21, 26);
+        String C5 = rawMessage.toString().substring(27, 32);
+        String C6 = rawMessage.toString().substring(33, 38);
+        String C7 = rawMessage.toString().substring(39, 44);
+        String C8 = rawMessage.toString().substring(45, 50);
 
 
 
