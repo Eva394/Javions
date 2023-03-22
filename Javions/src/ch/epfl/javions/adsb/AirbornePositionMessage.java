@@ -39,18 +39,21 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
         else {
             int untangled = untangle( attributeALT );
+
             int multipleOf500 = Bits.extractUInt( untangled, 3, 9 );
             int multipleOf100 = Bits.extractUInt( untangled, 0, 3 );
 
             int msBits = decodeGrey( multipleOf500, 9 );
             int lsBits = decodeGrey( multipleOf100, 3 );
+
+            //if (  )
         }
 
-        return alt;
+        return null;
     }
 
 
-    private static int decodeGrey(int value, int n) {
+    public static int decodeGrey(int value, int n) {
 
         int binaryValue = value;
 
