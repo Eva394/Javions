@@ -88,7 +88,6 @@ class PowerWindowTest {
         DataInputStream stream = new DataInputStream( new BufferedInputStream( new FileInputStream( new File(
                 "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft.zip" ) ) ) );
 
-        System.out.println( stream );
         PowerWindow window = new PowerWindow( stream, 8 );
 
         window.advance();

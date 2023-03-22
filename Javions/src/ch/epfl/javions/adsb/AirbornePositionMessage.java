@@ -30,6 +30,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         //        int attributeALT = 0b011001001010;
         //        int q = 0;
         int attributeALT = Bits.extractUInt( rawMessage.payload(), 36, 12 );
+        System.out.println( attributeALT );
         int q = Bits.extractUInt( rawMessage.payload(), 40, 1 );
         int alt;
 
@@ -39,6 +40,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             int right = Bits.extractUInt( attributeALT, 0, 4 );
             int multipleOf25 = right | ( left << 4 );
             alt = baseAltitude + multipleOf25 * 25;
+            System.out.println( "q = 1 : " + alt );
         }
 
         else {
@@ -61,9 +63,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             if ( msBits % 2 != 0 ) {
                 msBits = mirrorBits( msBits );
             }
-            System.out.println( lsBits );
-            System.out.println( msBits );
             alt = baseAltitude + lsBits * 100 + msBits * 500;
+            System.out.println( "q = 0 : " + alt );
         }
 
         return null;
@@ -75,7 +76,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    public static int decodeGray(int value, int n) {
+    private static int decodeGray(int value, int n) {
 
         int binaryValue = value;
 
