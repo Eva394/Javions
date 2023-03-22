@@ -21,9 +21,13 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
 
         int typeCode = rawMessage.typeCode();
+
+        /*
         if (typeCode != 1 && typeCode != 2 && typeCode != 3 && typeCode != 4) {
             return null;
         }
+
+         */
 
 
         int CA = Bits.extractUInt(rawMessage.payload(),48,3);
