@@ -5,7 +5,9 @@ import ch.epfl.javions.adsb.RawMessage;
 import java.io.IOException;
 import java.io.InputStream;
 
-
+/**
+ * Represents a demodulator of ADS-B messages
+ */
 public final class AdsbDemodulator {
 
     /**
@@ -21,12 +23,19 @@ public final class AdsbDemodulator {
      *
      * @param samplesStream input stream
      * @throws IOException if there is an input/output error
+     * @author Eva Mangano 345375
      */
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         this.powerWindow = new PowerWindow( samplesStream, WINDOW_SIZE );
     }
 
 
+    /**
+     * Finds the next message in the stream
+     *
+     * @return the message
+     * @throws IOException if there is an input/output error
+     */
     public RawMessage nextMessage() throws IOException {
 
         byte[] bytes = new byte[RawMessage.LENGTH];
@@ -43,13 +52,13 @@ public final class AdsbDemodulator {
             int currentValleySum = 0;
             currentSpikesSum = 0;
 
-            for ( int i = 0 ; i < spikesIndexes.length ; i++ ) {
-                currentSpikesSum += powerWindow.get( spikesIndexes[i] );
-                nextSpikesSum += powerWindow.get( spikesIndexes[i] + 1 );
+            for ( int spikesIndex : spikesIndexes ) {
+                currentSpikesSum += powerWindow.get( spikesIndex );
+                nextSpikesSum += powerWindow.get( spikesIndex + 1 );
             }
 
-            for ( int i = 0 ; i < valleyIndexes.length ; i++ ) {
-                currentValleySum += powerWindow.get( valleyIndexes[i] );
+            for ( int valleyIndex : valleyIndexes ) {
+                currentValleySum += powerWindow.get( valleyIndex );
             }
 
             if ( ( previousSpikesSum < currentSpikesSum ) && ( currentSpikesSum > nextSpikesSum ) && ( currentSpikesSum

@@ -1,4 +1,4 @@
-/*package ch.epfl.sigcheck;
+package ch.epfl.sigcheck;
 
 // Attention : cette classe n'est *pas* un test JUnit, et son code n'est
 // pas destiné à être exécuté. Son seul but est de vérifier, autant que
@@ -73,6 +73,3 @@ final class SignatureChecks_4 {
         v04 = v17.timeStampNs();
     }
 }
-
-
- */

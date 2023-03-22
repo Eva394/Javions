@@ -20,7 +20,6 @@ public record IcaoAddress(String string) {
     /**
      * ICAO address
      */
-    //TODO find out if this is public or private
     private static Pattern addressPattern;
 
 
@@ -32,6 +31,7 @@ public record IcaoAddress(String string) {
      */
     public IcaoAddress {
         addressPattern = Pattern.compile( "[0-9A-F]{6}" );
-        Preconditions.checkArgument( addressPattern.matcher( string ).matches() );
+        Preconditions.checkArgument( addressPattern.matcher( string )
+                                                   .matches() );
     }
 }
