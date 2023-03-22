@@ -4,10 +4,10 @@ import ch.epfl.javions.Bits;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
-import java.math.BigInteger;
 
 public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAddress, int category, CallSign callSign) implements Message {
 
+    private static final String alphabet = "-ABCDEFGHIJKLMNOPQRSTUVWXYZ----- ---------------0123456789------";
 
     public AircraftIdentificationMessage {
         Preconditions.checkArgument(timeStampNs >= 0);
@@ -15,33 +15,65 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
         if (icaoAddress == null || callSign == null) {
             throw new NullPointerException();
         }
-
     }
+
 
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
 
         int typeCode = rawMessage.typeCode();
-
         if (typeCode != 1 && typeCode != 2 && typeCode != 3 && typeCode != 4) {
             return null;
         }
 
-        int CA = Bits.extractUInt(rawMessage.payload(),0,2);
-        int temp = 14 - typeCode;
+
+        int CA = Bits.extractUInt(rawMessage.payload(),48,3);
+        int temp = 0xE - typeCode;
+        int category = (temp<<4)|CA;
+
+        /*
+        int categoryDecimal = CA << 1 | temp;
+        int categroy = Integer.
+         */
+        /*
+
         String strCategory = Integer.toHexString(temp).toUpperCase() + Integer.toHexString(CA).toUpperCase();
         int category = Integer.parseInt(strCategory, 16);
 
-        String callSignString = rawMessage.toString().substring(3, 50);
-        CallSign callSign = new CallSign(callSignString);
+         */
+
+        /*
+
+        int callSign = Bits.extractUInt(rawMessage.payload(),0,48);
+
+         */
+
+        StringBuilder cS = new StringBuilder(6);
 
         for (int i = 0; i < 8; i++) {
 
-            int a = Bits.extractUInt(rawMessage.payload(),45 - (6 * i), 6);
+            int character = Bits.extractUInt(rawMessage.payload(),6 * i, 6);
+            char c = alphabet.charAt(character);
+            if (!(c== ' ' ) && cS.isEmpty()){
+                cS.append(c);
+            }
 
-            if (a == 0 || (a >= 27 && a <= 47)) {
+            /*
+
+            if (character == 0 || (character >= 27 && character <= 47)) {
                 return null;
             }
+
+             */
         }
+
+        String callSignStr = cS.reverse().toString();
+
+        if (callSignStr.contains("-")){
+            return null;
+        }
+
+        CallSign callSign = new CallSign(callSignStr);
+
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign);
     }
 }
