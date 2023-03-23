@@ -23,8 +23,6 @@ class AirbornePositionMessageTest {
         //        }
     }
 
-
-    //59B225F07550AD
     @Test
     void testOfReturnsCorrectAltitude() {
         //TODO this is a bullshit test i just print out the values lol we'll have to change that

@@ -39,15 +39,23 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     public static AirbornePositionMessage of(RawMessage rawMessage) {
 
         //long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x, double y
-        double alt = computeAltitude( rawMessage );
 
+        double alt = computeAltitude( rawMessage );
         if ( Double.isNaN( alt ) ) {
             return null;
         }
 
+        long timeStampsNs = rawMessage.timeStampNs();
+
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
 
-        return null;
+        int parity = Bits.extractUInt( rawMessage.payload(), 34, 1 );
+
+        double longitude = Bits.extractUInt( rawMessage.payload(), 0, 17 );
+
+        double latitude = Bits.extractUInt( rawMessage.payload(), 17, 17 );
+
+        return new AirbornePositionMessage( timeStampsNs, icaoAddress, alt, parity, longitude, latitude );
     }
 
 
