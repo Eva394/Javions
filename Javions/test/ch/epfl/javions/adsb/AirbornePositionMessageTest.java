@@ -1,6 +1,7 @@
 package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.ByteString;
+import ch.epfl.javions.GeoPos;
 import org.junit.jupiter.api.Test;
 
 import java.util.HexFormat;
@@ -32,6 +33,8 @@ class AirbornePositionMessageTest {
                                                                                           "8D39203559B225F07550ADBE328F" ) ) ) );
 
         AirbornePositionMessage.of( new RawMessage( 100, new ByteString( new byte[14] ) ) );
+        GeoPos pos = CprDecoder.decodePosition( 0.62, 0.42, 0.6200000000000000001, 0.4200000000000000001, 0 );
+        System.out.println( pos );
     }
 }
 

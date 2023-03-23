@@ -79,15 +79,21 @@ public class CprDecoder {
         int latitude;
 
         if ( mostRecent == 0 ) {
-            longitude = (int)Units.convert( x0, Units.Angle.TURN, Units.Angle.T32 );
-            latitude = (int)Units.convert( y0, Units.Angle.TURN, Units.Angle.T32 );
+            longitude = (int)Units.convert( recenter( x0 ), Units.Angle.TURN, Units.Angle.T32 );
+            latitude = (int)Units.convert( recenter( y0 ), Units.Angle.TURN, Units.Angle.T32 );
         }
         else {
-            longitude = (int)Units.convert( x1, Units.Angle.TURN, Units.Angle.T32 );
-            latitude = (int)Units.convert( y1, Units.Angle.TURN, Units.Angle.T32 );
+            longitude = (int)Units.convert( recenter( x1 ), Units.Angle.TURN, Units.Angle.T32 );
+            latitude = (int)Units.convert( recenter( y1 ), Units.Angle.TURN, Units.Angle.T32 );
         }
 
         return new GeoPos( longitude, latitude );
+    }
+
+
+    private static double recenter(double value) {
+        //TODO verify
+        return ( value > .5 ) ? value - 1 : value;
     }
 
 
