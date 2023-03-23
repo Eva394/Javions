@@ -5,14 +5,16 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
 
-public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAddress, int category, CallSign callSign) implements Message {
+public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAddress, int category,
+                                            CallSign callSign) implements Message {
 
-    private static final String alphabet = "-ABCDEFGHIJKLMNOPQRSTUVWXYZ----- ---------------0123456789------";
+    private static final String ALPHABET = "-ABCDEFGHIJKLMNOPQRSTUVWXYZ----- ---------------0123456789------";
+
 
     public AircraftIdentificationMessage {
-        Preconditions.checkArgument(timeStampNs >= 0);
+        Preconditions.checkArgument( timeStampNs >= 0 );
 
-        if (icaoAddress == null || callSign == null) {
+        if ( icaoAddress == null || callSign == null ) {
             throw new NullPointerException();
         }
     }
@@ -29,10 +31,9 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
 
          */
 
-
-        int CA = Bits.extractUInt(rawMessage.payload(),48,3);
+        int CA = Bits.extractUInt( rawMessage.payload(), 48, 3 );
         int temp = 0xE - typeCode;
-        int category = (temp<<4)|CA;
+        int category = ( temp << 4 ) | CA;
 
         /*
         int categoryDecimal = CA << 1 | temp;
@@ -51,14 +52,14 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
 
          */
 
-        StringBuilder cS = new StringBuilder(6);
+        StringBuilder cS = new StringBuilder( 6 );
 
-        for (int i = 0; i < 8; i++) {
+        for ( int i = 0 ; i < 8 ; i++ ) {
 
-            int character = Bits.extractUInt(rawMessage.payload(),6 * i, 6);
-            char c = alphabet.charAt(character);
-            if (!(c== ' ' ) && cS.isEmpty()){
-                cS.append(c);
+            int character = Bits.extractUInt( rawMessage.payload(), 6 * i, 6 );
+            char c = ALPHABET.charAt( character );
+            if ( !( c == ' ' ) && cS.isEmpty() ) {
+                cS.append( c );
             }
 
             /*
@@ -70,15 +71,17 @@ public record AircraftIdentificationMessage(long timeStampNs,IcaoAddress icaoAdd
              */
         }
 
-        String callSignStr = cS.reverse().toString();
+        String callSignStr = cS.reverse()
+                               .toString();
 
-        if (callSignStr.contains("-")){
+        if ( callSignStr.contains( "-" ) ) {
             return null;
         }
 
-        CallSign callSign = new CallSign(callSignStr);
+        CallSign callSign = new CallSign( callSignStr );
 
-        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign);
+        return new AircraftIdentificationMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), category,
+                                                  callSign );
     }
 }
 

@@ -7,15 +7,26 @@ package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.Bits;
 import ch.epfl.javions.Preconditions;
+import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x,
                                       double y) implements Message {
 
 
+    public static final int BASE_ALTITUDE_1 = -1000;
+    public static final int BASE_ALTITUDE_0 = -1300;
     private static final int ME_SIZE = 12;
 
 
+    /**
+     * @param timeStampNs
+     * @param icaoAddress
+     * @param altitude
+     * @param parity
+     * @param x
+     * @param y
+     */
     public AirbornePositionMessage {
         if ( icaoAddress == null ) {
             throw new NullPointerException();
@@ -27,47 +38,63 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     public static AirbornePositionMessage of(RawMessage rawMessage) {
 
+        //long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x, double y
+        double alt = computeAltitude( rawMessage );
+
+        if ( Double.isNaN( alt ) ) {
+            return null;
+        }
+
+        IcaoAddress icaoAddress = rawMessage.icaoAddress();
+
+        return null;
+    }
+
+
+    private static double normalize(double value) {
+        return value * Math.scalb( 1d, -17 );
+    }
+
+
+    private static double computeAltitude(RawMessage rawMessage) {
+
+        double alt;
         //        int attributeALT = 0b011001001010;
         //        int q = 0;
         int attributeALT = Bits.extractUInt( rawMessage.payload(), 36, 12 );
-        System.out.println( attributeALT );
         int q = Bits.extractUInt( rawMessage.payload(), 40, 1 );
-        int alt;
 
         if ( q == 1 ) {
-            int baseAltitude = -1000;
-            int left = Bits.extractUInt( attributeALT, 5, 7 );
-            int right = Bits.extractUInt( attributeALT, 0, 4 );
-            int multipleOf25 = right | ( left << 4 );
-            alt = baseAltitude + multipleOf25 * 25;
-            System.out.println( "q = 1 : " + alt );
+            int msBits = Bits.extractUInt( attributeALT, 5, 7 );
+            int lsBits = Bits.extractUInt( attributeALT, 0, 4 );
+            int multipleOf25 = lsBits | ( msBits << 4 );
+
+            alt = BASE_ALTITUDE_1 + multipleOf25 * 25L;
+
+            return Units.convertFrom( alt, Units.Length.FOOT );
         }
 
-        else {
-            int baseAltitude = -1300;
-            int untangled = untangle( attributeALT );
+        int untangled = untangle( attributeALT );
 
-            int msBits = Bits.extractUInt( untangled, 3, 9 );
-            int lsBits = Bits.extractUInt( untangled, 0, 3 );
+        int msBits = Bits.extractUInt( untangled, 3, 9 );
+        int lsBits = Bits.extractUInt( untangled, 0, 3 );
 
-            msBits = decodeGray( msBits, 9 );
-            lsBits = decodeGray( lsBits, 3 );
+        msBits = decodeGray( msBits, 9 );
+        lsBits = decodeGray( lsBits, 3 );
 
-            if ( lsBits == 0 || lsBits == 5 || lsBits == 6 ) {
-                return null;
-            }
-            if ( lsBits == 7 ) {
-                lsBits = 5;
-            }
-
-            if ( msBits % 2 != 0 ) {
-                msBits = mirrorBits( msBits );
-            }
-            alt = baseAltitude + lsBits * 100 + msBits * 500;
-            System.out.println( "q = 0 : " + alt );
+        if ( lsBits == 0 || lsBits == 5 || lsBits == 6 ) {
+            return Double.NaN;
+        }
+        if ( lsBits == 7 ) {
+            lsBits = 5;
+        }
+        if ( msBits % 2 != 0 ) {
+            lsBits = mirrorBits( lsBits );
         }
 
-        return null;
+        alt = BASE_ALTITUDE_0 + lsBits * 100L + msBits * 500L;
+
+        return Units.convertFrom( alt, Units.Length.FOOT );
     }
 
 
