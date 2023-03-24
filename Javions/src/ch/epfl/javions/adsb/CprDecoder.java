@@ -92,7 +92,6 @@ public class CprDecoder {
 
 
     private static double recenter(double value) {
-        //TODO verify
         return ( value > .5 ) ? value - 1 : value;
     }
 

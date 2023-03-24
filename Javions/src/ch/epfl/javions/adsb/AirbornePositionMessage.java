@@ -52,8 +52,10 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         int parity = Bits.extractUInt( rawMessage.payload(), 34, 1 );
 
         double longitude = Bits.extractUInt( rawMessage.payload(), 0, 17 );
+        longitude = normalize( longitude );
 
         double latitude = Bits.extractUInt( rawMessage.payload(), 17, 17 );
+        latitude = normalize( latitude );
 
         return new AirbornePositionMessage( timeStampsNs, icaoAddress, alt, parity, longitude, latitude );
     }
