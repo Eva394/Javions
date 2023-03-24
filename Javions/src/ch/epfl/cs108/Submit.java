@@ -33,9 +33,9 @@ public final class Submit {
     // CONFIGURATION
     // -------------
     // Jeton du premier membre du groupe
-    private static final String TOKEN_1 = "ieR9koo4";
+    private static final String TOKEN_1 = "yov6Ap4E";
     // Jeton du second membre (identique au premier pour les personnes travaillant seules)
-    private static final String TOKEN_2 = "je1Oh6xe";
+    private static final String TOKEN_2 = "Aeng9Jod";
     // -------------
 
     private static final String ZIP_ENTRY_NAME_PREFIX = "Javions/";
@@ -47,7 +47,8 @@ public final class Submit {
 
     private static final String BASE32_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
     private static final Pattern SUBMISSION_ID_RX = Pattern.compile(
-            Stream.generate( () -> "[%s]{4}".formatted( BASE32_ALPHABET ) ).limit( 4 )
+            Stream.generate( () -> "[%s]{4}".formatted( BASE32_ALPHABET ) )
+                  .limit( 4 )
                   .collect( Collectors.joining( "-" ) ) );
 
 
@@ -79,7 +80,8 @@ public final class Submit {
             }
 
             var fileList = getFileList( semesterWeek( LocalDate.now() ) );
-            var paths = filesToSubmit( projectRoot, p -> fileList.stream().anyMatch( p::endsWith ) );
+            var paths = filesToSubmit( projectRoot, p -> fileList.stream()
+                                                                 .anyMatch( p::endsWith ) );
 
             var zipArchive = createZipArchive( paths );
             var backupName = "%tF_%tH%tM%tS".formatted( submissionTimeStamp, submissionTimeStamp, submissionTimeStamp,
@@ -104,7 +106,8 @@ public final class Submit {
                                           %s
                                         Votre rendu sera prochainement validé et le résultat de cette
                                         validation vous sera communiqué par e-mail, à votre adresse de l'EPFL.
-                                        """, subId, paths.stream().map( Object::toString )
+                                        """, subId, paths.stream()
+                                                         .map( Object::toString )
                                                          .collect( Collectors.joining( "\n  " ) ) );
                 }
                 case HTTP_ENTITY_TOO_LARGE -> printStream.println( "Erreur : l'archive est trop volumineuse !" );
@@ -132,16 +135,24 @@ public final class Submit {
 
     private static List<Path> getFileList(int stage) throws IOException, InterruptedException {
         var fileListUri = baseUri.resolve( "p/f/files-to-submit-%02d.txt".formatted( stage ) );
-        var httpRequest = HttpRequest.newBuilder( fileListUri ).GET().build();
-        return HttpClient.newHttpClient().send( httpRequest, HttpResponse.BodyHandlers.ofLines() ).body()
-                         .map( Path::of ).toList();
+        var httpRequest = HttpRequest.newBuilder( fileListUri )
+                                     .GET()
+                                     .build();
+        return HttpClient.newHttpClient()
+                         .send( httpRequest, HttpResponse.BodyHandlers.ofLines() )
+                         .body()
+                         .map( Path::of )
+                         .toList();
     }
 
 
     private static List<Path> filesToSubmit(Path projectRoot, Predicate<Path> keepFile) throws IOException {
         try ( var paths = Files.walk( projectRoot ) ) {
-            return paths.filter( Files::isRegularFile ).map( projectRoot::relativize ).filter( keepFile )
-                        .sorted( Comparator.comparing( Path::toString ) ).toList();
+            return paths.filter( Files::isRegularFile )
+                        .map( projectRoot::relativize )
+                        .filter( keepFile )
+                        .sorted( Comparator.comparing( Path::toString ) )
+                        .toList();
         }
     }
 
@@ -150,7 +161,8 @@ public final class Submit {
         var byteArrayOutputStream = new ByteArrayOutputStream();
         try ( var zipStream = new ZipOutputStream( byteArrayOutputStream ) ) {
             for ( var path : paths ) {
-                var entryPath = IntStream.range( 0, path.getNameCount() ).mapToObj( path::getName )
+                var entryPath = IntStream.range( 0, path.getNameCount() )
+                                         .mapToObj( path::getName )
                                          .map( Path::toString )
                                          .collect( Collectors.joining( "/", ZIP_ENTRY_NAME_PREFIX, "" ) );
                 zipStream.putNextEntry( new ZipEntry( entryPath ) );
@@ -169,11 +181,14 @@ public final class Submit {
         var httpRequest = HttpRequest.newBuilder( baseUri.resolve( "api/submissions" ) )
                                      .POST( HttpRequest.BodyPublishers.ofByteArray( zipArchive ) )
                                      .header( "Authorization", "token %s".formatted( submissionToken ) )
-                                     .header( "Content-Type", "application/zip" ).header( "Accept", "text/plain" )
-                                     .header( "Accept-Language", "fr" ).timeout( Duration.ofSeconds( TIMEOUT_SECONDS ) )
+                                     .header( "Content-Type", "application/zip" )
+                                     .header( "Accept", "text/plain" )
+                                     .header( "Accept-Language", "fr" )
+                                     .timeout( Duration.ofSeconds( TIMEOUT_SECONDS ) )
                                      .build();
 
-        return HttpClient.newHttpClient().send( httpRequest, HttpResponse.BodyHandlers.ofString() );
+        return HttpClient.newHttpClient()
+                         .send( httpRequest, HttpResponse.BodyHandlers.ofString() );
     }
 
 
