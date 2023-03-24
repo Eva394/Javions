@@ -58,7 +58,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
 
             int character = Bits.extractUInt( rawMessage.payload(), 6 * i, 6 );
             char c = ALPHABET.charAt( character );
-            if ( !( c == ' ' ) && cS.isEmpty() ) {
+            if ( !( c == ' ' ) ) {
                 cS.append( c );
             }
 

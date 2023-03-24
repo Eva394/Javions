@@ -35,7 +35,6 @@ public class CprDecoder {
 
         double zoneLat0 = temp;
         double zoneLat1 = temp;
-
         if ( temp < 0 ) {
             zoneLat0 += nbZonesLat0;
             zoneLat1 += nbZonesLat1;

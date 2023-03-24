@@ -525,7 +525,7 @@ class AirbornePositionMessageTest {
                 if ( isIdentificationMessage( m ) ) {
                     AircraftIdentificationMessage message = AircraftIdentificationMessage.of( m );
                     index++;
-                    System.out.println( index + " : " + message );
+                    System.out.println( message );
                 }
             }
         }
@@ -543,7 +543,7 @@ class AirbornePositionMessageTest {
                 if ( isPositionMessage( m ) ) {
                     AirbornePositionMessage message = AirbornePositionMessage.of( m );
                     index++;
-                    System.out.println( index + " : " + message );
+                    System.out.println( message );
                 }
             }
         }
@@ -568,6 +568,7 @@ class AirbornePositionMessageTest {
 }
 
 /*
+"C:\Users\Eva Mangano\.jdks\temurin-17.0.6\bin\java.exe" "-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2021.3\lib\idea_rt.jar=59551:C:\Program Files\JetBrains\IntelliJ IDEA 2021.3\bin" -Dfile.encoding=UTF-8 -classpath "C:\Users\Eva Mangano\OneDrive\Documents\EPFL\4 - BA2\PROJET\out\test\Javions;C:\Users\Eva Mangano\OneDrive\Documents\EPFL\4 - BA2\PROJET\out\production\Javions;C:\Users\Eva Mangano\.m2\repository\org\junit\jupiter\junit-jupiter\5.9.2\junit-jupiter-5.9.2.jar;C:\Users\Eva Mangano\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.9.2\junit-jupiter-api-5.9.2.jar;C:\Users\Eva Mangano\.m2\repository\org\opentest4j\opentest4j\1.2.0\opentest4j-1.2.0.jar;C:\Users\Eva Mangano\.m2\repository\org\junit\platform\junit-platform-commons\1.9.2\junit-platform-commons-1.9.2.jar;C:\Users\Eva Mangano\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Eva Mangano\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.9.2\junit-jupiter-params-5.9.2.jar;C:\Users\Eva Mangano\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.9.2\junit-jupiter-engine-5.9.2.jar;C:\Users\Eva Mangano\.m2\repository\org\junit\platform\junit-platform-engine\1.9.2\junit-platform-engine-1.9.2.jar" ch.epfl.javions.adsb.AirbornePositionMessageTest
 AircraftIdentificationMessage[timeStampNs=1499146900, icaoAddress=IcaoAddress[string=4D2228], category=163, callSign=CallSign[string=RYR7JD]]
 AircraftIdentificationMessage[timeStampNs=2240535600, icaoAddress=IcaoAddress[string=01024C], category=163, callSign=CallSign[string=MSC3361]]
 AircraftIdentificationMessage[timeStampNs=2698727800, icaoAddress=IcaoAddress[string=495299], category=163, callSign=CallSign[string=TAP931]]
