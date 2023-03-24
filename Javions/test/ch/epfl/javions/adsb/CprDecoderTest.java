@@ -27,24 +27,24 @@ class CprDecoderTest {
         System.out.println( p );
         System.out.println( p.longitudeT32() );
         System.out.println( p.latitudeT32() );
-        //assertEquals( ( 89192898 ), p.longitudeT32() );
-        //assertEquals( ( 552659081 ), p.latitudeT32() );
+        assertEquals( ( 89192898 ), p.longitudeT32() );
+        assertEquals( ( 552659081 ), p.latitudeT32() );
         GeoPos pos = CprDecoder.decodePosition( 0.62, 0.42, 0.6200000000000000001, 0.4200000000000000001, 0 );
         System.out.println( pos );
         GeoPos pos1 = CprDecoder.decodePosition( 0.3, 0.3, 0.3, 0.3, 1 );
         GeoPos pos2 = CprDecoder.decodePosition( 0.3, 0.3, 0.3, 0.3, 0 );
         System.out.println( pos1 );
         System.out.println( pos2 );
-        assertEquals( ( Units.convert( pos1.longitude(), Units.Angle.RADIAN, Units.Angle.DEGREE ) ),
+        assertEquals( ( Units.convert( pos1.longitudeT32(), Units.Angle.T32, Units.Angle.DEGREE ) ),
                       1.862068958580494 );
-        //assertEquals( ( Units.convert( pos1.latitude(), Units.Angle.RADIAN, Units.Angle.DEGREE ) ),
-        //              1.8305084947496653 );
-        assertEquals( ( Units.convert( pos2.latitude(), Units.Angle.RADIAN, Units.Angle.DEGREE ) ),
+        assertEquals( ( Units.convert( pos1.latitudeT32(), Units.Angle.T32, Units.Angle.DEGREE ) ),
+                      1.8305084947496653 );
+        assertEquals( ( Units.convert( pos2.latitudeT32(), Units.Angle.T32, Units.Angle.DEGREE ) ),
                       1.7999999597668648 );
 
-        //assertEquals( ( Units.convert( pos2.longitude(), Units.Angle.RADIAN, Units.Angle.DEGREE ) ),
-        //              1.8305084947496653 );
-        //assertEquals( ( Units.convert( pos2.longitude(), Units.Angle.RADIAN, Units.Angle.DEGREE ) ),
-        //              1.8305084947496653 );
+        assertEquals( ( Units.convert( pos2.longitudeT32(), Units.Angle.T32, Units.Angle.DEGREE ) ),
+                      1.8305084947496653 );
+        assertEquals( ( Units.convert( pos2.longitudeT32(), Units.Angle.T32, Units.Angle.DEGREE ) ),
+                      1.8305084947496653 );
     }
 }
