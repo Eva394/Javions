@@ -515,7 +515,7 @@ class AirbornePositionMessageTest {
 
 
     public static void testAircraftIdentificationMessageOf() throws IOException {
-        String f = "C:\\Users\\Eva Mangano\\Downloads\\samples_0304d\\samples_20230304_1442.bin";
+        String f = "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\samples_20230304_1442.bin";
         try ( InputStream s = new FileInputStream( f ) ) {
             AdsbDemodulator d = new AdsbDemodulator( s );
             RawMessage m;
@@ -533,7 +533,7 @@ class AirbornePositionMessageTest {
 
 
     public static void testAirbornePositionMessageOf() throws IOException {
-        String f = "C:\\Users\\Eva Mangano\\Downloads\\samples_0304d\\samples_20230304_1442.bin";
+        String f = "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\samples_20230304_1442.bin";
         try ( InputStream s = new FileInputStream( f ) ) {
             AdsbDemodulator d = new AdsbDemodulator( s );
             RawMessage m;
