@@ -20,7 +20,9 @@ class SamplesDecoderTest {
 
     private static byte[] getSampleBytes() {
         var sampleBytes = new byte[SAMPLES_COUNT * Short.BYTES];
-        var sampleBytesBuffer = ByteBuffer.wrap( sampleBytes ).order( ByteOrder.LITTLE_ENDIAN ).asShortBuffer();
+        var sampleBytesBuffer = ByteBuffer.wrap( sampleBytes )
+                                          .order( ByteOrder.LITTLE_ENDIAN )
+                                          .asShortBuffer();
 
         for ( int i = 0 ; i < SAMPLES_COUNT ; i += 1 ) {
             sampleBytesBuffer.put( (short)i );
@@ -32,7 +34,7 @@ class SamplesDecoderTest {
     @BeforeEach
     public void setUp() throws FileNotFoundException {
         DataInputStream stream = new DataInputStream( new BufferedInputStream(
-                new FileInputStream( new File( "C:\\Users\\Eva Mangano\\Downloads\\samples" + ".bin" ) ) ) );
+                new FileInputStream( new File( "C:\\Users\\Eva Mangano\\Downloads\\samples (1).bin" ) ) ) );
         sampleDecoder = new SamplesDecoder( stream, batchSize );
     }
 

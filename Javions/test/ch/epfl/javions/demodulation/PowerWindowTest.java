@@ -86,7 +86,7 @@ class PowerWindowTest {
     public void testAdvance() throws IOException {
 
         DataInputStream stream = new DataInputStream( new BufferedInputStream( new FileInputStream( new File(
-                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft.zip" ) ) ) );
+                "C:\\Users\\Eva Mangano\\Downloads\\javions_skeleton (1)\\Javions\\resources\\aircraft.zip" ) ) ) );
 
         PowerWindow window = new PowerWindow( stream, 8 );
 

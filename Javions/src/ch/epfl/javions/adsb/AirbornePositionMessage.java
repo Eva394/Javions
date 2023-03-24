@@ -69,8 +69,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static double computeAltitude(RawMessage rawMessage) {
 
         double alt;
-        //        int attributeALT = 0b011001001010;
-        //        int q = 0;
         int attributeALT = Bits.extractUInt( rawMessage.payload(), 36, 12 );
         int q = Bits.extractUInt( rawMessage.payload(), 40, 1 );
 

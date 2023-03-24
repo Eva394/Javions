@@ -16,7 +16,7 @@ public class AircraftDatabaseTest {
         assertEquals( new AircraftData( new AircraftRegistration( "HB-JDC" ), new AircraftTypeDesignator( "A20N" ),
                                         "AIRBUS A-320neo", new AircraftDescription( "L2J" ),
                                         WakeTurbulenceCategory.of( "M" ) ), new AircraftDatabase(
-                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft.zip" ).get(
+                "C:\\Users\\Eva Mangano\\Downloads\\javions_skeleton (1)" + "\\Javions\\resources\\aircraft.zip" ).get(
                 new IcaoAddress( "4B1814" ) ) );
     }
 
@@ -24,7 +24,7 @@ public class AircraftDatabaseTest {
     @Test
     void AircraftDatabaseWorksForInValidInput() throws IOException {
         assertNull( new AircraftDatabase(
-                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft.zip" ).get(
+                "C:\\Users\\Eva Mangano\\Downloads\\javions_skeleton (1)\\Javions\\resources\\aircraft.zip" ).get(
                 new IcaoAddress( "4B9912" ) ) );
     }
 
@@ -35,7 +35,6 @@ public class AircraftDatabaseTest {
         if ( aircraftResourceUrl != null ) {
             return new AircraftDatabase( URLDecoder.decode( aircraftResourceUrl.getFile(), UTF_8 ) );
         }
-
         // Try to get the database from the JAVIONS_AIRCRAFT_DATABASE environment variable
         // (only meant to simplify testing of several projects with a single database)
         var aircraftFileName = System.getenv( "JAVIONS_AIRCRAFT_DATABASE" );
