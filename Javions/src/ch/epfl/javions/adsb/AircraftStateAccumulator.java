@@ -23,6 +23,13 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     private Message oddMessage;
 
 
+    /**
+     * Constructor. Builds an instance of <code>AircraftStateAccumulator</code>
+     *
+     * @param stateSetter the state setter
+     * @throws NullPointerException if the state setter is null
+     * @author Eva Mangano 345375
+     */
     public AircraftStateAccumulator(T stateSetter) {
         Objects.requireNonNull( stateSetter );
         this.stateSetter = stateSetter;
@@ -39,6 +46,12 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     }
 
 
+    /**
+     * Updates the state of the aircraft depending on the given <code>Message</code>
+     *
+     * @param message message
+     * @author Eva Mangano 345375
+     */
     public void update(Message message) {
 
         stateSetter.setLastMessageTimeStampNs( message.timeStampNs() );
