@@ -10,22 +10,48 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+/**
+ * Represents an airborne position ADS-B message
+ *
+ * @param timeStampNs horodatage, in nanoseconds
+ * @param icaoAddress the ICAO address of the sender of the message
+ * @param altitude    altitude of the aircraft at the moment of sending the message, in meters
+ * @param parity      0 if the message is even, 1 if it's odd
+ * @param x           local and normalized longitude at the moment of sending the message
+ * @param y           local and normalized latitude at the moment of sending the message
+ * @author Eva Mangano 345375
+ */
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x,
                                       double y) implements Message {
 
 
+    /**
+     * Base altitude for an odd message
+     */
     public static final int BASE_ALTITUDE_1 = -1000;
+    /**
+     * Base altitude for an even message
+     */
     public static final int BASE_ALTITUDE_0 = -1300;
+    /**
+     * Size of an ME attribute
+     */
     private static final int ME_SIZE = 12;
 
 
     /**
-     * @param timeStampNs
-     * @param icaoAddress
-     * @param altitude
-     * @param parity
-     * @param x
-     * @param y
+     * Constructor. Builds an instance of <code>AirbornePositionMessage</code>
+     *
+     * @param timeStampNs horodatage, in nanoseconds
+     * @param icaoAddress ICAO address of the sender of the message
+     * @param altitude    altitude of the aircraft at the moment of sending the message, in meters
+     * @param parity      0 if the message is even, 1 if it's odd
+     * @param x           local and normalized longitude of the aircraft at the moment of sending the message
+     * @param y           local and normalized latitude of the aircraft at the moment of sending the message
+     * @throws NullPointerException     if the ICAO address is null
+     * @throws IllegalArgumentException if the horodatage is negative, the parity is invalid or the longitude and
+     *                                  latitude aren't normalized
+     * @author Eva Mangano 345375
      */
     public AirbornePositionMessage {
         if ( icaoAddress == null ) {
@@ -36,9 +62,15 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
+    /**
+     * Builds an instance of <code>AirbornePositionMessage</code> from a <code>RawMessage</code>
+     *
+     * @param rawMessage the ADS-B message
+     * @return an instance of <code>AirbornePositionMessage</code> as given by the <code>RawMessage</code>, null if the
+     * altitude is invalid
+     * @author Eva Mangano 345375
+     */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
-
-        //long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x, double y
 
         double alt = computeAltitude( rawMessage );
         if ( Double.isNaN( alt ) ) {
@@ -124,12 +156,9 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     private static int untangle(int attributeALT) {
-        int[] tangled = new int[]{Bits.extractUInt( attributeALT, 2, 1 ), Bits.extractUInt( attributeALT, 0, 1 ),
-                                  Bits.extractUInt( attributeALT, 10, 1 ), Bits.extractUInt( attributeALT, 8, 1 ),
-                                  Bits.extractUInt( attributeALT, 6, 1 ), Bits.extractUInt( attributeALT, 5, 1 ),
-                                  Bits.extractUInt( attributeALT, 3, 1 ), Bits.extractUInt( attributeALT, 1, 1 ),
-                                  Bits.extractUInt( attributeALT, 11, 1 ), Bits.extractUInt( attributeALT, 9, 1 ),
-                                  Bits.extractUInt( attributeALT, 7, 1 )};
+        int[] tangled = new int[]{Bits.extractUInt( attributeALT, 2, 1 ), Bits.extractUInt( attributeALT, 0, 1 ), Bits.extractUInt( attributeALT, 10, 1 ), Bits.extractUInt( attributeALT, 8, 1 ),
+                                  Bits.extractUInt( attributeALT, 6, 1 ), Bits.extractUInt( attributeALT, 5, 1 ), Bits.extractUInt( attributeALT, 3, 1 ), Bits.extractUInt( attributeALT, 1, 1 ),
+                                  Bits.extractUInt( attributeALT, 11, 1 ), Bits.extractUInt( attributeALT, 9, 1 ), Bits.extractUInt( attributeALT, 7, 1 )};
 
         int untangled = 0;
         for ( int i = 0 ; i < ME_SIZE - 2 ; i += 1 ) {
