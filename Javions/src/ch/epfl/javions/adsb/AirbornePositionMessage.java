@@ -41,6 +41,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         //long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x, double y
 
         double alt = computeAltitude( rawMessage );
+
         if ( Double.isNaN( alt ) ) {
             return null;
         }
