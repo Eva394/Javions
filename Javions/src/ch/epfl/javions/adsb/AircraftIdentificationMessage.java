@@ -8,7 +8,7 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAddress, int category,
                                             CallSign callSign) implements Message {
 
-    private static final String ALPHABET = "-ABCDEFGHIJKLMNOPQRSTUVWXYZ----- ---------------0123456789------";
+    private static final String ELEMENTS = "-ABCDEFGHIJKLMNOPQRSTUVWXYZ----- ---------------0123456789------";
 
 
     public AircraftIdentificationMessage {
@@ -35,7 +35,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         for ( int i = 0 ; i < 8 ; i++ ) {
 
             int character = Bits.extractUInt( rawMessage.payload(), 6 * i, 6 );
-            char c = ALPHABET.charAt( character );
+            char c = ELEMENTS.charAt( character );
             if ( !( c == ' ' ) ) {
                 cS.append( c );
             }
