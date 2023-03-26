@@ -27,15 +27,14 @@ public class CprDecoder {
 
         // COMPUTATION OF THE LATITUDE
         //number of zones
-        int nbZonesLat0 = 60;
-        int nbZonesLat1 = 59;
+        double nbZonesLat0 = 60.;
+        double nbZonesLat1 = 59.;
 
         //zone where the aircraft is
         double temp = getProductDifference( y0, y1, nbZonesLat0, nbZonesLat1 );
 
         double zoneLat0 = temp;
         double zoneLat1 = temp;
-
         if ( temp < 0 ) {
             zoneLat0 += nbZonesLat0;
             zoneLat1 += nbZonesLat1;
@@ -50,8 +49,8 @@ public class CprDecoder {
 
         //COMPUTATION OF THE LONGITUDE
         //number of zones for even and odd latitude, odd should be one less than even
-        int nbZonesLon0 = computeNbZonesLon( y0, widthLat0 );
-        int nbZonesLon1 = computeNbZonesLon( y1, widthLat1 );
+        double nbZonesLon0 = computeNbZonesLon( y0, widthLat0 );
+        double nbZonesLon1 = computeNbZonesLon( y1, widthLat1 );
         if ( nbZonesLon0 - 1 != nbZonesLon1 ) {
             return null;
         }
@@ -75,19 +74,19 @@ public class CprDecoder {
         x1 = widthLon1 * ( zoneLon1 + x1 );
 
         //RETURN THE RIGHT ONE
-        int longitude;
-        int latitude;
+        double longitude;
+        double latitude;
 
         if ( mostRecent == 0 ) {
-            longitude = (int)Units.convert( recenter( x0 ), Units.Angle.TURN, Units.Angle.T32 );
-            latitude = (int)Units.convert( recenter( y0 ), Units.Angle.TURN, Units.Angle.T32 );
+            longitude = Units.convert( recenter( x0 ), Units.Angle.TURN, Units.Angle.T32 );
+            latitude = Units.convert( recenter( y0 ), Units.Angle.TURN, Units.Angle.T32 );
         }
         else {
-            longitude = (int)Units.convert( recenter( x1 ), Units.Angle.TURN, Units.Angle.T32 );
-            latitude = (int)Units.convert( recenter( y1 ), Units.Angle.TURN, Units.Angle.T32 );
+            longitude = Units.convert( recenter( x1 ), Units.Angle.TURN, Units.Angle.T32 );
+            latitude = Units.convert( recenter( y1 ), Units.Angle.TURN, Units.Angle.T32 );
         }
 
-        return new GeoPos( longitude, latitude );
+        return new GeoPos( (int)Math.rint( longitude ), (int)Math.rint( latitude ) );
     }
 
 
@@ -96,7 +95,7 @@ public class CprDecoder {
     }
 
 
-    private static double getProductDifference(double y0, double y1, int nbZonesLat0, int nbZonesLat1) {
+    private static double getProductDifference(double y0, double y1, double nbZonesLat0, double nbZonesLat1) {
         return Math.rint( y0 * nbZonesLat1 - y1 * nbZonesLat0 );
     }
 

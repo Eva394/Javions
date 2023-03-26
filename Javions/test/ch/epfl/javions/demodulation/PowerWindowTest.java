@@ -2,7 +2,9 @@ package ch.epfl.javions.demodulation;
 
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -79,32 +81,6 @@ class PowerWindowTest {
         offset = 50;
         powerWindow.advanceBy( offset );
         assertEquals( offset + 10, powerWindow.position() );
-    }
-
-
-    @Test
-    public void testAdvance() throws IOException {
-
-        DataInputStream stream = new DataInputStream( new BufferedInputStream( new FileInputStream( new File(
-                "C:\\Users\\Eva Mangano\\Downloads\\javions_skeleton (1)\\Javions\\resources\\aircraft.zip" ) ) ) );
-
-        PowerWindow window = new PowerWindow( stream, 8 );
-
-        window.advance();
-        window.advance();
-        window.advance();
-
-        assertEquals( 3, window.position() );
-
-        assertEquals( 745, window.get( 0 ) );
-
-        assertEquals( 98, window.get( 1 ) );
-
-        window.advance();
-
-        assertEquals( 4, window.position() );
-
-        assertEquals( 98, window.get( 0 ) );
     }
 
 
