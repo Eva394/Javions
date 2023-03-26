@@ -19,7 +19,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         Preconditions.checkArgument((timeStampNs > 0) && (speed > 0) && (trackOrHeading > 0));
     }
 
-    AirborneVelocityMessage of(RawMessage rawMessage) {
+    public static AirborneVelocityMessage of(RawMessage rawMessage) {
 
         int SB = Bits.extractUInt(rawMessage.payload(), 48, 3);
         int Dew = Bits.extractUInt(rawMessage.payload(), 21, 1);
@@ -56,7 +56,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
             if (SH == 1 && SB == 3) {
                 speed = AS;
-            } else if (SH == 1 && SB == 4) {
+            } else if (SH == 1) {
                 speed = Units.convertTo(4, KNOT);
             } else {
                 return null;
