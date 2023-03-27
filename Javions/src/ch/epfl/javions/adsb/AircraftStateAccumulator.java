@@ -77,6 +77,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 stateSetter.setTrackOrHeading( velocityMessage.trackOrHeading() );
             }
             default -> {
+                throw new Error();
             }
         }
     }

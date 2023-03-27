@@ -103,6 +103,9 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         double alt;
         int attributeALT = Bits.extractUInt( rawMessage.payload(), 36, 12 );
+        System.out.println( rawMessage );
+        System.out.println( rawMessage.payload() );
+        System.out.println( attributeALT );
         int q = Bits.extractUInt( rawMessage.payload(), 40, 1 );
 
         if ( q == 1 ) {
@@ -116,6 +119,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
 
         int untangled = untangle( attributeALT );
+        System.out.println( untangled );
 
         int msBits = Bits.extractUInt( untangled, 3, 9 );
         int lsBits = Bits.extractUInt( untangled, 0, 3 );
@@ -165,7 +169,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
                                   Bits.extractUInt( attributeALT, 7, 1 )};
 
         int untangled = 0;
-        for ( int i = 0 ; i < ME_SIZE - 2 ; i += 1 ) {
+        for ( int i = 0 ; i < ME_SIZE - 1 ; i += 1 ) {
             untangled = ( untangled ) | ( tangled[i] << ( ME_SIZE - 2 - i ) );
         }
         return untangled;
