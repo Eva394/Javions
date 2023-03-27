@@ -24,7 +24,6 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @author Eva Mangano 345375
      */
     public GeoPos {
-        System.out.println( latitudeT32 );
         Preconditions.checkArgument( isValidLatitudeT32( latitudeT32 ) );
     }
 
