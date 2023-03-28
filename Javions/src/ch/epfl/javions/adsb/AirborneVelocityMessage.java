@@ -16,7 +16,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             throw new NullPointerException();
         }
 
-        Preconditions.checkArgument((timeStampNs > 0) && (speed > 0) && (trackOrHeading > 0));
+        Preconditions.checkArgument((timeStampNs >= 0) && (speed >= 0) && (trackOrHeading >= 0));
     }
 
     public static AirborneVelocityMessage of(RawMessage rawMessage) {

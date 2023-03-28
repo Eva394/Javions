@@ -23,12 +23,13 @@ class AircraftState implements AircraftStateSetter {
 
     @Override
     public void setCallSign(CallSign callSign) {
+        System.out.println("indicatif : " + callSign);
 
     }
 
     @Override
     public void setPosition(GeoPos position) {
-
+        System.out.println("position : " + position);
     }
 
     @Override
@@ -47,7 +48,7 @@ class AircraftState implements AircraftStateSetter {
     }
 
     public static void main(String[] args) throws IOException {
-        String f = "\"C:\\Users\\nagyu\\Downloads\\samples_0304\\samples_20230304_1442.bin\"";
+        String f = "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\samples_20230304_1442.bin";
         IcaoAddress expectedAddress = new IcaoAddress("4D2228");
         try (InputStream s = new FileInputStream(f)) {
             AdsbDemodulator d = new AdsbDemodulator(s);

@@ -103,9 +103,11 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         double alt;
         int attributeALT = Bits.extractUInt( rawMessage.payload(), 36, 12 );
-        System.out.println( rawMessage );
+        /*System.out.println( rawMessage );
         System.out.println( rawMessage.payload() );
         System.out.println( attributeALT );
+
+         */
         int q = Bits.extractUInt( rawMessage.payload(), 40, 1 );
 
         if ( q == 1 ) {
