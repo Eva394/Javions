@@ -51,6 +51,10 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
 
         if (SB == 3 || SB == 4) {
+            if (AS == 0){
+                return null;
+            }
+
             double angle = (HDG * 1.0) / (1 << 10);
             double speed;
 
