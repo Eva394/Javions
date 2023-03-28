@@ -50,9 +50,12 @@ public class CprDecoder {
         //COMPUTATION OF THE LONGITUDE
         //number of zones for even and odd latitude, odd should be one less than even
         double nbZonesLon0 = computeNbZonesLon( y0, widthLat0 );
-        double nbZonesLon1 = computeNbZonesLon( y1, widthLat1 );
-        if ( nbZonesLon0 - 1 != nbZonesLon1 ) {
+        double nbZonesLon1 = computeNbZonesLon( y1, widthLat0 );
+        if ( nbZonesLon0 != nbZonesLon1 ) {
             return null;
+        }
+        if ( nbZonesLon0 != 1 ) {
+            nbZonesLon1 = nbZonesLon0 - 1;
         }
 
         //zone where the aircraft is
@@ -86,7 +89,14 @@ public class CprDecoder {
             latitude = Units.convert( recenter( y1 ), Units.Angle.TURN, Units.Angle.T32 );
         }
 
-        return new GeoPos( (int)Math.rint( longitude ), (int)Math.rint( latitude ) );
+        return isValidLatitude( latitude ) ? new GeoPos( (int)Math.rint( longitude ), (int)Math.rint( latitude ) )
+                                           : null;
+    }
+
+
+    private static boolean isValidLatitude(double y) {
+        double yDegrees = Units.convert( y, Units.Angle.T32, Units.Angle.DEGREE );
+        return -90. <= yDegrees && yDegrees <= 90.;
     }
 
 
