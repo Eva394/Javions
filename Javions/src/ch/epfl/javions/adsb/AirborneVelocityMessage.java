@@ -30,7 +30,10 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
                 return null;
             }
 
-            double angle = Math.atan2( directionEW,directionNS);
+            double angle = Math.atan2( directionEW, directionNS );
+            if ( angle < 0 ) {
+                angle += 2 * Math.PI;
+            }
             double speed = Math.hypot( velocityNS - 1, velocityEW - 1 );
 
             if ( subType == 1 ) {
