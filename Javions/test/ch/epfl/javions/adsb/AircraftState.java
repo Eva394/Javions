@@ -13,6 +13,9 @@ class AircraftState implements AircraftStateSetter {
 
     public static void main(String[] args) throws IOException {
         String f = "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\samples_20230304_1442.bin";
+        //        RawMessage rawMessage = RawMessage.of( 100, HexFormat.of()
+        //                                                             .parseHex( "8D485020994409940838175B284F" ) );
+        //        IcaoAddress expectedAddress = rawMessage.icaoAddress();
         IcaoAddress expectedAddress = new IcaoAddress( "4D2228" );
         try ( InputStream s = new FileInputStream( f ) ) {
             AdsbDemodulator d = new AdsbDemodulator( s );
@@ -27,6 +30,7 @@ class AircraftState implements AircraftStateSetter {
                 Message pm = MessageParser.parse( m );
                 if ( pm != null ) {
                     a.update( pm );
+                    System.out.println( pm );
                 }
             }
         }
@@ -47,13 +51,13 @@ class AircraftState implements AircraftStateSetter {
 
     @Override
     public void setCallSign(CallSign callSign) {
-        System.out.println( "indicatif : " + callSign );
+        //System.out.println( "indicatif : " + callSign );
     }
 
 
     @Override
     public void setPosition(GeoPos position) {
-        System.out.println( "position : " + position );
+        //System.out.println( "position : " + position );
     }
 
 
