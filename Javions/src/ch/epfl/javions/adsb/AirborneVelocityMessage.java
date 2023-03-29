@@ -30,14 +30,14 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
                 return null;
             }
 
-            double angle = Math.atan2( directionNS, directionEW );
+            double angle = Math.atan2( directionEW,directionNS);
             double speed = Math.hypot( velocityNS - 1, velocityEW - 1 );
 
             if ( subType == 1 ) {
                 speed = Units.convertFrom( speed, Units.Speed.KNOT );
             }
             else {
-                speed = Units.convertFrom( speed * 4., Units.Speed.KNOT );
+                speed = Units.convertFrom( speed * 4.0, Units.Speed.KNOT );
             }
 
             //TODO angle
@@ -71,7 +71,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
                 speed = Units.convertFrom( airVelocity - 1, Units.Speed.KNOT );
             }
             else {
-                speed = Units.convertFrom( ( airVelocity - 1 ) * 4., Units.Speed.KNOT );
+                speed = Units.convertFrom( ( airVelocity - 1 ) * 4.0, Units.Speed.KNOT );
             }
 
             //            double angle = (double)( heading ) / ( 1 << 10 );
