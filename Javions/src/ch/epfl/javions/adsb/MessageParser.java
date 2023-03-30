@@ -29,6 +29,13 @@ public class MessageParser {
      */
     public static Message parse(RawMessage rawMessage) {
         int typeCode = rawMessage.typeCode();
+        //TODO switch
+
+        //        switch ( typeCode ) {
+        //            case typeCode == 1 || typeCode == 2 || typeCode == 3 || typeCode == 4 ->
+        //            return AircraftIdentificationMessage.of( rawMessage );
+        //
+        //        }
 
         if ( isIdentificationMessage( typeCode ) ) {
             return AircraftIdentificationMessage.of( rawMessage );

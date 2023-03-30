@@ -19,13 +19,14 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
 
         int subType = Bits.extractUInt( rawMessage.payload(), 48, 3 );
+        int payload = Bits.extractUInt( rawMessage.payload(), 21, 22 );
 
         if ( subType == 1 || subType == 2 ) {
 
-            int directionEW = Bits.extractUInt( rawMessage.payload(), 21, 1 );
-            int velocityEW = Bits.extractUInt( rawMessage.payload(), 11, 10 ) - 1;
-            int directionNS = Bits.extractUInt( rawMessage.payload(), 10, 1 );
-            int velocityNS = Bits.extractUInt( rawMessage.payload(), 0, 10 ) - 1;
+            int directionEW = Bits.extractUInt( payload, 21, 1 );
+            int velocityEW = Bits.extractUInt( payload, 11, 10 ) - 1;
+            int directionNS = Bits.extractUInt( payload, 10, 1 );
+            int velocityNS = Bits.extractUInt( payload, 0, 10 ) - 1;
 
             if ( velocityNS == 0 || velocityEW == 0 ) {
                 return null;
@@ -37,11 +38,11 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
                 velocityNS *= -1;
             }
 
-            double angle = Math.atan2( velocityEW, velocityNS ) - Math.PI / 2;
+            double angle = Math.atan2( velocityEW, velocityNS );
             double speed = Math.hypot( velocityNS, velocityEW );
 
             if ( angle < 0 ) {
-                angle += 2 * Math.PI;
+                angle += Math.PI;
             }
 
             if ( subType == 1 ) {
@@ -50,19 +51,6 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             else {
                 speed = Units.convertFrom( speed * 4.0, Units.Speed.KNOT );
             }
-
-            //TODO angle
-
-            //            double angle = Units.convertTo( Math.atan2( 1 - directionNS, 1 - directionEW ), DEGREE );
-            //            double speed;
-            //
-            //            if ( subType == 1 ) {
-            //                speed = Units.convertTo( Math.hypot( velocityNS - 1, velocityEW - 1 ), KNOT );
-            //            }
-            //            else {
-            //                speed = Units.convertTo( Math.hypot( velocityNS - 1, velocityEW - 1 ) / 4., KNOT );
-            //            }
-            //
             return new AirborneVelocityMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, angle );
         }
 
@@ -84,20 +72,6 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             else {
                 speed = Units.convertFrom( ( airVelocity ) * 4.0, Units.Speed.KNOT );
             }
-
-            //            double angle = (double)( heading ) / ( 1 << 10 );
-            //            double speed;
-            //
-            //            if ( headingAvailability == 1 && subType == 3 ) {
-            //                speed = airVelocity;
-            //            }
-            //            else if ( headingAvailability == 1 ) {
-            //                speed = Units.convertTo( 4, KNOT );
-            //            }
-            //            else {
-            //                return null;
-            //            }
-            //
             return new AirborneVelocityMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, angle );
         }
 
