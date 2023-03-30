@@ -29,38 +29,19 @@ public class MessageParser {
      */
     public static Message parse(RawMessage rawMessage) {
         int typeCode = rawMessage.typeCode();
-        //TODO switch
-
-        //        switch ( typeCode ) {
-        //            case typeCode == 1 || typeCode == 2 || typeCode == 3 || typeCode == 4 ->
-        //            return AircraftIdentificationMessage.of( rawMessage );
-        //
-        //        }
-
-        if ( isIdentificationMessage( typeCode ) ) {
-            return AircraftIdentificationMessage.of( rawMessage );
+        switch ( typeCode ) {
+            case 1, 2, 3, 4 -> {
+                return AircraftIdentificationMessage.of( rawMessage );
+            }
+            case 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22 -> {
+                return AirbornePositionMessage.of( rawMessage );
+            }
+            case 19 -> {
+                return AirborneVelocityMessage.of( rawMessage );
+            }
+            default -> {
+                return null;
+            }
         }
-        if ( isPositionMessage( typeCode ) ) {
-            return AirbornePositionMessage.of( rawMessage );
-        }
-        if ( isVelocityMessage( typeCode ) ) {
-            return AirborneVelocityMessage.of( rawMessage );
-        }
-        return null;
-    }
-
-
-    private static boolean isIdentificationMessage(int typeCode) {
-        return typeCode == 1 || typeCode == 2 || typeCode == 3 || typeCode == 4;
-    }
-
-
-    private static boolean isVelocityMessage(int typeCode) {
-        return typeCode == 19;
-    }
-
-
-    private static boolean isPositionMessage(int typeCode) {
-        return ( 9 <= typeCode && typeCode <= 18 ) || ( 20 <= typeCode && typeCode <= 22 );
     }
 }
