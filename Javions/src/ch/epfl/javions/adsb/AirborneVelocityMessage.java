@@ -17,6 +17,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
+        //TODO modularize and choose a version
         long payload = rawMessage.payload();
 
         int subType = Bits.extractUInt( payload, 48, 3 );
@@ -56,13 +57,14 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
 
         if ( subType == 3 || subType == 4 ) {
+            System.out.println( "sub 3 4" );
             //int headingAvailability = Bits.extractUInt( rawMessage.stDependentBits(), 21, 1 );
-            int heading = Bits.extractUInt( rawMessage.payload(), 11, 10 );
-            int airSpeed = Bits.extractUInt( rawMessage.payload(), 0, 10 ) - 1;
+            int heading = Bits.extractUInt( stDependentBits, 11, 10 );
+            int airSpeed = Bits.extractUInt( stDependentBits, 0, 10 ) - 1;
 
             Bits.testBit( rawMessage.payload(), 21 );
 
-            if ( Bits.testBit( rawMessage.payload(), ) airSpeed == 0){
+            if ( Bits.testBit( stDependentBits, 11 ) || airSpeed == 0 ) {
                 return null;
             }
 
@@ -70,6 +72,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             double speed;
 
             if ( subType == 3 ) {
+                System.out.println( "sub 3" );
                 speed = Units.convertFrom( airSpeed, Units.Speed.KNOT );
             }
             else {

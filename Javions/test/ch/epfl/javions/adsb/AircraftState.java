@@ -16,7 +16,10 @@ class AircraftState implements AircraftStateSetter {
         //RawMessage rawMessage = RawMessage.of( 100, HexFormat.of()
         //                                                     .parseHex( "8DA05F219C06B6AF189400CBC33F" ) );
         //IcaoAddress expectedAddress = rawMessage.icaoAddress();
-        IcaoAddress expectedAddress = new IcaoAddress( "4D2228" );
+
+        IcaoAddress expectedAddress = new IcaoAddress( "39D300" );
+        //IcaoAddress expectedAddress = new IcaoAddress( "4D2228" );
+
         try ( InputStream s = AircraftState.class.getClassLoader()
                                                  .getResourceAsStream( "samples_20230304_1442.bin" ) ) {
             AdsbDemodulator d = new AdsbDemodulator( s );
