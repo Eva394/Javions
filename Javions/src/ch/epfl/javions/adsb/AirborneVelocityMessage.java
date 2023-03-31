@@ -23,7 +23,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         int subType = Bits.extractUInt( payload, 48, 3 );
         int stDependentBits = Bits.extractUInt( payload, 21, 22 );
 
-        //System.out.println( "subType : " + subType );
+        System.out.println( "subType : " + subType );
 
         if ( subType == 1 || subType == 2 ) {
 
@@ -46,7 +46,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             double speed = Math.hypot( velocityNS, velocityEW );
 
             if ( angle < 0 ) {
-                //System.out.println( "negative" );
+                System.out.println( "negative" );
                 angle += 2 * Math.PI;
             }
 

@@ -1,22 +1,18 @@
 package ch.epfl.javions.adsb;
 
+import ch.epfl.javions.ByteString;
 import ch.epfl.javions.GeoPos;
-import ch.epfl.javions.aircraft.IcaoAddress;
 import ch.epfl.javions.demodulation.AdsbDemodulator;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HexFormat;
 
 class AircraftState implements AircraftStateSetter {
 
 
     public static void main(String[] args) throws IOException {
-        //RawMessage rawMessage = RawMessage.of( 100, HexFormat.of()
-        //                                                     .parseHex( "8D485020994409940838175B284F" ) );
-        RawMessage rawMessage = RawMessage.of( 100, HexFormat.of()
-                                                             .parseHex( "8DA05F219C06B6AF189400CBC33F" ) );
-        IcaoAddress expectedAddress = rawMessage.icaoAddress();
+
+        //System.out.println( AirborneVelocityMessage.of( rm ) );
 
         //IcaoAddress expectedAddress = new IcaoAddress( "39D300" );
         //IcaoAddress expectedAddress = new IcaoAddress( "4D2228" );
@@ -25,22 +21,36 @@ class AircraftState implements AircraftStateSetter {
                                                  .getResourceAsStream( "samples_20230304_1442.bin" ) ) {
             AdsbDemodulator d = new AdsbDemodulator( s );
             RawMessage m;
+            RawMessage rm = new RawMessage( 0, ByteString.ofHexadecimalString( "8D485020994409940838175B284F" ) );
+            System.out.println( AirborneVelocityMessage.of( rm ) );
             AircraftStateAccumulator<AircraftState> a = new AircraftStateAccumulator<>( new AircraftState() );
-            while ( ( m = d.nextMessage() ) != null ) {
-                //                if ( !m.icaoAddress()
-                //                       .equals( expectedAddress ) ) {
-                //                    continue;
-                //                }
+            //while ( ( m = d.nextMessage() ) != null ) {
+            //                                if ( !m.icaoAddress()
+            //                                       .equals( expectedAddress ) ) {
+            //                                    continue;
+            //                                }
 
-                if ( m.typeCode() == 19 ) {
-                    Message pm = MessageParser.parse( m );
-                    if ( pm != null ) {
-                        a.update( pm );
-                        System.out.println( pm );
-                    }
-                }
+            //if ( m.typeCode() == 19 ) {
+            Message pm = MessageParser.parse( rm );
+            if ( pm != null ) {
+                a.update( pm );
+                //System.out.println( pm );
             }
+            //}
+            //}
         }
+    }
+
+
+    static void messageB() {
+        RawMessage rm = new RawMessage( 0, ByteString.ofHexadecimalString( "8D485020994409940838175B284F" ) );
+        System.out.println( AirborneVelocityMessage.of( rm ) );
+    }
+
+
+    static void messageC() {
+        RawMessage rm = new RawMessage( 0, ByteString.ofHexadecimalString( "8DA05F219C06B6AF189400CBC33F" ) );
+        System.out.println( AirborneVelocityMessage.of( rm ) );
     }
 
 
