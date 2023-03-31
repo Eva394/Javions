@@ -23,6 +23,8 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         int subType = Bits.extractUInt( payload, 48, 3 );
         int stDependentBits = Bits.extractUInt( payload, 21, 22 );
 
+        //System.out.println( "subType : " + subType );
+
         if ( subType == 1 || subType == 2 ) {
 
             int directionEW = Bits.extractUInt( stDependentBits, 21, 1 );
@@ -44,7 +46,8 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             double speed = Math.hypot( velocityNS, velocityEW );
 
             if ( angle < 0 ) {
-                angle += Math.PI;
+                //System.out.println( "negative" );
+                angle += 2 * Math.PI;
             }
 
             if ( subType == 1 ) {
@@ -57,7 +60,6 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
 
         if ( subType == 3 || subType == 4 ) {
-            System.out.println( "sub 3 4" );
             //int headingAvailability = Bits.extractUInt( rawMessage.stDependentBits(), 21, 1 );
             int heading = Bits.extractUInt( stDependentBits, 11, 10 );
             int airSpeed = Bits.extractUInt( stDependentBits, 0, 10 ) - 1;
@@ -68,11 +70,10 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
                 return null;
             }
 
-            double angle = Math.scalb( heading, -10 );
+            double angle = Math.scalb( (double)heading, -10 );
             double speed;
 
             if ( subType == 3 ) {
-                System.out.println( "sub 3" );
                 speed = Units.convertFrom( airSpeed, Units.Speed.KNOT );
             }
             else {
