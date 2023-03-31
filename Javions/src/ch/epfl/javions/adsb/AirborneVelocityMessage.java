@@ -55,22 +55,24 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
 
         if ( subType == 3 || subType == 4 ) {
-            int headingAvailability = Bits.extractUInt( rawMessage.payload(), 21, 1 );
+            //int headingAvailability = Bits.extractUInt( rawMessage.payload(), 21, 1 );
             int heading = Bits.extractUInt( rawMessage.payload(), 11, 10 );
-            int airVelocity = Bits.extractUInt( rawMessage.payload(), 0, 10 ) - 1;
+            int airSpeed = Bits.extractUInt( rawMessage.payload(), 0, 10 ) - 1;
 
-            if ( airVelocity == 0 || headingAvailability != 1 ) {
+            Bits.testBit(rawMessage.payload(),21);
+
+            if ( airSpeed == 0) {
                 return null;
             }
 
-            double angle = (double)heading / ( 1 << 10 );
+            double angle = Math.scalb(heading,-10) ;
             double speed;
 
             if ( subType == 3 ) {
-                speed = Units.convertFrom( airVelocity, Units.Speed.KNOT );
+                speed = Units.convertFrom( airSpeed, Units.Speed.KNOT );
             }
             else {
-                speed = Units.convertFrom( ( airVelocity ) * 4.0, Units.Speed.KNOT );
+                speed = Units.convertFrom( ( airSpeed ) * 4.0, Units.Speed.KNOT );
             }
             return new AirborneVelocityMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, angle );
         }
