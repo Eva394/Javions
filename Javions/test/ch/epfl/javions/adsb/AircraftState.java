@@ -11,12 +11,12 @@ class AircraftState implements AircraftStateSetter {
 
 
     public static void main(String[] args) throws IOException {
-        //        String f = "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\samples_20230304_1442.bin";
-        //        RawMessage rawMessage = RawMessage.of( 100, HexFormat.of()
-        //                                                             .parseHex( "8D485020994409940838175B284F" ) );
-        //        IcaoAddress expectedAddress = rawMessage.icaoAddress();
+        //RawMessage rawMessage = RawMessage.of( 100, HexFormat.of()
+        //                                                     .parseHex( "8D485020994409940838175B284F" ) );
+        //RawMessage rawMessage = RawMessage.of( 100, HexFormat.of()
+        //                                                     .parseHex( "8DA05F219C06B6AF189400CBC33F" ) );
+        //IcaoAddress expectedAddress = rawMessage.icaoAddress();
         IcaoAddress expectedAddress = new IcaoAddress( "4D2228" );
-        //try ( InputStream s = new FileInputStream( f ) ) {
         try ( InputStream s = AircraftState.class.getClassLoader()
                                                  .getResourceAsStream( "samples_20230304_1442.bin" ) ) {
             AdsbDemodulator d = new AdsbDemodulator( s );

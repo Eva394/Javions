@@ -17,16 +17,17 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
+        long payload = rawMessage.payload();
 
-        int subType = Bits.extractUInt( rawMessage.payload(), 48, 3 );
-        int payload = Bits.extractUInt( rawMessage.payload(), 21, 22 );
+        int subType = Bits.extractUInt( payload, 48, 3 );
+        int stDependentBits = Bits.extractUInt( payload, 21, 22 );
 
         if ( subType == 1 || subType == 2 ) {
 
-            int directionEW = Bits.extractUInt( payload, 21, 1 );
-            int velocityEW = Bits.extractUInt( payload, 11, 10 ) - 1;
-            int directionNS = Bits.extractUInt( payload, 10, 1 );
-            int velocityNS = Bits.extractUInt( payload, 0, 10 ) - 1;
+            int directionEW = Bits.extractUInt( stDependentBits, 21, 1 );
+            int velocityEW = Bits.extractUInt( stDependentBits, 11, 10 ) - 1;
+            int directionNS = Bits.extractUInt( stDependentBits, 10, 1 );
+            int velocityNS = Bits.extractUInt( stDependentBits, 0, 10 ) - 1;
 
             if ( velocityNS == 0 || velocityEW == 0 ) {
                 return null;
@@ -55,17 +56,17 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
 
         if ( subType == 3 || subType == 4 ) {
-            //int headingAvailability = Bits.extractUInt( rawMessage.payload(), 21, 1 );
+            //int headingAvailability = Bits.extractUInt( rawMessage.stDependentBits(), 21, 1 );
             int heading = Bits.extractUInt( rawMessage.payload(), 11, 10 );
             int airSpeed = Bits.extractUInt( rawMessage.payload(), 0, 10 ) - 1;
 
-            Bits.testBit(rawMessage.payload(),21);
+            Bits.testBit( rawMessage.payload(), 21 );
 
-            if ( airSpeed == 0) {
+            if ( Bits.testBit( rawMessage.payload(), ) airSpeed == 0){
                 return null;
             }
 
-            double angle = Math.scalb(heading,-10) ;
+            double angle = Math.scalb( heading, -10 );
             double speed;
 
             if ( subType == 3 ) {
