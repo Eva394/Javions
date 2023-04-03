@@ -57,8 +57,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         if ( icaoAddress == null ) {
             throw new NullPointerException();
         }
-        Preconditions.checkArgument(
-                timeStampNs >= 0 && ( parity == 0 || parity == 1 ) && x >= 0 && x < 1 && y >= 0 && y < 1 );
+        Preconditions.checkArgument( checkArguments() );
     }
 
 
@@ -175,5 +174,10 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             untangled = ( untangled ) | ( tangled[i] << ( ME_SIZE - 2 - i ) );
         }
         return untangled;
+    }
+
+
+    private boolean checkArguments() {
+        return timeStampNs >= 0 && ( parity == 0 || parity == 1 ) && x >= 0 && x < 1 && y >= 0 && y < 1;
     }
 }

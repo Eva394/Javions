@@ -60,18 +60,19 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 storeMessage( positionMessage );
                 stateSetter.setAltitude( positionMessage.altitude() );
                 boolean isEven = isEven( positionMessage );
-                GeoPos position;
+                GeoPos position = null;
 
                 if ( isEven && oddMessage != null
                      && ( message.timeStampNs() - oddMessage.timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {
                     position = CprDecoder.decodePosition( positionMessage.x(), positionMessage.y(), oddMessage.x(),
                                                           oddMessage.y(), 0 );
-                    stateSetter.setPosition( position );
                 }
                 else if ( !isEven && evenMessage != null
                           && ( message.timeStampNs() - evenMessage.timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {
                     position = CprDecoder.decodePosition( evenMessage.x(), evenMessage.y(), positionMessage.x(),
                                                           positionMessage.y(), 1 );
+                }
+                if ( Objects.nonNull( position ) ) {
                     stateSetter.setPosition( position );
                 }
             }
