@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 public class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
-    private static final long MAX_TIMESTAMP_DIFF = (long)1e11;
+    private static final long MAX_TIMESTAMP_DIFF = (long)1e10;
     private T stateSetter;
     private AirbornePositionMessage evenMessage;
     private AirbornePositionMessage oddMessage;
@@ -60,7 +60,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 storeMessage( positionMessage );
                 stateSetter.setAltitude( positionMessage.altitude() );
                 boolean isEven = isEven( positionMessage );
-                GeoPos position = null;
+                GeoPos position;
 
                 if ( isEven && oddMessage != null
                      && ( message.timeStampNs() - oddMessage.timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {

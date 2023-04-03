@@ -30,7 +30,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             int directionNS = Bits.extractUInt( stDependentBits, 10, 1 );
             int velocityNS = Bits.extractUInt( stDependentBits, 0, 10 ) - 1;
 
-            if ( velocityNS == 0 || velocityEW == 0 ) {
+            if ( velocityNS == -1 || velocityEW == -1 ) {
                 return null;
             }
             if ( directionEW == 1 ) {
@@ -58,17 +58,14 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
 
         if ( subType == 3 || subType == 4 ) {
-            //int headingAvailability = Bits.extractUInt( rawMessage.stDependentBits(), 21, 1 );
             int heading = Bits.extractUInt( stDependentBits, 11, 10 );
             int airSpeed = Bits.extractUInt( stDependentBits, 0, 10 ) - 1;
-
-            Bits.testBit( rawMessage.payload(), 21 );
 
             if ( Bits.testBit( stDependentBits, 11 ) || airSpeed == 0 ) {
                 return null;
             }
 
-            double angle = Math.scalb( (double)heading, -10 );
+            double angle = Units.convertFrom( Math.scalb( (double)heading, -10 ), Units.Angle.TURN );
             double speed;
 
             if ( subType == 3 ) {
@@ -77,6 +74,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             else {
                 speed = Units.convertFrom( ( airSpeed ) * 4.0, Units.Speed.KNOT );
             }
+
             return new AirborneVelocityMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, angle );
         }
 
