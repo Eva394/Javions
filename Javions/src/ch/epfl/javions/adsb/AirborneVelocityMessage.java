@@ -7,13 +7,33 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 
 import java.util.Objects;
 
+/**
+ * Airborne Velocity Message
+ *
+ * @author Nagyung KIM (339628)
+ */
+
 public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress, double speed,
                                       double trackOrHeading) implements Message {
+
+    /**
+     *
+     * @param timeStampNs horodatage in nanoseconds
+     * @param icaoAddress the ICAO address of the sender of the message
+     * @param speed the speed of the object
+     * @param trackOrHeading the direction of movement of the aircraft, in radians
+     */
 
     public AirborneVelocityMessage {
         Objects.requireNonNull( icaoAddress );
         Preconditions.checkArgument( ( timeStampNs >= 0 ) && ( speed >= 0 ) && ( trackOrHeading >= 0 ) );
     }
+
+    /**
+     *
+     * @param rawMessage the ADS-B message
+     * @return speed message in flight
+     */
 
 
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
@@ -22,6 +42,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         int subType = Bits.extractUInt( payload, 48, 3 );
         int stDependentBits = Bits.extractUInt( payload, 21, 22 );
+
 
         if ( subType == 1 || subType == 2 ) {
 
@@ -44,7 +65,6 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             double speed = Math.hypot( velocityNS, velocityEW );
 
             if ( angle < 0 ) {
-
                 angle += 2 * Math.PI;
             }
 
