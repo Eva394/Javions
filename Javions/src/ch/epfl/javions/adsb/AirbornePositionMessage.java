@@ -10,6 +10,8 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+import java.util.Objects;
+
 /**
  * Represents an airborne position ADS-B message
  *
@@ -63,9 +65,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @author Eva Mangano 345375
      */
     public AirbornePositionMessage {
-        if ( icaoAddress == null ) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull( icaoAddress );
         checkArguments( timeStampNs, parity, x, y );
     }
 
@@ -157,7 +157,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         alt = BASE_ALTITUDE_1 + multipleOf25 * 25L;
 
-        return Units.convertFrom( alt, Units.Length.FOOT );
+        return alt;
     }
 
 
