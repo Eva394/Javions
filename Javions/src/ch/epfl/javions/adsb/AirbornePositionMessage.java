@@ -25,18 +25,27 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
                                       double y) implements Message {
 
 
-    /**
-     * Base altitude for an odd message
-     */
-    public static final int BASE_ALTITUDE_1 = -1000;
-    /**
-     * Base altitude for an even message
-     */
-    public static final int BASE_ALTITUDE_0 = -1300;
-    /**
-     * Size of an ME attribute
-     */
+    private static final int ALT_START = 36;
+    private static final int ALT_SIZE = 12;
+    private static final int Q_START = 40;
+    private static final int Q_SIZE = 1;
+    private static final int MSB1_START = 5;
+    private static final int MSB1_SIZE = 7;
+    private static final int LSB1_START = 0;
+    private static final int LSB1_SIZE = 4;
+    private static final int BASE_ALTITUDE_1 = -1000;
+    private static final int BASE_ALTITUDE_0 = -1300;
     private static final int ME_SIZE = 12;
+    private static final int PARITY_START = 34;
+    private static final int PARITY_SIZE = 1;
+    private static final int LONGITUDE_START = 0;
+    private static final int LONGITUDE_SIZE = 17;
+    private static final int LATITUDE_START = 17;
+    private static final int LATITUDE_SIZE = 17;
+    private static final int MSB0_START = 3;
+    private static final int MSB0_SIZE = 9;
+    private static final int LSB0_START = 0;
+    private static final int LSB0_SIZE = 3;
 
 
     /**
@@ -57,7 +66,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         if ( icaoAddress == null ) {
             throw new NullPointerException();
         }
-        Preconditions.checkArgument( checkArguments() );
+        checkArguments( timeStampNs, parity, x, y );
     }
 
 
@@ -72,7 +81,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     public static AirbornePositionMessage of(RawMessage rawMessage) {
 
         double alt = computeAltitude( rawMessage );
-
         if ( Double.isNaN( alt ) ) {
             return null;
         }
@@ -81,12 +89,12 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
 
-        int parity = Bits.extractUInt( rawMessage.payload(), 34, 1 );
+        int parity = Bits.extractUInt( rawMessage.payload(), PARITY_START, PARITY_SIZE );
 
-        double longitude = Bits.extractUInt( rawMessage.payload(), 0, 17 );
+        double longitude = Bits.extractUInt( rawMessage.payload(), LONGITUDE_START, LONGITUDE_SIZE );
         longitude = normalize( longitude );
 
-        double latitude = Bits.extractUInt( rawMessage.payload(), 17, 17 );
+        double latitude = Bits.extractUInt( rawMessage.payload(), LATITUDE_START, LATITUDE_SIZE );
         latitude = normalize( latitude );
 
         return new AirbornePositionMessage( timeStampsNs, icaoAddress, alt, parity, longitude, latitude );
@@ -99,46 +107,55 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     private static double computeAltitude(RawMessage rawMessage) {
+        long rawMessagePayload = rawMessage.payload();
 
         double alt;
-        int attributeALT = Bits.extractUInt( rawMessage.payload(), 36, 12 );
-        /*System.out.println( rawMessage );
-        System.out.println( rawMessage.payload() );
-        System.out.println( attributeALT );
+        int attributeALT = Bits.extractUInt( rawMessagePayload, ALT_START, ALT_SIZE );
 
-         */
-        int q = Bits.extractUInt( rawMessage.payload(), 40, 1 );
+        int q = Bits.extractUInt( rawMessagePayload, Q_START, Q_SIZE );
 
         if ( q == 1 ) {
-            int msBits = Bits.extractUInt( attributeALT, 5, 7 );
-            int lsBits = Bits.extractUInt( attributeALT, 0, 4 );
-            int multipleOf25 = lsBits | ( msBits << 4 );
+            alt = computeQ1Altitude( attributeALT );
+        }
+        else {
+            int untangled = untangle( attributeALT );
+            int msBits = computeMSBorLSB( untangled, MSB0_START, MSB0_SIZE );
+            int lsBits = computeMSBorLSB( untangled, LSB0_START, LSB0_SIZE );
 
-            alt = BASE_ALTITUDE_1 + multipleOf25 * 25L;
+            switch ( lsBits ) {
+                case 0, 5, 6 -> {
+                    return Double.NaN;
+                }
+                case 7 -> {
+                    lsBits = 5;
+                }
+            }
 
-            return Units.convertFrom( alt, Units.Length.FOOT );
+            if ( msBits % 2 != 0 ) {
+                lsBits = mirrorBits( lsBits );
+            }
+
+            alt = BASE_ALTITUDE_0 + lsBits * 100L + msBits * 500L;
         }
 
-        int untangled = untangle( attributeALT );
-        System.out.println( untangled );
+        return Units.convertFrom( alt, Units.Length.FOOT );
+    }
 
-        int msBits = Bits.extractUInt( untangled, 3, 9 );
-        int lsBits = Bits.extractUInt( untangled, 0, 3 );
 
-        msBits = decodeGray( msBits, 9 );
-        lsBits = decodeGray( lsBits, 3 );
+    private static int computeMSBorLSB(int attributeALT, int start, int size) {
+        int bits = Bits.extractUInt( attributeALT, start, size );
+        bits = decodeGray( bits, size );
+        return bits;
+    }
 
-        if ( lsBits == 0 || lsBits == 5 || lsBits == 6 ) {
-            return Double.NaN;
-        }
-        if ( lsBits == 7 ) {
-            lsBits = 5;
-        }
-        if ( msBits % 2 != 0 ) {
-            lsBits = mirrorBits( lsBits );
-        }
 
-        alt = BASE_ALTITUDE_0 + lsBits * 100L + msBits * 500L;
+    private static double computeQ1Altitude(int untangledAlt) {
+        double alt;
+        int msBits = Bits.extractUInt( untangledAlt, MSB1_START, MSB1_SIZE );
+        int lsBits = Bits.extractUInt( untangledAlt, LSB1_START, LSB1_SIZE );
+        int multipleOf25 = lsBits | ( msBits << LSB1_SIZE );
+
+        alt = BASE_ALTITUDE_1 + multipleOf25 * 25L;
 
         return Units.convertFrom( alt, Units.Length.FOOT );
     }
@@ -177,7 +194,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    private boolean checkArguments() {
-        return timeStampNs >= 0 && ( parity == 0 || parity == 1 ) && x >= 0 && x < 1 && y >= 0 && y < 1;
+    private void checkArguments(long timeStampNs, int parity, double x, double y) {
+        Preconditions.checkArgument(
+                timeStampNs >= 0 && ( parity == 0 || parity == 1 ) && x >= 0 && x < 1 && y >= 0 && y < 1 );
     }
 }
