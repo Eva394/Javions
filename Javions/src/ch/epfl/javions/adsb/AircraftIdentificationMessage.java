@@ -4,12 +4,23 @@ import ch.epfl.javions.Bits;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+/**
+ * Aircraft Indentification Message
+ * @author Nagyung KIM (339628)
+ */
 
 public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAddress, int category,
                                             CallSign callSign) implements Message {
 
     private static final String ELEMENTS = "-ABCDEFGHIJKLMNOPQRSTUVWXYZ----- ---------------0123456789------";
 
+    /**
+     *
+     * @param timeStampNs horodatage in nanoseconds
+     * @param icaoAddress the ICAO address of the sender of the message
+     * @param category the shipper's aircraft category
+     * @param callSign the sender's code
+     */
 
     public AircraftIdentificationMessage {
         Preconditions.checkArgument( timeStampNs >= 0 );
@@ -19,6 +30,12 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         }
     }
 
+    /**
+     *
+     * @param rawMessage the ADS-B message
+     * @return the identification message corresponding to the given raw message,
+     * or null if at least one of the characters of the code it contains is invalid
+     */
 
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
 

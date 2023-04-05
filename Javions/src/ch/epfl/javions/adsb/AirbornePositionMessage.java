@@ -70,7 +70,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * altitude is invalid
      * @author Eva Mangano 345375
      */
-    public static AirbornePositionMessage of(RawMessage rawMessage) {
+
+    /*public static AirbornePositionMessage of(RawMessage rawMessage) {
 
         double alt = computeAltitude( rawMessage );
 
@@ -93,6 +94,21 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         return new AirbornePositionMessage( timeStampsNs, icaoAddress, alt, parity, longitude, latitude );
     }
 
+     */
+
+    // normalize could be done in one line
+
+    public static AirbornePositionMessage of(RawMessage rawMessage) {
+        double alt = computeAltitude(rawMessage);
+        if (Double.isNaN(alt)) return null;
+        long timeStampsNs = rawMessage.timeStampNs();
+        IcaoAddress icaoAddress = rawMessage.icaoAddress();
+        double longitude = normalize(Bits.extractUInt(rawMessage.payload(), 0, 17));
+        double latitude = normalize(Bits.extractUInt(rawMessage.payload(), 17, 17));
+        int parity = Bits.extractUInt(rawMessage.payload(), 34, 1);
+        return new AirbornePositionMessage(timeStampsNs, icaoAddress, alt, parity, longitude, latitude);
+    }
+
 
     private static double normalize(double value) {
         return value * Math.scalb( 1d, -17 );
@@ -103,11 +119,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         double alt;
         int attributeALT = Bits.extractUInt( rawMessage.payload(), 36, 12 );
-        /*System.out.println( rawMessage );
-        System.out.println( rawMessage.payload() );
-        System.out.println( attributeALT );
-
-         */
         int q = Bits.extractUInt( rawMessage.payload(), 40, 1 );
 
         if ( q == 1 ) {
@@ -121,7 +132,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
 
         int untangled = untangle( attributeALT );
-        System.out.println( untangled );
+
+        //System.out.println( untangled );
 
         int msBits = Bits.extractUInt( untangled, 3, 9 );
         int lsBits = Bits.extractUInt( untangled, 0, 3 );
@@ -162,7 +174,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    private static int untangle(int attributeALT) {
+    /*private static int untangle(int attributeALT) {
         int[] tangled = new int[]{Bits.extractUInt( attributeALT, 2, 1 ), Bits.extractUInt( attributeALT, 0, 1 ),
                                   Bits.extractUInt( attributeALT, 10, 1 ), Bits.extractUInt( attributeALT, 8, 1 ),
                                   Bits.extractUInt( attributeALT, 6, 1 ), Bits.extractUInt( attributeALT, 5, 1 ),
@@ -173,6 +185,17 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         int untangled = 0;
         for ( int i = 0 ; i < ME_SIZE - 1 ; i += 1 ) {
             untangled = ( untangled ) | ( tangled[i] << ( ME_SIZE - 2 - i ) );
+        }
+        return untangled;
+    }
+
+     */
+
+    private static int untangle(int attributeALT) {
+        int untangled = 0;
+        int[] order = {2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7};
+        for (int i = 0; i < order.length; i++) {
+            untangled |= (Bits.extractUInt(attributeALT, order[i], 1) << (ME_SIZE - 2 - i));
         }
         return untangled;
     }
