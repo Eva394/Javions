@@ -35,6 +35,10 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static final int ST_SIZE = 3;
     private static final int DEPENDENT_BITS_START = 21;
     private static final int DEPENDENT_BITS_SIZE = 22;
+    private static final int GROUND_SPEED_KNOTS = 1;
+    private static final int GROUND_SPEED_FOUR_KNOTS = 2;
+    private static final int AIR_SPEED_KNOTS = 3;
+    private static final int AIR_SPEED_FOUR_KNOTS = 4;
 
 
     /**
@@ -68,10 +72,10 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         int stDependentBits = Bits.extractUInt( payload, DEPENDENT_BITS_START, DEPENDENT_BITS_SIZE );
 
         switch ( subType ) {
-            case 1, 2 -> {
+            case GROUND_SPEED_KNOTS, GROUND_SPEED_FOUR_KNOTS -> {
                 return velocityMessageGroundSpeed( rawMessage, subType, stDependentBits );
             }
-            case 3, 4 -> {
+            case AIR_SPEED_KNOTS, AIR_SPEED_FOUR_KNOTS -> {
                 return velocityMessageAirSpeed( rawMessage, subType, stDependentBits );
             }
         }
@@ -99,7 +103,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             angle += 2 * Math.PI;
         }
 
-        speed = convertSpeedToKnot( speed, subType, 2 );
+        speed = convertSpeedToKnot( speed, subType, GROUND_SPEED_FOUR_KNOTS );
 
         return new AirborneVelocityMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, angle );
     }
@@ -117,7 +121,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         double angle = Units.convertFrom( Math.scalb( (double)heading, -10 ), Units.Angle.TURN );
         double speed;
 
-        speed = convertSpeedToKnot( airSpeed, subType, 4 );
+        speed = convertSpeedToKnot( airSpeed, subType, AIR_SPEED_FOUR_KNOTS );
 
         return new AirborneVelocityMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, angle );
     }

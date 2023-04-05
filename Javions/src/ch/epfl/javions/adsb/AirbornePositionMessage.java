@@ -167,7 +167,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     private static int decodeGray(int value, int n) {
-
         int binaryValue = value;
 
         for ( int i = 1 ; i < n ; i++ ) {
