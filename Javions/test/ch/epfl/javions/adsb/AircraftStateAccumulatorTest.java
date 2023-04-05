@@ -188,9 +188,12 @@ class AircraftStateAccumulatorTest {
             accumulator.update( m );
             var expectedLatitudeDeg = expectedLatitudesDeg[i];
             if ( Double.isNaN( expectedLatitudeDeg ) ) {
+                System.out.println( "nan" );
                 assertNull( stateSetter.position );
             }
             else {
+                System.out.println( "expected longitude : " + expectedLongitudeDeg );
+                System.out.println( "expected latitude : " + expectedLatitudeDeg );
                 assertEquals( expectedLongitudeDeg, Math.toDegrees( stateSetter.position.longitude() ), 1e-4 );
                 assertEquals( expectedLatitudeDeg, Math.toDegrees( stateSetter.position.latitude() ), 1e-4 );
             }
