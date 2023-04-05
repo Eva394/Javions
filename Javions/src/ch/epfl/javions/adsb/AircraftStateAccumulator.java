@@ -10,12 +10,13 @@ import ch.epfl.javions.GeoPos;
 import java.util.Objects;
 
 /**
- * Accumulator of a single aircraft states
- *
+ * Accumulator of a single aircraft state
  * @author Eva Mangano 345375
  */
 public class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
+    private static final int EVEN_MESSAGE = 0;
+    private static final int ODD_MESSAGE = 1;
     private static final long MAX_TIMESTAMP_DIFF = (long)1e10;
     private T stateSetter;
     private AirbornePositionMessage evenMessage;
@@ -24,7 +25,6 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
     /**
      * Constructor. Builds an instance of <code>AircraftStateAccumulator</code>
-     *
      * @param stateSetter the state setter
      * @throws NullPointerException if the state setter is null
      * @author Eva Mangano 345375
@@ -40,6 +40,11 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     }
 
 
+    /**
+     * Returns the modifiable state of the instance
+     * @return the state setter of the instance
+     * @author Eva Mangano 345375
+     */
     public T stateSetter() {
         return stateSetter;
     }
@@ -47,7 +52,6 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
     /**
      * Updates the state of the aircraft depending on the given <code>Message</code>
-     *
      * @param message message
      * @author Eva Mangano 345375
      */
@@ -57,36 +61,51 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
         switch ( message ) {
             case AirbornePositionMessage positionMessage -> {
-                storeMessage( positionMessage );
-                stateSetter.setAltitude( positionMessage.altitude() );
-                boolean isEven = isEven( positionMessage );
-                GeoPos position = null;
-
-                if ( isEven && oddMessage != null
-                     && ( message.timeStampNs() - oddMessage.timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {
-                    position = CprDecoder.decodePosition( positionMessage.x(), positionMessage.y(), oddMessage.x(),
-                                                          oddMessage.y(), 0 );
-                }
-                else if ( !isEven && evenMessage != null
-                          && ( message.timeStampNs() - evenMessage.timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {
-                    position = CprDecoder.decodePosition( evenMessage.x(), evenMessage.y(), positionMessage.x(),
-                                                          positionMessage.y(), 1 );
-                }
-                if ( Objects.nonNull( position ) ) {
-                    stateSetter.setPosition( position );
-                }
+                updatePositionMessage( message, positionMessage );
             }
             case AircraftIdentificationMessage identificationMessage -> {
-                stateSetter.setCategory( identificationMessage.category() );
-                stateSetter.setCallSign( identificationMessage.callSign() );
+                updateIdentificationMessage( identificationMessage );
             }
             case AirborneVelocityMessage velocityMessage -> {
-                stateSetter.setVelocity( velocityMessage.speed() );
-                stateSetter.setTrackOrHeading( velocityMessage.trackOrHeading() );
+                updateVelocityMessage( velocityMessage );
             }
             default -> {
                 throw new Error();
             }
+        }
+    }
+
+
+    private void updateVelocityMessage(AirborneVelocityMessage velocityMessage) {
+        stateSetter.setVelocity( velocityMessage.speed() );
+        stateSetter.setTrackOrHeading( velocityMessage.trackOrHeading() );
+    }
+
+
+    private void updateIdentificationMessage(AircraftIdentificationMessage identificationMessage) {
+        stateSetter.setCategory( identificationMessage.category() );
+        stateSetter.setCallSign( identificationMessage.callSign() );
+    }
+
+
+    private void updatePositionMessage(Message message, AirbornePositionMessage positionMessage) {
+        storeMessage( positionMessage );
+        stateSetter.setAltitude( positionMessage.altitude() );
+        boolean isEven = isEven( positionMessage );
+        GeoPos position = null;
+
+        if ( isEven && oddMessage != null
+             && ( message.timeStampNs() - oddMessage.timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {
+            position = CprDecoder.decodePosition( positionMessage.x(), positionMessage.y(), oddMessage.x(),
+                                                  oddMessage.y(), EVEN_MESSAGE );
+        }
+        else if ( !isEven && evenMessage != null
+                  && ( message.timeStampNs() - evenMessage.timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {
+            position = CprDecoder.decodePosition( evenMessage.x(), evenMessage.y(), positionMessage.x(),
+                                                  positionMessage.y(), ODD_MESSAGE );
+        }
+        if ( Objects.nonNull( position ) ) {
+            stateSetter.setPosition( position );
         }
     }
 
