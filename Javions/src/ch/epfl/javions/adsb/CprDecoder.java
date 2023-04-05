@@ -10,45 +10,46 @@ import ch.epfl.javions.Units;
 
 /**
  * Decoder of CPR positions
+ * @author Eva Mangano 345375
  */
 public class CprDecoder {
 
 
+    public static final int EVEN_MESSAGE = 0;
+    public static final int ODD_MESSAGE = 1;
+    public static final double NB_ZONES_LAT_0 = 60.;
+    public static final double NB_ZONES_LAT_1 = 59.;
+
+
     /**
-     * @param x0
-     * @param y0
-     * @param x1
-     * @param y1
-     * @param mostRecent
-     * @return
+     * @param x0         the even longitude
+     * @param y0         the even latitude
+     * @param x1         the odd longitude
+     * @param y1         the odd latitude
+     * @param mostRecent parity of the most recent position message, 0 for even or 1 for odd
+     * @return the geographical position corresponding to the local positions <code>x0</code>, <code>y0</code>,
+     * <code>x1</code> and <code>y1</code> (depending the on the most recent message), or null if the positon is
+     * invalid or can't be determined
+     * @throws IllegalArgumentException if <code>mostRecent</code> is invalid (not 0 or 1)
+     * @author Eva Mangano 345375
      */
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
-        Preconditions.checkArgument( mostRecent == 0 || mostRecent == 1 );
-
+        Preconditions.checkArgument( mostRecent == EVEN_MESSAGE || mostRecent == ODD_MESSAGE );
         // COMPUTATION OF THE LATITUDE
-        //number of zones
-        double nbZonesLat0 = 60.;
-        double nbZonesLat1 = 59.;
+        ///zone where the aircraft is
+        double temp = getProductDifference( y0, y1, NB_ZONES_LAT_0, NB_ZONES_LAT_1 );
+        double zoneLat0 = computeZone( temp, NB_ZONES_LAT_0 );
+        double zoneLat1 = computeZone( temp, NB_ZONES_LAT_1 );
 
-        //zone where the aircraft is
-        double temp = getProductDifference( y0, y1, nbZonesLat0, nbZonesLat1 );
-
-        double zoneLat0 = temp;
-        double zoneLat1 = temp;
-        if ( temp < 0 ) {
-            zoneLat0 += nbZonesLat0;
-            zoneLat1 += nbZonesLat1;
-        }
-
-        //latitude
-        double widthLat0 = 1. / nbZonesLat0;
-        double widthLat1 = 1. / nbZonesLat1;
-
-        y0 = widthLat0 * ( zoneLat0 + y0 );
-        y1 = widthLat1 * ( zoneLat1 + y1 );
+        //TODO FIND HOW TO MODULATE THIS
+        ///latitude
+        double widthLat0 = computeWidth( NB_ZONES_LAT_0 );
+        double widthLat1 = computeWidth( NB_ZONES_LAT_1 );
+        y0 = computeLatOrLon( y0, zoneLat0, widthLat0 );
+        y1 = computeLatOrLon( y1, zoneLat1, widthLat1 );
 
         //COMPUTATION OF THE LONGITUDE
-        //number of zones for even and odd latitude, odd should be one less than even
+        ///number of zones for even and odd latitude, odd should be one less than even
         double nbZonesLon0 = computeNbZonesLon( y0, widthLat0 );
         double nbZonesLon1 = computeNbZonesLon( y1, widthLat0 );
         if ( nbZonesLon0 != nbZonesLon1 ) {
@@ -58,39 +59,57 @@ public class CprDecoder {
             nbZonesLon1 = nbZonesLon0 - 1;
         }
 
-        //zone where the aircraft is
+        ///zone where the aircraft is
         temp = getProductDifference( x0, x1, nbZonesLon0, nbZonesLon1 );
+        double zoneLon0 = computeZone( temp, nbZonesLon0 );
+        double zoneLon1 = computeZone( temp, nbZonesLon1 );
 
-        double zoneLon0 = temp;
-        double zoneLon1 = temp;
-
-        if ( temp < 0 ) {
-            zoneLon0 += nbZonesLon0;
-            zoneLon1 += nbZonesLon1;
-        }
-
-        //longitude
-        double widthLon0 = 1. / nbZonesLon0;
-        double widthLon1 = 1. / nbZonesLon1;
-
-        x0 = widthLon0 * ( zoneLon0 + x0 );
-        x1 = widthLon1 * ( zoneLon1 + x1 );
+        ///longitude
+        double widthLon0 = computeWidth( nbZonesLon0 );
+        double widthLon1 = computeWidth( nbZonesLon1 );
+        x0 = computeLatOrLon( x0, zoneLon0, widthLon0 );
+        x1 = computeLatOrLon( x1, zoneLon1, widthLon1 );
 
         //RETURN THE RIGHT ONE
         double longitude;
         double latitude;
 
-        if ( mostRecent == 0 ) {
-            longitude = Units.convert( recenter( x0 ), Units.Angle.TURN, Units.Angle.T32 );
-            latitude = Units.convert( recenter( y0 ), Units.Angle.TURN, Units.Angle.T32 );
-        }
-        else {
-            longitude = Units.convert( recenter( x1 ), Units.Angle.TURN, Units.Angle.T32 );
-            latitude = Units.convert( recenter( y1 ), Units.Angle.TURN, Units.Angle.T32 );
+        switch ( mostRecent ) {
+            case EVEN_MESSAGE -> {
+                longitude = convert( x0 );
+                latitude = convert( y0 );
+            }
+            case ODD_MESSAGE -> {
+                longitude = convert( x1 );
+                latitude = convert( y1 );
+            }
+            default -> {
+                throw new Error();
+            }
         }
 
         return isValidLatitude( latitude ) ? new GeoPos( (int)Math.rint( longitude ), (int)Math.rint( latitude ) )
                                            : null;
+    }
+
+
+    private static double convert(double x0) {
+        return Units.convert( recenter( x0 ), Units.Angle.TURN, Units.Angle.T32 );
+    }
+
+
+    private static double computeWidth(double nbZones) {
+        return 1. / nbZones;
+    }
+
+
+    private static double computeLatOrLon(double value, double zone, double zoneWidth) {
+        return zoneWidth * ( zone + value );
+    }
+
+
+    private static double computeZone(double temp, double nbZones) {
+        return temp < 0 ? temp + nbZones : temp;
     }
 
 

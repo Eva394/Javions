@@ -104,6 +104,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
             position = CprDecoder.decodePosition( evenMessage.x(), evenMessage.y(), positionMessage.x(),
                                                   positionMessage.y(), ODD_MESSAGE );
         }
+        
         if ( Objects.nonNull( position ) ) {
             stateSetter.setPosition( position );
         }
