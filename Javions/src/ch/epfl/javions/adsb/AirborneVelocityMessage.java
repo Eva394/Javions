@@ -128,7 +128,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     private static double convertSpeedToKnot(double speed, int subType, int fourKnotsUnitSubType) {
-        speed = subType == fourKnotsUnitSubType ? 4 * speed : speed;
+        speed = subType == fourKnotsUnitSubType ? 4. * speed : speed;
         return Units.convertFrom( speed, Units.Speed.KNOT );
     }
 
