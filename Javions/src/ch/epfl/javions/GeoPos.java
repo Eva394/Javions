@@ -15,9 +15,12 @@ package ch.epfl.javions;
  */
 public record GeoPos(int longitudeT32, int latitudeT32) {
 
+
+    private static final double T32_BOUNDARY = Math.scalb( 1d, 30 );
+
+
     /**
      * Constructor. Builds an instance of GeoPos.
-     *
      * @param longitudeT32 longitude, expressed in T32
      * @param latitudeT32  latitude, expressed in T32
      * @throws IllegalArgumentException if the latitude is not between -2^30 and 2^30
@@ -30,19 +33,17 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
 
     /**
      * Checks if the latitude is valid
-     *
      * @param latitudeT32 latitude, expressed in T32
      * @return a boolean value, true if the latitude is valid
      * @author Eva Mangano 345375
      */
     public static boolean isValidLatitudeT32(int latitudeT32) {
-        return ( Math.scalb( -1., 30 ) <= latitudeT32 && latitudeT32 <= Math.scalb( 1., 30 ) );
+        return ( -T32_BOUNDARY <= latitudeT32 && latitudeT32 <= T32_BOUNDARY );
     }
 
 
     /**
      * Converts the longitude of the instance to radians
-     *
      * @return the longitude of the instance converted to radians
      * @author Eva Mangano 345375
      */
@@ -53,7 +54,6 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
 
     /**
      * Converts the latitude of the instance to radians
-     *
      * @return the latitude of the instance converted to radians
      * @author Eva Mangano 345375
      */
@@ -64,7 +64,6 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
 
     /**
      * Returns a string of the form (longitude, latitude) once converted to degrees
-     *
      * @return a string of the form (laongitude, latitude), expressed in degrees
      * @author Eva Mangano 345375
      */

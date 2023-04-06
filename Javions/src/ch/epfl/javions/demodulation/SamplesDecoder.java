@@ -9,10 +9,10 @@ import ch.epfl.javions.Preconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * Represents a sample decoder, which transforms the bytes from the AirSpy into signed 12-bit samples
- *
  * @author Eva Mangano 345375
  */
 public final class SamplesDecoder {
@@ -26,7 +26,6 @@ public final class SamplesDecoder {
 
     /**
      * Constructor. Builds an instance of SamplesDecoder.
-     *
      * @param stream    input stream containing the bytes from the AirSpy radio
      * @param batchSize size of the batches
      * @throws IllegalArgumentException if the size of the batches is not positive
@@ -35,9 +34,7 @@ public final class SamplesDecoder {
      */
     public SamplesDecoder(InputStream stream, int batchSize) {
         Preconditions.checkArgument( batchSize > 0 );
-        if ( stream == null ) {
-            throw new NullPointerException();
-        }
+        Objects.requireNonNull( stream );
 
         this.stream = stream;
         this.sample = new byte[batchSize * 2];
@@ -48,7 +45,6 @@ public final class SamplesDecoder {
     /**
      * Reads and converts the batches of bytes from the stream to an array of samples of signed shorts. Stores it in the
      * array <code>batch</code>
-     *
      * @param batch array to fill with the samples
      * @throws IOException              if there is an input/output error
      * @throws IllegalArgumentException if the size of <code>batch</code> is not equal to <code>batchSize</code>

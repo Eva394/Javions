@@ -235,7 +235,7 @@ class PowerComputerTest {
         powerComputer.readBatch( batch );
 
         for ( int i = 0 ; i < 10 ; i++ ) {
-            System.out.println( batch[i] );
+            //System.out.println( batch[i] );
         }
     }
 

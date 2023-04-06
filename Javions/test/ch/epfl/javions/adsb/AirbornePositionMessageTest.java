@@ -531,7 +531,6 @@ class AirbornePositionMessageTest {
                 if ( isIdentificationMessage( m ) ) {
                     AircraftIdentificationMessage message = AircraftIdentificationMessage.of( m );
                     index++;
-                    System.out.println( message );
                 }
             }
         }
@@ -549,7 +548,6 @@ class AirbornePositionMessageTest {
                 if ( isPositionMessage( m ) ) {
                     AirbornePositionMessage message = AirbornePositionMessage.of( m );
                     index++;
-                    System.out.println( message );
                 }
             }
         }

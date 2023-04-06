@@ -9,14 +9,11 @@ import java.util.Objects;
 
 /**
  * Represents a window of fixed size on a sequence of samples produced by <code>PowerComputer</code>
- *
  * @author Eva Mangano 345375
  */
 public final class PowerWindow {
 
-
     public static final int SAMPLE_SIZE = 1 << 16;
-    private InputStream stream;
     private PowerComputer powerComputer;
     private int[] tab1;
     private int[] tab2;
@@ -28,7 +25,6 @@ public final class PowerWindow {
 
     /**
      * Constructor. Builds an instance of <code>PowerWindow</code>
-     *
      * @param stream     input stream containing the bytes from the AirSpy radio
      * @param windowSize size of the window on the sequence of samples that we want to look at
      * @throws IOException if there is an input or output error
@@ -37,7 +33,6 @@ public final class PowerWindow {
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
         Preconditions.checkArgument( ( windowSize > 0 ) && ( windowSize <= SAMPLE_SIZE ) );
 
-        this.stream = stream;
         this.powerComputer = new PowerComputer( stream, SAMPLE_SIZE );
         this.windowSize = windowSize;
         this.tab1 = new int[SAMPLE_SIZE];
@@ -51,8 +46,8 @@ public final class PowerWindow {
 
     /**
      * Getter for <code>windowSize</code>
-     *
      * @return the value of <code>windowSize</code>
+     * @author Eva Mangano 345375
      */
     public int size() {
         return windowSize;
@@ -60,9 +55,9 @@ public final class PowerWindow {
 
 
     /**
-     * Getter for the position of the window on the stream //TODO know if this is right
-     *
+     * Getter for the position of the window on the stream
      * @return the value of <code>position</code>
+     * @author Eva Mangano 345375
      */
     public long position() {
         return position;
@@ -71,7 +66,6 @@ public final class PowerWindow {
 
     /**
      * Checks if the window is full (the end of the stream happens before the end of the window)
-     *
      * @return true if the window is full (contains as many samples as its size)
      * @author Eva Mangano 345375
      */
@@ -82,7 +76,6 @@ public final class PowerWindow {
 
     /**
      * Gets the sample at the index <code>i</code> of the window
-     *
      * @param i index
      * @return the sample at the index of the window
      * @author Eva Mangano 345375
@@ -103,7 +96,6 @@ public final class PowerWindow {
 
     /**
      * Advances the window of 1 sample in the stream
-     *
      * @throws IOException if there is an input or output error
      * @author Eva Mangano 345375
      */
@@ -129,7 +121,6 @@ public final class PowerWindow {
 
     /**
      * Advances the window of <code>offset</code> samples in the stream
-     *
      * @param offset the number of samples pass which to advance the window
      * @throws IOException if there is an input or output error
      * @author Eva Mangano 345375

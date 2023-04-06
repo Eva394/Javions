@@ -19,7 +19,6 @@ public class Bits {
 
     /**
      * Extracts a range of bits from the given value, from the index start and of given size.
-     *
      * @param value value given form which to extract the range
      * @param start index of the start of the range to be extracted
      * @param size  size of the range to be extracted
@@ -38,11 +37,11 @@ public class Bits {
 
     /**
      * Returns true if the bit at the index is 1
-     *
      * @param value given value
      * @param index index of the bit to look at
      * @return a boolean, true if the bit at the index is 1
      * @throws IndexOutOfBoundsException if the index is not between 0 (included) and 64 (excluded)
+     * @author Eva Mangano 345375
      */
     public static boolean testBit(long value, int index) {
 
@@ -50,10 +49,6 @@ public class Bits {
 
         long mask = 1L << index;
 
-        if ( ( value & mask ) == mask ) {
-            return true;
-        }
-
-        return false;
+        return ( value & mask ) == mask;
     }
 }

@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 /**
  * Represents the description of an aircraft
- *
  * @param string textual representation of the description
  * @author Eva Mangano 345375
  */
@@ -25,12 +24,13 @@ public record AircraftDescription(String string) {
 
     /**
      * Constructor. Builds an instance of AircraftDescription
-     *
      * @param string textual representation of the description
      * @throws IllegalArgumentException if the string is not a valid description
+     * @author Eva Mangano 345375
      */
     public AircraftDescription {
         descriptionPattern = Pattern.compile( "[ABDGHLPRSTV-][0123468][EJPT-]" );
-        Preconditions.checkArgument( descriptionPattern.matcher( string ).matches() || string.equals( "" ) );
+        Preconditions.checkArgument( descriptionPattern.matcher( string )
+                                                       .matches() || string.equals( "" ) );
     }
 }

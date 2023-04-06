@@ -94,14 +94,10 @@ class PowerWindowTest {
 
             while ( powerWindow.isFull() ) {
                 powerWindow.advance();
-                System.out.println( powerWindow.position() );
             }
         }
         catch ( IOException e ) {
             e.printStackTrace();
-        }
-        finally {
-            System.out.println( powerWindow.position() );
         }
     }
 

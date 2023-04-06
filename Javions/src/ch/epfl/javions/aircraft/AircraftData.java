@@ -9,7 +9,6 @@ import java.util.Objects;
 
 /**
  * Collection of the fixed data of an aircraft
- *
  * @param registration           registration of the aircraft
  * @param typeDesignator         type of the aircraft
  * @param model                  model of the aircraft
@@ -22,14 +21,14 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
 
 
     /**
-     * Constructor. Constructs an instance of AircraftData and verifies if the arguments are non-null
-     *
+     * Constructor. Builds an instance of AircraftData and verifies if the arguments are non-null
      * @param registration           registration of the aircraft
      * @param typeDesignator         type of the aircraft
      * @param model                  model of the aircraft
      * @param description            description of the aircraft
      * @param wakeTurbulenceCategory turbulence category of the aircraft
      * @throws NullPointerException if one of the parameters is null
+     * @author Eva Mangano 345375
      */
     public AircraftData {
         Objects.requireNonNull( registration );

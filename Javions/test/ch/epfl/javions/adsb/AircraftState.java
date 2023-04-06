@@ -12,8 +12,6 @@ class AircraftState implements AircraftStateSetter {
 
     public static void main(String[] args) throws IOException {
 
-        //System.out.println( AirborneVelocityMessage.of( rm ) );
-
         //IcaoAddress expectedAddress = new IcaoAddress( "39D300" );
         //IcaoAddress expectedAddress = new IcaoAddress( "4D2228" );
 

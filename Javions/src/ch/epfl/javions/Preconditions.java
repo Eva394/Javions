@@ -15,6 +15,11 @@ public final class Preconditions {
     }
 
 
+    /**
+     * Checks the condition <code>shouldBeTrue</code>
+     * @param shouldBeTrue condition to check
+     * @throws IllegalArgumentException if <code>shouldBeTrue</code> is false
+     */
     public static void checkArgument(boolean shouldBeTrue) {
         if ( !shouldBeTrue ) {
             throw new IllegalArgumentException();

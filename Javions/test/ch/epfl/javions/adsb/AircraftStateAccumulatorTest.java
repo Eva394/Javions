@@ -110,7 +110,6 @@ class AircraftStateAccumulatorTest {
         var expectedAltitude = Double.NaN;
 
         for ( int i = 0 ; i < 100 ; i += 1 ) {
-            System.out.println( i );
             assertEquals( expectedLastMessageTimeStampNs, stateSetter.lastMessageTimeStampNs );
             assertEquals( expectedAltitude, stateSetter.altitude );
             assertNull( stateSetter.position );
@@ -182,18 +181,14 @@ class AircraftStateAccumulatorTest {
         var altitude = 567d;
 
         for ( int i = 0 ; i < xys.length ; i += 1 ) {
-            System.out.println( i );
             var m = new AirbornePositionMessage( timeStampNs, icao, altitude, xys[i].p, cpr( xys[i].x ),
                                                  cpr( xys[i].y ) );
             accumulator.update( m );
             var expectedLatitudeDeg = expectedLatitudesDeg[i];
             if ( Double.isNaN( expectedLatitudeDeg ) ) {
-                System.out.println( "nan" );
                 assertNull( stateSetter.position );
             }
             else {
-                System.out.println( "expected longitude : " + expectedLongitudeDeg );
-                System.out.println( "expected latitude : " + expectedLatitudeDeg );
                 assertEquals( expectedLongitudeDeg, Math.toDegrees( stateSetter.position.longitude() ), 1e-4 );
                 assertEquals( expectedLatitudeDeg, Math.toDegrees( stateSetter.position.latitude() ), 1e-4 );
             }

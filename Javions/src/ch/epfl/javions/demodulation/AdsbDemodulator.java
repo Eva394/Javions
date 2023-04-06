@@ -10,17 +10,17 @@ import java.io.InputStream;
  */
 public final class AdsbDemodulator {
 
+    public static final int TO_NANOSECONDS = 100;
     /**
      * the size of a window
      */
-    public static final int WINDOW_SIZE = 1200;
+    private static final int WINDOW_SIZE = 1200;
     private final PowerWindow powerWindow;
-    private long timestampNs = 0;
+    private long timestampNs;
 
 
     /**
      * Constructor. Builds an instance of AdsbDemodulator
-     *
      * @param samplesStream input stream
      * @throws IOException if there is an input/output error
      * @author Eva Mangano 345375
@@ -30,11 +30,19 @@ public final class AdsbDemodulator {
     }
 
 
+    private static boolean windowContainsPreamble(int previousSpikesSum, int nextSpikesSum, int currentValleySum,
+                                                  int currentSpikesSum) {
+        return ( previousSpikesSum < currentSpikesSum ) && ( currentSpikesSum > nextSpikesSum ) && ( currentSpikesSum
+                                                                                                     >= 2
+                                                                                                        * currentValleySum );
+    }
+
+
     /**
      * Finds the next message in the stream
-     *
      * @return the message
      * @throws IOException if there is an input/output error
+     * @author Eva Mangano 345375
      */
     public RawMessage nextMessage() throws IOException {
 
@@ -43,14 +51,13 @@ public final class AdsbDemodulator {
         int[] spikesIndexes = new int[]{0, 10, 35, 45};
         int[] valleyIndexes = new int[]{5, 15, 20, 25, 30, 40};
 
-        int currentSpikesSum = 0;
         int previousSpikesSum = 0;
 
         while ( powerWindow.isFull() ) {
 
             int nextSpikesSum = 0;
             int currentValleySum = 0;
-            currentSpikesSum = 0;
+            int currentSpikesSum = 0;
 
             for ( int spikesIndex : spikesIndexes ) {
                 currentSpikesSum += powerWindow.get( spikesIndex );
@@ -61,25 +68,22 @@ public final class AdsbDemodulator {
                 currentValleySum += powerWindow.get( valleyIndex );
             }
 
-            if ( ( previousSpikesSum < currentSpikesSum ) && ( currentSpikesSum > nextSpikesSum ) && ( currentSpikesSum
-                                                                                                       >= 2
-                                                                                                          * currentValleySum ) ) {
-                timestampNs = powerWindow.position() * 100;
+            if ( windowContainsPreamble( previousSpikesSum, nextSpikesSum, currentValleySum, currentSpikesSum ) ) {
+                timestampNs = powerWindow.position() * TO_NANOSECONDS;
 
                 for ( int i = 0 ; i < RawMessage.LENGTH ; i++ ) {
                     computeByte( bytes, i );
                 }
                 if ( RawMessage.size( bytes[0] ) == RawMessage.LENGTH ) {
-                    RawMessage a = RawMessage.of( timestampNs, bytes );
-                    if ( a != null ) {
+                    RawMessage rawMessage = RawMessage.of( timestampNs, bytes );
+                    if ( rawMessage != null ) {
                         powerWindow.advanceBy( WINDOW_SIZE );
-                        return a;
+                        return rawMessage;
                     }
                 }
             }
 
             previousSpikesSum = currentSpikesSum;
-            currentSpikesSum = nextSpikesSum;
             powerWindow.advance();
         }
 
@@ -87,16 +91,16 @@ public final class AdsbDemodulator {
     }
 
 
-    private void computeByte(byte[] bytes, int i) {
+    private void computeByte(byte[] bytes, int index) {
         int previousByte = 0;
         int currentByte;
 
         for ( int bit = 0 ; bit < Byte.SIZE ; bit++ ) {
-            currentByte = getBit( i * Byte.SIZE + bit );
+            currentByte = getBit( index * Byte.SIZE + bit );
             previousByte = ( ( previousByte << 1 ) | currentByte );
         }
 
-        bytes[i] = (byte)previousByte;
+        bytes[index] = (byte)previousByte;
     }
 
 

@@ -7,13 +7,12 @@ import java.io.InputStream;
 
 /**
  * Power Calculator
- *
  * @autor Nagyung Kim (339628)
  */
 
 public final class PowerComputer {
 
-    private final InputStream stream;
+
     private final short[] sample;
     private final SamplesDecoder samplesDecoder;
     private final int batchSize;
@@ -22,7 +21,6 @@ public final class PowerComputer {
 
     /**
      * Construct a power calculator using the given input stream and produce batch power samples of given size
-     *
      * @param stream    input stream containing the bytes from the AirSpy radio
      * @param batchSize size of the batches
      */
@@ -33,7 +31,6 @@ public final class PowerComputer {
         Preconditions.checkArgument( ( batchSize > 0 ) && ( ( batchSize % Byte.SIZE ) == 0 ) );
 
         this.samplesDecoder = new SamplesDecoder( stream, batchSize * 2 );
-        this.stream = stream;
         this.sample = new short[Byte.SIZE];
         this.batchSize = batchSize;
     }
@@ -41,7 +38,6 @@ public final class PowerComputer {
 
     /**
      * returns the number of power samples placed in the array
-     *
      * @param batch array to fill with the power samples
      * @return the number of power samples placed in the array
      * @throws IOException              if input/output error

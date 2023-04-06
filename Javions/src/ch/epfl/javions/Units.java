@@ -31,7 +31,6 @@ public final class Units {
 
     /**
      * Converts the value given (expressed in the unit fromUnit) to the unit toUnit.
-     *
      * @param value    value to convert, expressed in the unit fromUnit
      * @param fromUnit unit from which to convert
      * @param toUnit   unit to which to convert
@@ -45,7 +44,6 @@ public final class Units {
 
     /**
      * Converts the value given (expressed in the unit fromUnit) to the reference unit.
-     *
      * @param value    value to convert, expressed in the unit fromUnit
      * @param fromUnit unit from which to convert
      * @return a double of the converted value
@@ -58,7 +56,6 @@ public final class Units {
 
     /**
      * Converts the value given (expressed in the reference unit) to the unit toUnit
-     *
      * @param value  value to convert, expressed in the reference unit
      * @param toUnit unit to convert to
      * @return a double of the converted value
@@ -93,7 +90,6 @@ public final class Units {
 
 
         private Angle() {
-
         }
     }
 
