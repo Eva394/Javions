@@ -20,6 +20,28 @@ public class CprDecoder {
     public static final double NB_ZONES_LAT_0 = 60.;
     public static final double NB_ZONES_LAT_1 = 59.;
 
+    /**
+     *
+     * @param p0
+     * @param p1
+     * @param zone0
+     * @param zone1
+     * @return
+     */
+
+
+
+    static double[] compute_LatOrLon_Zone(double p0, double p1, double zone0, double zone1) {
+        double temp = getProductDifference( p0, p1, zone0, zone1 );
+        double zoneLat0 = computeZone( temp, zone0 );
+        double zoneLat1 = computeZone( temp, zone1 );
+        double width0 = computeWidth( zone0 );
+        double width1 = computeWidth( zone1 );
+        p0 = computeLatOrLon( p0, zoneLat0, width0 );
+        p1 = computeLatOrLon( p1, zoneLat1, width1 );
+        double[] returns = {p0, p1, width0, width1};
+        return returns;
+    }
 
     /**
      * @param x0         the even longitude
@@ -33,10 +55,19 @@ public class CprDecoder {
      * @throws IllegalArgumentException if <code>mostRecent</code> is invalid (not 0 or 1)
      * @author Eva Mangano 345375
      */
+
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
+
         Preconditions.checkArgument( mostRecent == EVEN_MESSAGE || mostRecent == ODD_MESSAGE );
         // COMPUTATION OF THE LATITUDE
         ///zone where the aircraft is
+
+        double[] returns= compute_LatOrLon_Zone(y0, y1, NB_ZONES_LAT_0, NB_ZONES_LAT_1);
+        y0=returns[0];
+        y1=returns[1];
+        double widthLat0=returns[2];
+        double widthLat1=returns[3];
+        /*
         double temp = getProductDifference( y0, y1, NB_ZONES_LAT_0, NB_ZONES_LAT_1 );
         double zoneLat0 = computeZone( temp, NB_ZONES_LAT_0 );
         double zoneLat1 = computeZone( temp, NB_ZONES_LAT_1 );
@@ -47,6 +78,7 @@ public class CprDecoder {
         double widthLat1 = computeWidth( NB_ZONES_LAT_1 );
         y0 = computeLatOrLon( y0, zoneLat0, widthLat0 );
         y1 = computeLatOrLon( y1, zoneLat1, widthLat1 );
+         */
 
         //COMPUTATION OF THE LONGITUDE
         ///number of zones for even and odd latitude, odd should be one less than even
@@ -59,6 +91,12 @@ public class CprDecoder {
             nbZonesLon1 = nbZonesLon0 - 1;
         }
 
+
+
+        double[] xs= compute_LatOrLon_Zone(x0, x1, nbZonesLon0, nbZonesLon1);
+        x0=xs[0];
+        x1=xs[1];
+        /*
         ///zone where the aircraft is
         temp = getProductDifference( x0, x1, nbZonesLon0, nbZonesLon1 );
         double zoneLon0 = computeZone( temp, nbZonesLon0 );
@@ -69,6 +107,7 @@ public class CprDecoder {
         double widthLon1 = computeWidth( nbZonesLon1 );
         x0 = computeLatOrLon( x0, zoneLon0, widthLon0 );
         x1 = computeLatOrLon( x1, zoneLon1, widthLon1 );
+         */
 
         //RETURN THE RIGHT ONE
         double longitude;
