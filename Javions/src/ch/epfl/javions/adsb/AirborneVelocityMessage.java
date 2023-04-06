@@ -9,7 +9,6 @@ import java.util.Objects;
 
 /**
  * Represents an <code>AirborneVelocityMessage</code>
- *
  * @param timeStampNs    the horodatage, in nanoseconds
  * @param icaoAddress    the ICAO address of the sender of the message
  * @param speed          the speed of the sender of the message (ground speed or airspeed), in meters per second
@@ -36,14 +35,13 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static final int DEPENDENT_BITS_START = 21;
     private static final int DEPENDENT_BITS_SIZE = 22;
     private static final int GROUND_SPEED_KNOTS = 1;
-    private static final int GROUND_SPEED_FOUR_KNOTS = 2;
+    private static final int GROUND_SPEED_FOUR_KNOTS = GROUND_SPEED_KNOTS + 1;
     private static final int AIR_SPEED_KNOTS = 3;
-    private static final int AIR_SPEED_FOUR_KNOTS = 4;
+    private static final int AIR_SPEED_FOUR_KNOTS = AIR_SPEED_KNOTS + 1;
 
 
     /**
      * Constructor. Builds an instance of <code>AirborneVelocityMessage</code>
-     *
      * @param timeStampNs    the horodatage, in nanoseconds
      * @param icaoAddress    the ICAO address of the sender of the message
      * @param speed          the speed of the sender of the message (ground speed or airspeed), in meters per second
@@ -60,7 +58,6 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     /**
      * Builds an instance of <code>AirborneVelocityMessage</code> from the <code>RawMessage</code>
-     *
      * @param rawMessage the raw message sent by the aircraft
      * @return an instance of <code>AirborneVelocityMessage</code> from the raw message
      * @author Eva Mangano 345375
