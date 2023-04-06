@@ -150,6 +150,16 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         return alt;
     }
 
+    private static int untangle(int attributeALT) {
+        int untangled = 0;
+        int[] order = {2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7};
+        for (int i = 0; i < order.length; i++) {
+            untangled |= (Bits.extractUInt(attributeALT, order[i], 1) << (ME_SIZE - 2 - i));
+        }
+        return untangled;
+    }
+
+    /*
 
     private static int untangle(int attributeALT) {
         int[] tangled = new int[]{Bits.extractUInt( attributeALT, 2, 1 ), Bits.extractUInt( attributeALT, 0, 1 ),
@@ -165,6 +175,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         }
         return untangled;
     }
+
+     */
 
 
     private static int computeMSBorLSB(int attributeALT, int start, int size) {
