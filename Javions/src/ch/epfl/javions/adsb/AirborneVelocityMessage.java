@@ -80,6 +80,11 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
+    private static void checkArguments(long timeStampNs, double speed, double trackOrHeading) {
+        Preconditions.checkArgument( ( timeStampNs >= 0 ) && ( speed >= 0 ) && ( trackOrHeading >= 0 ) );
+    }
+
+
     private static AirborneVelocityMessage velocityMessageGroundSpeed(RawMessage rawMessage, int subType,
                                                                       int stDependentBits) {
         int directionEW = Bits.extractUInt( stDependentBits, DEW_START, DIRECTION_SIZE );
@@ -124,9 +129,8 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    private static double convertSpeedToKnot(double speed, int subType, int fourKnotsUnitSubType) {
-        speed = subType == fourKnotsUnitSubType ? 4. * speed : speed;
-        return Units.convertFrom( speed, Units.Speed.KNOT );
+    private static int velocitySign(int direction, int velocity) {
+        return direction == 0 ? velocity : -velocity;
     }
 
 
@@ -135,12 +139,8 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    private static int velocitySign(int direction, int velocity) {
-        return direction == 0 ? velocity : -velocity;
-    }
-
-
-    private static void checkArguments(long timeStampNs, double speed, double trackOrHeading) {
-        Preconditions.checkArgument( ( timeStampNs >= 0 ) && ( speed >= 0 ) && ( trackOrHeading >= 0 ) );
+    private static double convertSpeedToKnot(double speed, int subType, int fourKnotsUnitSubType) {
+        speed = subType == fourKnotsUnitSubType ? 4. * speed : speed;
+        return Units.convertFrom( speed, Units.Speed.KNOT );
     }
 }

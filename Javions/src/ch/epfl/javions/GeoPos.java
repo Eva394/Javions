@@ -6,7 +6,6 @@ package ch.epfl.javions;
 
 
 
-
 /**
  * @param longitudeT32 longitude, expressed in T32
  * @param latitudeT32  latitude, expressed in T32

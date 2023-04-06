@@ -10,11 +10,8 @@ import java.io.InputStream;
  */
 public final class AdsbDemodulator {
 
-    public static final int TO_NANOSECONDS = 100;
-    /**
-     * the size of a window
-     */
     private static final int WINDOW_SIZE = 1200;
+    private static final int TO_NANOSECONDS = 100;
     private final PowerWindow powerWindow;
     private long timestampNs;
 
@@ -54,7 +51,6 @@ public final class AdsbDemodulator {
         int previousSpikesSum = 0;
 
         while ( powerWindow.isFull() ) {
-
             int nextSpikesSum = 0;
             int currentValleySum = 0;
             int currentSpikesSum = 0;

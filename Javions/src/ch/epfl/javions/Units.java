@@ -6,7 +6,6 @@ package ch.epfl.javions;
 
 
 
-
 /**
  * @author Eva Mangano 345375 Defines the prefixes useful for the project. Contains definitions for Angle, Length, Time,
  * Speed.
@@ -95,7 +94,6 @@ public final class Units {
 
 
 
-
     /**
      * @author Eva Mangano 345375 Defines the units of length
      */
@@ -133,7 +131,6 @@ public final class Units {
 
 
 
-
     /**
      * @author Eva Mangano 345375 Defines the units of time
      */
@@ -156,7 +153,6 @@ public final class Units {
         private Time() {
         }
     }
-
 
 
 

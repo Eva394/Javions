@@ -8,7 +8,6 @@ import java.util.Objects;
 
 /**
  * represents an Aircraft Identification Message
- *
  * @author Nagyung KIM (339628)
  */
 
@@ -24,7 +23,6 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
 
     /**
      * Constructor. Builds an instance of <code>AircraftIdentificationMessage</code>
-     *
      * @param timeStampNs horodatage in nanoseconds
      * @param icaoAddress the ICAO address of the sender of the message
      * @param category    the shipper's aircraft category
@@ -41,7 +39,6 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
 
     /**
      * Builds an instance of <code>AircraftIdentificationMessage</code> from the raw message
-     *
      * @param rawMessage the ADS-B message
      * @return an instance of <code>AircraftIdentificationMessage</code> corresponding to the given raw message, or null
      * if at least one of the characters of the code it contains is invalid

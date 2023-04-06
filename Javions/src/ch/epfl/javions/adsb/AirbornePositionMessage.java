@@ -14,7 +14,6 @@ import java.util.Objects;
 
 /**
  * Represents an airborne position ADS-B message
- *
  * @param timeStampNs horodatage, in nanoseconds
  * @param icaoAddress the ICAO address of the sender of the message
  * @param altitude    altitude of the aircraft at the moment of sending the message, in meters
@@ -52,7 +51,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     /**
      * Constructor. Builds an instance of <code>AirbornePositionMessage</code>
-     *
      * @param timeStampNs horodatage, in nanoseconds
      * @param icaoAddress ICAO address of the sender of the message
      * @param altitude    altitude of the aircraft at the moment of sending the message, in meters
@@ -72,7 +70,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     /**
      * Builds an instance of <code>AirbornePositionMessage</code> from a <code>RawMessage</code>
-     *
      * @param rawMessage the ADS-B message
      * @return an instance of <code>AirbornePositionMessage</code> as given by the <code>RawMessage</code>, null if the
      * altitude is invalid
@@ -80,7 +77,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
 
-        double alt = computeAltitude( rawMessage );
+        long payload = rawMessage.payload();
+        double alt = computeAltitude( payload );
         if ( Double.isNaN( alt ) ) {
             return null;
         }
@@ -89,26 +87,25 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
 
-        int parity = Bits.extractUInt( rawMessage.payload(), PARITY_START, PARITY_SIZE );
+        int parity = Bits.extractUInt( payload, PARITY_START, PARITY_SIZE );
 
-        double longitude = Bits.extractUInt( rawMessage.payload(), LONGITUDE_START, LONGITUDE_SIZE );
+        double longitude = Bits.extractUInt( payload, LONGITUDE_START, LONGITUDE_SIZE );
         longitude = normalize( longitude );
 
-        double latitude = Bits.extractUInt( rawMessage.payload(), LATITUDE_START, LATITUDE_SIZE );
+        double latitude = Bits.extractUInt( payload, LATITUDE_START, LATITUDE_SIZE );
         latitude = normalize( latitude );
 
         return new AirbornePositionMessage( timeStampsNs, icaoAddress, alt, parity, longitude, latitude );
     }
 
 
-    private static double normalize(double value) {
-        return value * Math.scalb( 1d, -17 );
+    private static void checkArguments(long timeStampNs, int parity, double x, double y) {
+        Preconditions.checkArgument(
+                timeStampNs >= 0 && ( parity == 0 || parity == 1 ) && x >= 0 && x < 1 && y >= 0 && y < 1 );
     }
 
 
-    private static double computeAltitude(RawMessage rawMessage) {
-        long rawMessagePayload = rawMessage.payload();
-
+    private static double computeAltitude(long rawMessagePayload) {
         double alt;
         int attributeALT = Bits.extractUInt( rawMessagePayload, ALT_START, ALT_SIZE );
 
@@ -142,13 +139,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    private static int computeMSBorLSB(int attributeALT, int start, int size) {
-        int bits = Bits.extractUInt( attributeALT, start, size );
-        bits = decodeGray( bits, size );
-        return bits;
-    }
-
-
     private static double computeQ1Altitude(int untangledAlt) {
         double alt;
         int msBits = Bits.extractUInt( untangledAlt, MSB1_START, MSB1_SIZE );
@@ -158,22 +148,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         alt = BASE_ALTITUDE_1 + multipleOf25 * 25L;
 
         return alt;
-    }
-
-
-    private static int mirrorBits(int bits) {
-        return 6 - bits;
-    }
-
-
-    private static int decodeGray(int value, int n) {
-        int binaryValue = value;
-
-        for ( int i = 1 ; i < n ; i++ ) {
-            binaryValue = binaryValue ^ ( value >> i );
-        }
-
-        return binaryValue;
     }
 
 
@@ -193,8 +167,30 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    private void checkArguments(long timeStampNs, int parity, double x, double y) {
-        Preconditions.checkArgument(
-                timeStampNs >= 0 && ( parity == 0 || parity == 1 ) && x >= 0 && x < 1 && y >= 0 && y < 1 );
+    private static int computeMSBorLSB(int attributeALT, int start, int size) {
+        int bits = Bits.extractUInt( attributeALT, start, size );
+        bits = decodeGray( bits, size );
+        return bits;
+    }
+
+
+    private static int decodeGray(int value, int n) {
+        int binaryValue = value;
+
+        for ( int i = 1 ; i < n ; i++ ) {
+            binaryValue = binaryValue ^ ( value >> i );
+        }
+
+        return binaryValue;
+    }
+
+
+    private static int mirrorBits(int bits) {
+        return 6 - bits;
+    }
+
+
+    private static double normalize(double value) {
+        return value * Math.scalb( 1d, -17 );
     }
 }

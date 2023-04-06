@@ -6,7 +6,6 @@ package ch.epfl.javions;
 
 
 
-
 /**
  * Represents a crc calculator of 24 bits
  * @author Eva Mangano 345375

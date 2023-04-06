@@ -35,21 +35,6 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     }
 
 
-    private static boolean isEven(AirbornePositionMessage message) {
-        return message.parity() == 0;
-    }
-
-
-    /**
-     * Returns the modifiable state of the instance
-     * @return the state setter of the instance
-     * @author Eva Mangano 345375
-     */
-    public T stateSetter() {
-        return stateSetter;
-    }
-
-
     /**
      * Updates the state of the aircraft depending on the given <code>Message</code>
      * @param message message
@@ -76,15 +61,13 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     }
 
 
-    private void updateVelocityMessage(AirborneVelocityMessage velocityMessage) {
-        stateSetter.setVelocity( velocityMessage.speed() );
-        stateSetter.setTrackOrHeading( velocityMessage.trackOrHeading() );
-    }
-
-
-    private void updateIdentificationMessage(AircraftIdentificationMessage identificationMessage) {
-        stateSetter.setCategory( identificationMessage.category() );
-        stateSetter.setCallSign( identificationMessage.callSign() );
+    /**
+     * Returns the modifiable state of the instance
+     * @return the state setter of the instance
+     * @author Eva Mangano 345375
+     */
+    public T stateSetter() {
+        return stateSetter;
     }
 
 
@@ -104,10 +87,22 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
             position = CprDecoder.decodePosition( evenMessage.x(), evenMessage.y(), positionMessage.x(),
                                                   positionMessage.y(), ODD_MESSAGE );
         }
-        
+
         if ( Objects.nonNull( position ) ) {
             stateSetter.setPosition( position );
         }
+    }
+
+
+    private void updateIdentificationMessage(AircraftIdentificationMessage identificationMessage) {
+        stateSetter.setCategory( identificationMessage.category() );
+        stateSetter.setCallSign( identificationMessage.callSign() );
+    }
+
+
+    private void updateVelocityMessage(AirborneVelocityMessage velocityMessage) {
+        stateSetter.setVelocity( velocityMessage.speed() );
+        stateSetter.setTrackOrHeading( velocityMessage.trackOrHeading() );
     }
 
 
@@ -118,5 +113,10 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
         else {
             oddMessage = message;
         }
+    }
+
+
+    private boolean isEven(AirbornePositionMessage message) {
+        return message.parity() == 0;
     }
 }
