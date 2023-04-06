@@ -13,6 +13,7 @@ import java.util.Objects;
  * @param icaoAddress    the ICAO address of the sender of the message
  * @param speed          the speed of the sender of the message (ground speed or airspeed), in meters per second
  * @param trackOrHeading the track the angle the direction of the aircraft does with the North, in radians
+ * @author Nagyung Kim (339628)
  * @author Eva Mangano 345375
  */
 public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress, double speed,
@@ -34,10 +35,10 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static final int ST_SIZE = 3;
     private static final int DEPENDENT_BITS_START = 21;
     private static final int DEPENDENT_BITS_SIZE = 22;
-    private static final int GROUND_SPEED_KNOTS = 1;
-    private static final int GROUND_SPEED_FOUR_KNOTS = GROUND_SPEED_KNOTS + 1;
-    private static final int AIR_SPEED_KNOTS = 3;
-    private static final int AIR_SPEED_FOUR_KNOTS = AIR_SPEED_KNOTS + 1;
+    private static final int GROUND_SPEED_SUBSONIC = 1;
+    private static final int GROUND_SPEED_SUPERSONIC = GROUND_SPEED_SUBSONIC + 1;
+    private static final int AIR_SPEED_SUBSONIC = 3;
+    private static final int AIR_SPEED_SUPERSONIC = AIR_SPEED_SUBSONIC + 1;
 
 
     /**
@@ -49,6 +50,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @throws NullPointerException     if the ICAO address is null
      * @throws IllegalArgumentException if the horodatage, the speed or the angle is negative
      * @author Eva Mangano 345375
+     * @author Nagyung Kim (339628)
      */
     public AirborneVelocityMessage {
         Objects.requireNonNull( icaoAddress );
@@ -60,6 +62,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
      * Builds an instance of <code>AirborneVelocityMessage</code> from the <code>RawMessage</code>
      * @param rawMessage the raw message sent by the aircraft
      * @return an instance of <code>AirborneVelocityMessage</code> from the raw message
+     * @author Nagyung Kim (339628)
      * @author Eva Mangano 345375
      */
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
@@ -69,10 +72,10 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         int stDependentBits = Bits.extractUInt( payload, DEPENDENT_BITS_START, DEPENDENT_BITS_SIZE );
 
         switch ( subType ) {
-            case GROUND_SPEED_KNOTS, GROUND_SPEED_FOUR_KNOTS -> {
+            case GROUND_SPEED_SUBSONIC, GROUND_SPEED_SUPERSONIC -> {
                 return velocityMessageGroundSpeed( rawMessage, subType, stDependentBits );
             }
-            case AIR_SPEED_KNOTS, AIR_SPEED_FOUR_KNOTS -> {
+            case AIR_SPEED_SUBSONIC, AIR_SPEED_SUPERSONIC -> {
                 return velocityMessageAirSpeed( rawMessage, subType, stDependentBits );
             }
         }
@@ -105,7 +108,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
             angle += 2 * Math.PI;
         }
 
-        speed = convertSpeedToKnot( speed, subType, GROUND_SPEED_FOUR_KNOTS );
+        speed = convertSpeedToKnot( speed, subType, GROUND_SPEED_SUPERSONIC);
 
         return new AirborneVelocityMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, angle );
     }
@@ -123,7 +126,7 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         double angle = Units.convertFrom( Math.scalb( (double)heading, -10 ), Units.Angle.TURN );
         double speed;
 
-        speed = convertSpeedToKnot( airSpeed, subType, AIR_SPEED_FOUR_KNOTS );
+        speed = convertSpeedToKnot( airSpeed, subType, AIR_SPEED_SUPERSONIC);
 
         return new AirborneVelocityMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, angle );
     }

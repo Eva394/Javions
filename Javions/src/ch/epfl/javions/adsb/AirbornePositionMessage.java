@@ -74,6 +74,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      * @return an instance of <code>AirbornePositionMessage</code> as given by the <code>RawMessage</code>, null if the
      * altitude is invalid
      * @author Eva Mangano 345375
+     * @author Nagyung Kim (339628)
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
 
@@ -89,11 +90,9 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         int parity = Bits.extractUInt( payload, PARITY_START, PARITY_SIZE );
 
-        double longitude = Bits.extractUInt( payload, LONGITUDE_START, LONGITUDE_SIZE );
-        longitude = normalize( longitude );
+        double longitude = normalize(Bits.extractUInt( payload, LONGITUDE_START, LONGITUDE_SIZE ));
 
-        double latitude = Bits.extractUInt( payload, LATITUDE_START, LATITUDE_SIZE );
-        latitude = normalize( latitude );
+        double latitude = normalize (Bits.extractUInt( payload, LATITUDE_START, LATITUDE_SIZE ));
 
         return new AirbornePositionMessage( timeStampsNs, icaoAddress, alt, parity, longitude, latitude );
     }

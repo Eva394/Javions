@@ -11,6 +11,7 @@ import ch.epfl.javions.Units;
 /**
  * Decoder of CPR positions
  * @author Eva Mangano 345375
+ * @author Nagyung Kim (339628)
  */
 public class CprDecoder {
 
@@ -91,8 +92,8 @@ public class CprDecoder {
         double width1 = computeWidth( zone1 );
         p0 = computeLatOrLon( p0, zoneLat0, width0 );
         p1 = computeLatOrLon( p1, zoneLat1, width1 );
-        double[] returns = {p0, p1, width0, width1};
-        return returns;
+        double[] doubles = {p0, p1, width0, width1};
+        return doubles;
     }
 
 
