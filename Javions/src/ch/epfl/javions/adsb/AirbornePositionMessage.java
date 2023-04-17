@@ -90,9 +90,11 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         int parity = Bits.extractUInt( payload, PARITY_START, PARITY_SIZE );
 
-        double longitude = normalize(Bits.extractUInt( payload, LONGITUDE_START, LONGITUDE_SIZE ));
+        double longitude = Bits.extractUInt( payload, LONGITUDE_START, LONGITUDE_SIZE );
+        longitude = normalize( longitude );
 
-        double latitude = normalize (Bits.extractUInt( payload, LATITUDE_START, LATITUDE_SIZE ));
+        double latitude = Bits.extractUInt( payload, LATITUDE_START, LATITUDE_SIZE );
+        latitude = normalize( latitude );
 
         return new AirbornePositionMessage( timeStampsNs, icaoAddress, alt, parity, longitude, latitude );
     }
@@ -149,33 +151,15 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         return alt;
     }
 
+
     private static int untangle(int attributeALT) {
         int untangled = 0;
         int[] order = {2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7};
-        for (int i = 0; i < order.length; i++) {
-            untangled |= (Bits.extractUInt(attributeALT, order[i], 1) << (ME_SIZE - 2 - i));
+        for ( int i = 0 ; i < order.length ; i++ ) {
+            untangled |= ( Bits.extractUInt( attributeALT, order[i], 1 ) << ( ME_SIZE - 2 - i ) );
         }
         return untangled;
     }
-
-    /*
-
-    private static int untangle(int attributeALT) {
-        int[] tangled = new int[]{Bits.extractUInt( attributeALT, 2, 1 ), Bits.extractUInt( attributeALT, 0, 1 ),
-                                  Bits.extractUInt( attributeALT, 10, 1 ), Bits.extractUInt( attributeALT, 8, 1 ),
-                                  Bits.extractUInt( attributeALT, 6, 1 ), Bits.extractUInt( attributeALT, 5, 1 ),
-                                  Bits.extractUInt( attributeALT, 3, 1 ), Bits.extractUInt( attributeALT, 1, 1 ),
-                                  Bits.extractUInt( attributeALT, 11, 1 ), Bits.extractUInt( attributeALT, 9, 1 ),
-                                  Bits.extractUInt( attributeALT, 7, 1 )};
-
-        int untangled = 0;
-        for ( int i = 0 ; i < ME_SIZE - 1 ; i += 1 ) {
-            untangled = ( untangled ) | ( tangled[i] << ( ME_SIZE - 2 - i ) );
-        }
-        return untangled;
-    }
-
-     */
 
 
     private static int computeMSBorLSB(int attributeALT, int start, int size) {
