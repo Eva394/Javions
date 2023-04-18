@@ -6,9 +6,11 @@ package ch.epfl.javions.gui;
 
 
 import ch.epfl.javions.GeoPos;
+import ch.epfl.javions.Preconditions;
+import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
-import ch.epfl.javions.aircraft.AircraftData;
+import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -21,17 +23,23 @@ import java.util.Observable;
  */
 public final class ObservableAircraftState extends Observable implements AircraftStateSetter {
 
-    private ObservableList<AirbonePos> trajectory;
-    private ObservableList<AirbonePos> unmodifiableTrajectory;
-    private LongProperty lastMessageTimeStampNs;
-    private IntegerProperty category;
-    private ObjectProperty<GeoPos> position;
-    private DoubleProperty altitude;
-    private DoubleProperty velocity;
-    private DoubleProperty trackOrHeading;
+    private final IcaoAddress icaoAddress;
+    private final AircraftDatabase aircraftDatabase;
+    private final ObservableList<AirbonePos> trajectory;
+    private final ObservableList<AirbonePos> unmodifiableTrajectory;
+    private final LongProperty lastMessageTimeStampNs;
+    private final IntegerProperty category;
+    private final ObjectProperty<GeoPos> position;
+    private final DoubleProperty altitude;
+    private final DoubleProperty velocity;
+    private final DoubleProperty trackOrHeading;
+    private long lastTrajectoryUpdateTimeStampNs;
 
 
-    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData aircraftData) {
+    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftDatabase aircraftDatabase) {
+        Preconditions.checkArgument( icaoAddress != null );
+        this.icaoAddress = icaoAddress;
+        this.aircraftDatabase = aircraftDatabase;
         trajectory = FXCollections.observableArrayList();
         unmodifiableTrajectory = FXCollections.unmodifiableObservableList( trajectory );
         lastMessageTimeStampNs = new SimpleLongProperty( -1L );
@@ -45,11 +53,6 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     public ObservableList<AirbonePos> getUnmodifiableTrajectory() {
         return unmodifiableTrajectory;
-    }
-
-
-    public void setTrajectory(ObservableList<AirbonePos> trajectory) {
-        this.trajectory = trajectory;
     }
 
 
@@ -79,13 +82,20 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
 
+    @Override
+    public void setPosition(GeoPos position) {
+
+    }
+
+
     public GeoPos getPosition() {
         return position.get();
     }
 
 
-    public void setPosition(GeoPos position) {
-        this.position.set( position );
+    public void setAltitude(double altitude) {
+        updateTrajectory( position, altitude );
+        this.altitude.set( altitude );
     }
 
 
@@ -94,8 +104,9 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
 
-    public void setAltitude(double altitude) {
-        this.altitude.set( altitude );
+    public void setPosition(ObjectProperty<GeoPos> position) {
+        updateTrajectory( position, altitude );
+        this.position.set( position );
     }
 
 
@@ -154,6 +165,19 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
 
-    private record AirbonePos(GeoPos position, double altitude) {
+    private void updateTrajectory(ObjectProperty<GeoPos> position, DoubleProperty altitude) {
+        if ( this.position != trajectory.get( trajectory.size() - 1 )
+                                        .position() || trajectory.isEmpty() ) {
+            trajectory.add( new AirbonePos( new GeoPos( (int)Units.convertTo( position.get()
+                                                                                      .longitude(), Units.Angle.T32 ),
+                                                        (int)Units.convertTo( position.get()
+                                                                                      .latitude(), Units.Angle.T32 ) ),
+                                            altitude ) );
+        }
+        if ( )
+    }
+
+
+    private record AirbonePos(GeoPos position, DoubleProperty altitude) {
     }
 }
