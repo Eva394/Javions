@@ -34,9 +34,12 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData aircraftData) {
         trajectory = FXCollections.observableArrayList();
         unmodifiableTrajectory = FXCollections.unmodifiableObservableList( trajectory );
-        lastMessageTimeStampNs;
-        category;
-        position;
+        lastMessageTimeStampNs = new SimpleLongProperty( -1L );
+        category = new SimpleIntegerProperty( -1 );
+        position = new SimpleObjectProperty<>();
+        altitude = new SimpleDoubleProperty( -1. );
+        velocity = new SimpleDoubleProperty( -1. );
+        trackOrHeading = new SimpleDoubleProperty( -1. );
     }
 
 
