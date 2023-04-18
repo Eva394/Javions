@@ -82,20 +82,15 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
 
-    @Override
-    public void setPosition(GeoPos position) {
-
-    }
-
-
     public GeoPos getPosition() {
         return position.get();
     }
 
 
-    public void setAltitude(double altitude) {
-        updateTrajectory( position, altitude );
-        this.altitude.set( altitude );
+    @Override
+    public void setPosition(GeoPos position) {
+        updateTrajectory( new SimpleObjectProperty<>( position ), altitude );
+        this.position.set( position );
     }
 
 
@@ -104,9 +99,9 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
 
-    public void setPosition(ObjectProperty<GeoPos> position) {
-        updateTrajectory( position, altitude );
-        this.position.set( position );
+    public void setAltitude(double altitude) {
+        updateTrajectory( position, new SimpleDoubleProperty( altitude ) );
+        this.altitude.set( altitude );
     }
 
 
@@ -166,15 +161,23 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
 
     private void updateTrajectory(ObjectProperty<GeoPos> position, DoubleProperty altitude) {
-        if ( this.position != trajectory.get( trajectory.size() - 1 )
-                                        .position() || trajectory.isEmpty() ) {
+        if ( this.position.get() != trajectory.get( trajectory.size() - 1 )
+                                              .position() || trajectory.isEmpty() ) {
             trajectory.add( new AirbonePos( new GeoPos( (int)Units.convertTo( position.get()
                                                                                       .longitude(), Units.Angle.T32 ),
                                                         (int)Units.convertTo( position.get()
                                                                                       .latitude(), Units.Angle.T32 ) ),
                                             altitude ) );
         }
-        if ( )
+        if ( lastTrajectoryUpdateTimeStampNs == lastMessageTimeStampNs.get() ) {
+            trajectory.set( trajectory.size() - 1, new AirbonePos( new GeoPos( (int)Units.convertTo( position.get()
+                                                                                                             .longitude(),
+                                                                                                     Units.Angle.T32 ),
+                                                                               (int)Units.convertTo( position.get()
+                                                                                                             .latitude(),
+                                                                                                     Units.Angle.T32 ) ),
+                                                                   altitude ) );
+        }
     }
 
 
