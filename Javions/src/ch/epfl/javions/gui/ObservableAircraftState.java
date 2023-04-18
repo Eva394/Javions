@@ -88,9 +88,9 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
 
     @Override
-    public void setPosition(GeoPos position) {
-        updateTrajectory( new SimpleObjectProperty<>( position ), altitude );
-        this.position.set( position );
+    public void setPosition(GeoPos pos) {
+        updateTrajectory( new SimpleObjectProperty<>( pos ), altitude );
+        this.position.set( pos );
     }
 
 
@@ -99,9 +99,9 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
 
-    public void setAltitude(double altitude) {
-        updateTrajectory( position, new SimpleDoubleProperty( altitude ) );
-        this.altitude.set( altitude );
+    public void setAltitude(double alt) {
+        updateTrajectory( position, new SimpleDoubleProperty( alt ) );
+        this.altitude.set( alt );
     }
 
 
