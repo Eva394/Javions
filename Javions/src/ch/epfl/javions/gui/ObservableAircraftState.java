@@ -10,54 +10,63 @@ import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.IcaoAddress;
+import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
-import java.util.List;
+import java.util.Observable;
 
 /**
  * Represents the state of an aircraft, which is observable
  */
-public final class ObservableAircraftState implements AircraftStateSetter {
+public final class ObservableAircraftState extends Observable implements AircraftStateSetter {
 
-    private List<AirbonePos> positions; //TODO idk??? + ot has to be immuable
-    private long lastMessageTimeStampNs;
-    private int category;
-    private CallSign callSign;
-    private double position;
-    private double altitude;
-    private double velocity;
-    private double trackOrHeading;
+    private ObservableList<AirbonePos> trajectory;
+    private ObservableList<AirbonePos> unmodifiableTrajectory;
+    private LongProperty lastMessageTimeStampNs;
+    private IntegerProperty category;
+    private ObjectProperty<GeoPos> position;
+    private DoubleProperty altitude;
+    private DoubleProperty velocity;
+    private DoubleProperty trackOrHeading;
 
 
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData aircraftData) {
-        //AircraftRegistration aircraftRegistration, AircraftTypeDesignator aircraftTypeDesignator,AircraftDescription aircraftDescription,
-        //TODO idk what to do here ???
+        trajectory = FXCollections.observableArrayList();
+        unmodifiableTrajectory = FXCollections.unmodifiableObservableList( trajectory );
+        lastMessageTimeStampNs;
+        category;
+        position;
+    }
+
+
+    public ObservableList<AirbonePos> getUnmodifiableTrajectory() {
+        return unmodifiableTrajectory;
+    }
+
+
+    public void setTrajectory(ObservableList<AirbonePos> trajectory) {
+        this.trajectory = trajectory;
     }
 
 
     public long getLastMessageTimeStampNs() {
-        return lastMessageTimeStampNs;
+        return lastMessageTimeStampNs.get();
     }
 
 
-    @Override
-    public void setLastMessageTimeStampNs(long timeStampNs) {
-
+    public void setLastMessageTimeStampNs(long lastMessageTimeStampNs) {
+        this.lastMessageTimeStampNs.set( lastMessageTimeStampNs );
     }
 
 
     public int getCategory() {
-        return category;
+        return category.get();
     }
 
 
-    @Override
     public void setCategory(int category) {
-
-    }
-
-
-    public CallSign getCallSign() {
-        return callSign;
+        this.category.set( category );
     }
 
 
@@ -67,55 +76,81 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
 
-    public double getPosition() {
-        return position;
+    public GeoPos getPosition() {
+        return position.get();
     }
 
 
-    @Override
     public void setPosition(GeoPos position) {
-
-    }
-
-
-    public List<AirbonePos> getPositions() {
-        return positions;
+        this.position.set( position );
     }
 
 
     public double getAltitude() {
-        return altitude;
+        return altitude.get();
     }
 
 
-    @Override
     public void setAltitude(double altitude) {
-
+        this.altitude.set( altitude );
     }
 
 
     public double getVelocity() {
-        return velocity;
+        return velocity.get();
     }
 
 
-    @Override
     public void setVelocity(double velocity) {
-
+        this.velocity.set( velocity );
     }
 
 
     public double getTrackOrHeading() {
+        return trackOrHeading.get();
+    }
+
+
+    public void setTrackOrHeading(double trackOrHeading) {
+        this.trackOrHeading.set( trackOrHeading );
+    }
+
+
+    public ReadOnlyListProperty<AirbonePos> unmodifiableTrajectoryProperty() {
+        return (ReadOnlyListProperty<AirbonePos>)unmodifiableTrajectory;
+    }
+
+
+    public ReadOnlyLongProperty lastMessageTimeStampNsProperty() {
+        return lastMessageTimeStampNs;
+    }
+
+
+    public ReadOnlyIntegerProperty categoryProperty() {
+        return category;
+    }
+
+
+    public ReadOnlyObjectProperty<GeoPos> positionProperty() {
+        return position;
+    }
+
+
+    public ReadOnlyDoubleProperty altitudeProperty() {
+        return altitude;
+    }
+
+
+    public ReadOnlyDoubleProperty velocityProperty() {
+        return velocity;
+    }
+
+
+    public ReadOnlyDoubleProperty trackOrHeadingProperty() {
         return trackOrHeading;
     }
 
 
-    @Override
-    public void setTrackOrHeading(double trackOrHeading) {
-
-    }
-
-
-    private record AirbonePos(double[] position, double altitude) {
+    private record AirbonePos(GeoPos position, double altitude) {
     }
 }
