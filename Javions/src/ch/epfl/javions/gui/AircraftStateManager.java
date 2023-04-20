@@ -12,6 +12,7 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,12 +22,14 @@ public final class AircraftStateManager {
     private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> receivedStates;
     private final ObservableSet<ObservableAircraftState> knownStates;
     private final AircraftDatabase aircraftDatabase;
+    private long lastUpdatedTimeStampNs;
 
 
     public AircraftStateManager(AircraftDatabase aircraftDatabase) {
         this.aircraftDatabase = aircraftDatabase;
         this.receivedStates = new HashMap<>();
         this.knownStates = FXCollections.emptyObservableSet();
+        this.lastUpdatedTimeStampNs = 0L;
     }
 
 
@@ -35,19 +38,27 @@ public final class AircraftStateManager {
     }
 
 
-    public void updateWithMessage(Message message) {
+    public void updateWithMessage(Message message) throws IOException {
         IcaoAddress icaoAddress = message.icaoAddress();
         if ( receivedStates.containsKey( icaoAddress ) ) {
             AircraftStateAccumulator<ObservableAircraftState> stateAccumulator = receivedStates.get( icaoAddress );
             stateAccumulator.update( message );
-            //TODO next line : idk how to get the AircraftDatabase other than this but the énoncé doesn't say
-            // anything about get being static so...
-            knownStates.add( new ObservableAircraftState( icaoAddress, AircraftDatabase.get( icaoAddress ) ) );
-            //TODO if smth doesn't work try adding this : receivedStates.replace( icaoAddress, stateAccumulator );
+            knownStates.add( new ObservableAircraftState( icaoAddress, aircraftDatabase.get( icaoAddress ) ) );
+            //if smth doesn't work try adding this : receivedStates.replace( icaoAddress, stateAccumulator );
         }
         else {
-            //TODO what do i put in AircraftStateAccumulator<>()
-            receivedStates.put( icaoAddress, new AircraftStateAccumulator<>() )
+            ObservableAircraftState aircraftState = new ObservableAircraftState( icaoAddress,
+                                                                                 aircraftDatabase.get( icaoAddress ) );
+            AircraftStateAccumulator<ObservableAircraftState> newStateAccumulator = new AircraftStateAccumulator<>(
+                    aircraftState );
+            receivedStates.put( icaoAddress, newStateAccumulator );
         }
+        lastUpdatedTimeStampNs = message.timeStampNs();
+    }
+
+
+    public void purge() {
+        knownStates.removeIf(
+                state -> lastUpdatedTimeStampNs - ONE_MINUTE_IN_NANOSECONDS > state.getLastMessageTimeStampNs() );
     }
 }

@@ -10,7 +10,7 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
-import ch.epfl.javions.aircraft.AircraftDatabase;
+import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -24,7 +24,7 @@ import java.util.Observable;
 public final class ObservableAircraftState extends Observable implements AircraftStateSetter {
 
     private final IcaoAddress icaoAddress;
-    private final AircraftDatabase aircraftDatabase;
+    private final AircraftData aircraftData;
     private final ObservableList<AirbonePos> trajectory;
     private final ObservableList<AirbonePos> unmodifiableTrajectory;
     private final LongProperty lastMessageTimeStampNs;
@@ -36,10 +36,10 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     private long lastTrajectoryUpdateTimeStampNs;
 
 
-    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftDatabase aircraftDatabase) {
+    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData aircraftData) {
         Preconditions.checkArgument( icaoAddress != null );
         this.icaoAddress = icaoAddress;
-        this.aircraftDatabase = aircraftDatabase;
+        this.aircraftData = aircraftData;
         trajectory = FXCollections.observableArrayList();
         unmodifiableTrajectory = FXCollections.unmodifiableObservableList( trajectory );
         lastMessageTimeStampNs = new SimpleLongProperty( -1L );
