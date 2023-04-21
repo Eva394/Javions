@@ -7,7 +7,6 @@ package ch.epfl.javions.gui;
 
 import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Preconditions;
-import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftData;
@@ -89,8 +88,8 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     @Override
     public void setPosition(GeoPos pos) {
-        updateTrajectory( new SimpleObjectProperty<>( pos ), altitude );
-        this.position.set( pos );
+        position.set( pos );
+        updateTrajectory();
     }
 
 
@@ -100,8 +99,8 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
 
     public void setAltitude(double alt) {
-        updateTrajectory( position, new SimpleDoubleProperty( alt ) );
         this.altitude.set( alt );
+        updateTrajectory();
     }
 
 
@@ -160,27 +159,36 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
 
-    private void updateTrajectory(ObjectProperty<GeoPos> position, DoubleProperty altitude) {
-        if ( this.position.get() != trajectory.get( trajectory.size() - 1 )
-                                              .position() || trajectory.isEmpty() ) {
-            trajectory.add( new AirbonePos( new GeoPos( (int)Units.convertTo( position.get()
-                                                                                      .longitude(), Units.Angle.T32 ),
-                                                        (int)Units.convertTo( position.get()
-                                                                                      .latitude(), Units.Angle.T32 ) ),
-                                            altitude ) );
-        }
-        if ( lastTrajectoryUpdateTimeStampNs == lastMessageTimeStampNs.get() ) {
-            trajectory.set( trajectory.size() - 1, new AirbonePos( new GeoPos( (int)Units.convertTo( position.get()
-                                                                                                             .longitude(),
-                                                                                                     Units.Angle.T32 ),
-                                                                               (int)Units.convertTo( position.get()
-                                                                                                             .latitude(),
-                                                                                                     Units.Angle.T32 ) ),
-                                                                   altitude ) );
+    public IcaoAddress getIcaoAddress() {
+        return icaoAddress;
+    }
+
+
+    public AircraftData getAircraftData() {
+        return aircraftData;
+    }
+
+
+    private void updateTrajectory() {
+        //TODO get rid of next line
+        getPosition();
+        GeoPos geoPos = position.get();
+        double alt = altitude.get();
+        AirbonePos airbonePos = new AirbonePos( geoPos, alt );
+
+        if ( geoPos != null && !Double.isNaN( alt ) ) {
+            if ( trajectory.isEmpty() || geoPos != trajectory.get( trajectory.size() - 1 )
+                                                             .position() ) {
+                trajectory.add( airbonePos );
+                lastTrajectoryUpdateTimeStampNs = lastMessageTimeStampNs.get();
+            }
+            else if ( lastTrajectoryUpdateTimeStampNs == lastMessageTimeStampNs.get() ) {
+                trajectory.set( trajectory.size() - 1, airbonePos );
+            }
         }
     }
 
 
-    private record AirbonePos(GeoPos position, DoubleProperty altitude) {
+    private record AirbonePos(GeoPos position, double altitude) {
     }
 }
