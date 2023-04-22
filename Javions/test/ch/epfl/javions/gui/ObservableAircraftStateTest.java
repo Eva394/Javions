@@ -11,26 +11,28 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Set;
+import java.util.List;
 
 class ObservableAircraftStateTest {
     public static void main(String[] args) {
+        byte[] bytes = new byte[RawMessage.LENGTH];
+        AircraftDatabase aircraftDatabase = new AircraftDatabase(
+                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft"
+                + ".zip" );
+        AircraftStateManager stateManager = new AircraftStateManager( aircraftDatabase );
+        int index = 0;
+        System.out.println(
+                "OACI      Indicatif      Immat.     Modèle                               Longitude     " + "Latitude "
+                + "     Alt.  " + "     Vit." + "    Dir.\n"
+                + "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――" );
+
         try ( DataInputStream s = new DataInputStream( new BufferedInputStream( new FileInputStream(
                 "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\messages_20230318_0915.bin" ) ) ) ) {
 
-            byte[] bytes = new byte[RawMessage.LENGTH];
-            AircraftDatabase aircraftDatabase = new AircraftDatabase(
-                    "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft"
-                    + ".zip" );
-            AircraftStateManager stateManager = new AircraftStateManager( aircraftDatabase );
-            int index = 0;
-            //            Set<ObservableAircraftState> states = new HashSet<>();
-            System.out.println(
-                    "OACI    Indicatif Immat.     Modèle                               Longitude              Latitude "
-                    + "            Alt.  " + "                Vit" + ".\n"
-                    + "―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――" );
-            while ( index < 1e2 ) {
+            while ( true ) {
                 index++;
                 long timeStampNs = s.readLong();
                 int bytesRead = s.readNBytes( bytes, 0, bytes.length );
@@ -46,32 +48,82 @@ class ObservableAircraftStateTest {
                 Message theMessage = MessageParser.parse( rawMessage );
                 assert theMessage != null;
 
-                //                ObservableAircraftState newState = new ObservableAircraftState( theMessage.icaoAddress(),
-                //                                                                                aircraftDatabase.get(
-                //                                                                                        theMessage.icaoAddress() ) );
-                //                if ( newState.getPosition() != null ) {
-                //                    states.add( newState );
-                //                }
-
-                Set<ObservableAircraftState> states = stateManager.states();
                 stateManager.updateWithMessage( theMessage );
-                for ( ObservableAircraftState state : states ) {
-                    System.out.printf( "%s %17s %35s %24s %21s %20s %20s\n", state.getIcaoAddress()
-                                                                                  .string()
-                            /*callsign*/, state.getAircraftData()
-                                               .registration()
-                                               .string(), state.getAircraftData()
-                                                               .model(), Units.convertTo( state.getPosition()
-                                                                                               .longitude(),
-                                                                                          Units.Angle.DEGREE ),
-                                       Units.convertTo( state.getPosition()
-                                                             .latitude(), Units.Angle.DEGREE ), state.getAltitude(),
-                                       Units.convert( state.getVelocity(), Units.Speed.,
-                                                      Units.Speed.KILOMETER_PER_HOUR ) );
-                }
+                stateManager.purge();
             }
         }
+
         catch ( IOException e ) {
+        }
+
+        finally {
+            List<ObservableAircraftState> states = new ArrayList<>( stateManager.states() );
+            AddressComparator comparator = new AddressComparator();
+            states.sort( comparator );
+            try {
+                index = 0;
+                DecimalFormat df = new DecimalFormat( "#.#####" );
+                for ( ObservableAircraftState state : states ) {
+                    index++;
+                    String aircraftData = state.getIcaoAddress()
+                                               .string();
+                    String callSign = state.getCallSign()
+                                           .string();
+                    String aircraftRegistration = state.getAircraftData() == null ? "" : state.getAircraftData()
+                                                                                              .registration()
+                                                                                              .string();
+                    String aircraftModel = state.getAircraftData() == null ? "" : state.getAircraftData()
+                                                                                       .model();
+                    double longitude = Units.convertTo( state.getPosition()
+                                                             .longitude(), Units.Angle.DEGREE );
+                    double latitude = Units.convertTo( state.getPosition()
+                                                            .latitude(), Units.Angle.DEGREE );
+                    double altitude = state.getAltitude();
+                    if ( state.getVelocity() == -1 ) {
+                        continue;
+                    }
+                    double velocity = Units.convertTo( state.getVelocity(), Units.Speed.KILOMETER_PER_HOUR );
+                    double dir = state.getTrackOrHeading() % ( 2 * Math.PI );
+                    char direction;
+                    final char[] directions = new char[]{'↑', '↗', '→', '↘', '↓', '↙', '←', '↖'};
+                    if ( 5.890 < dir || dir <= 0.393 ) {
+                        direction = directions[0];
+                    }
+                    else if ( 0.393 < dir && dir <= 1.178 ) {
+                        direction = directions[1];
+                    }
+                    else if ( 1.178 < dir && dir <= 1.963 ) {
+                        direction = directions[2];
+                    }
+                    else if ( 1.963 < dir && dir <= 2.749 ) {
+                        direction = directions[3];
+                    }
+                    else if ( 2.749 < dir && dir <= 3.534 ) {
+                        direction = directions[4];
+                    }
+                    else if ( 3.534 < dir && dir <= 4.320 ) {
+                        direction = directions[5];
+                    }
+                    else if ( 4.320 < dir && dir <= 5.105 ) {
+                        direction = directions[6];
+                    }
+                    else if ( 5.105 < dir && dir <= 5.980 ) {
+                        direction = directions[7];
+                    }
+                    else {
+                        direction = 'X';
+                    }
+
+                    System.out.printf( "%-9s %-14s %-10s %-36s %-13s %-13s %-10s %-8s %s\n", aircraftData, callSign,
+                                       aircraftRegistration, aircraftModel, df.format( longitude ),
+                                       df.format( latitude ), Math.round( altitude ), Math.round( velocity ),
+                                       direction );
+                }
+            }
+            catch ( NullPointerException e ) {
+                System.out.println( "e.getMessage() = " + e.getMessage() );
+                System.out.println( "index = " + index );
+            }
         }
     }
 

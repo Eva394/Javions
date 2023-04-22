@@ -28,6 +28,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     private final ObservableList<AirbonePos> unmodifiableTrajectory;
     private final LongProperty lastMessageTimeStampNs;
     private final IntegerProperty category;
+    private final ObjectProperty<CallSign> callSign;
     private final ObjectProperty<GeoPos> position;
     private final DoubleProperty altitude;
     private final DoubleProperty velocity;
@@ -37,12 +38,15 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData aircraftData) {
         Preconditions.checkArgument( icaoAddress != null );
+
         this.icaoAddress = icaoAddress;
         this.aircraftData = aircraftData;
+
         trajectory = FXCollections.observableArrayList();
         unmodifiableTrajectory = FXCollections.unmodifiableObservableList( trajectory );
         lastMessageTimeStampNs = new SimpleLongProperty( -1L );
         category = new SimpleIntegerProperty( -1 );
+        callSign = new SimpleObjectProperty<>();
         position = new SimpleObjectProperty<>();
         altitude = new SimpleDoubleProperty( -1. );
         velocity = new SimpleDoubleProperty( -1. );
@@ -75,9 +79,24 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
 
+    public IcaoAddress getIcaoAddress() {
+        return icaoAddress;
+    }
+
+
+    public AircraftData getAircraftData() {
+        return aircraftData;
+    }
+
+
+    public CallSign getCallSign() {
+        return callSign.get();
+    }
+
+
     @Override
     public void setCallSign(CallSign callSign) {
-
+        this.callSign.set( callSign );
     }
 
 
@@ -156,16 +175,6 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     public ReadOnlyDoubleProperty trackOrHeadingProperty() {
         return trackOrHeading;
-    }
-
-
-    public IcaoAddress getIcaoAddress() {
-        return icaoAddress;
-    }
-
-
-    public AircraftData getAircraftData() {
-        return aircraftData;
     }
 
 
