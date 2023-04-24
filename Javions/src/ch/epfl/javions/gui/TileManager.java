@@ -23,6 +23,13 @@ public final class TileManager {
     private final static int MEMORY_CACHE_SIZE = 100;
     private final Path diskCachePath;
     private final String serverName;
+
+    //TODO replace this redifinition by just declaration +
+    //  Bonjour,
+    //  Dans notre cas, je ne pense pas que ce soit nécessaire. En effet, la méthode next() de l'itérateur de
+    //  l'ensemble des clefs (keySet) de LinkedHashMap retourne l'élément le plus ancien, que vous pouvez
+    //  alors enlever à l'aide de la méthode remove(). Cela vous permettra d'écrire un peu moins de code.
+    //  aka do smth like memoryCache.keySet().next().remove() -- see if this works in another page
     private final LinkedHashMap<Path, Image> memoryCache = new LinkedHashMap<Path, Image>() {
         protected boolean removeEldestEntry(Map.Entry<Path, Image> eldest) {
             return size() > MEMORY_CACHE_SIZE;
