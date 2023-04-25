@@ -100,32 +100,36 @@ public final class BaseMapController {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         double width = canvas.getWidth();
         double height = canvas.getHeight();
-        double mapMinX = mapParameters.getMinX();
-        double mapMinY = mapParameters.getMinY();
+        int mapMinX = mapParameters.getMinX();
+        int mapMinY = mapParameters.getMinY();
         int zoom = mapParameters.getZoom();
 
         int firstRow = (int)mapMinX / TILE_SIZE;
         int firstColumn = (int)mapMinY / TILE_SIZE;
 
-        int lastRow = (int)( mapMinX + width ) / TILE_SIZE;
+        int lastRow = (int)( mapMinX + width ) / TILE_SIZE; //TODO i think theres a +1
         int lastColumn = (int)( mapMinY + height ) / TILE_SIZE;
 
+        int shiftedRow = mapMinX - firstRow * TILE_SIZE;
         for ( int row = firstRow ; row < lastRow ; row++ ) {
+            int shiftedCol = mapMinY - firstColumn * TILE_SIZE;
             for ( int col = firstColumn ; col < lastColumn ; col++ ) {
-                if ( TileManager.TileId.isValid( zoom, row, col ) ) {
+                if ( !TileManager.TileId.isValid( zoom, row, col ) ) {
                     continue;
                 }
 
                 TileManager.TileId tileId = new TileManager.TileId( zoom, row, col );
                 try {
                     Image tile = tileManager.imageForTileAt( tileId );
-                    graphicsContext.drawImage( tile, row, col );
-                    //TODO i don't think row and col are the right variables -- see in tests and if not find a formula
+                    graphicsContext.drawImage( tile, shiftedRow, shiftedCol );
+                    //TODO idk if its the right formula for shiftedRow and shiftedCol
                 }
                 catch ( IOException ignored ) {
                     ignored.printStackTrace();
                 }
+                shiftedCol += TILE_SIZE;
             }
+            shiftedRow += TILE_SIZE;
         }
     }
 

@@ -5,9 +5,7 @@ package ch.epfl.javions.gui;
  */
 
 
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public final class MapParameters {
@@ -15,17 +13,17 @@ public final class MapParameters {
     private final IntegerProperty zoom;
 
     //TODO idk if this is double or int
-    private final DoubleProperty minX;
+    private final IntegerProperty minX;
     //TODO idk if this is double or int
-    private final DoubleProperty minY;
+    private final IntegerProperty minY;
 
 
-    public MapParameters(int zoom, double minX, double minY) {
+    public MapParameters(int zoom, int minX, int minY) {
         //TODO i needed intellij to stop doing errors everywhere so i created this
         //  it should be correct so far but idk if theres something more to do or not
         this.zoom = new SimpleIntegerProperty( zoom );
-        this.minX = new SimpleDoubleProperty( minX );
-        this.minY = new SimpleDoubleProperty( minY );
+        this.minX = new SimpleIntegerProperty( minX );
+        this.minY = new SimpleIntegerProperty( minY );
     }
 
 
@@ -35,13 +33,13 @@ public final class MapParameters {
     }
 
 
-    public double getMinX() {
+    public int getMinX() {
         //TODO i needed intellij to stop doing errors everywhere so i created this but the body is still to do
         return 0;
     }
 
 
-    public double getMinY() {
+    public int getMinY() {
         //TODO i needed intellij to stop doing errors everywhere so i created this but the body is still to do
         return 0;
     }
