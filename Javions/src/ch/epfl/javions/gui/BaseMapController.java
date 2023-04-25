@@ -6,11 +6,15 @@ package ch.epfl.javions.gui;
 
 
 import ch.epfl.javions.GeoPos;
-import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -22,9 +26,9 @@ public final class BaseMapController {
     private final MapParameters mapParameters;
     private final Canvas canvas;
     private final Pane pane;
-    private final SimpleLongProperty minScrollTime = new SimpleLongProperty();
+    private final LongProperty minScrollTime;
+    private final ObjectProperty<Point2D> lastMousePosition;
     private boolean redrawNeeded;
-    private WebMercator lastMousePosition;
 
 
     public BaseMapController(TileManager tileManager, MapParameters mapParameters) {
@@ -33,30 +37,95 @@ public final class BaseMapController {
         this.canvas = new Canvas();
         this.pane = new Pane( canvas );
         this.redrawNeeded = true;
+        this.minScrollTime = new SimpleLongProperty();
+        this.lastMousePosition = new SimpleObjectProperty<>();
         bindCanvasToPane();
-        defineGraphicsContexts();
-
-        //pane.getChildren().add(canvas) ;
 
         canvas.sceneProperty()
               .addListener( (p, oldS, newS) -> {
                   assert oldS == null;
                   newS.addPreLayoutPulseListener( this::redrawIfNeeded );
               } );
+
+        addListeners();
+        addHandlers();
+    }
+
+
+    public Pane pane() {
+        return pane;
+    }
+
+
+    public void centerOn(GeoPos position) {
+        //TODO i dont understand
+    }
+
+
+    private void storeMousePosition(Point2D position) {
+        lastMousePosition.set( position );
+    }
+
+
+    private void addHandlers() {
+        //TODO what goes in there ???
+        //  + use storeMousePosition sometime
+        pane.setOnMousePressed();
+        pane.setOnMouseDragged();
+        pane.setOnMouseReleased();
+        pane.setOnScroll( e -> {
+            int zoomDelta = (int)Math.signum( e.getDeltaY() );
+            if ( zoomDelta == 0 ) {
+                return;
+            }
+            long currentTime = System.currentTimeMillis();
+            if ( currentTime < minScrollTime.get() ) {
+                return;
+            }
+            minScrollTime.set( currentTime + 200 );
+            //TODO this is not finished
+        } );
+    }
+
+
+    private void addListeners() {
+        canvas.heightProperty()
+              .addListener( (heightProperty, oldHeight, newHeight) -> redrawOnNextPulse() );
+        canvas.widthProperty()
+              .addListener( (width, oldWidth, newWidth) -> redrawOnNextPulse() );
     }
 
 
     private void defineGraphicsContexts() {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-        TileManager.TileId tileId = new TileManager.TileId( mapParameters.getZoomProperty(),
-                                                            mapParameters.getMinXProperty(),
-                                                            mapParameters.getMinYProperty() );
-        try {
-            graphicsContext.drawImage( tileManager.imageForTileAt( tileId ), mapParameters.getMinXProperty(),
-                                       mapParameters.getMinYProperty() );
-        }
-        catch ( IOException ignored ) {
-            ignored.printStackTrace();
+        double width = canvas.getWidth();
+        double height = canvas.getHeight();
+        double mapMinX = mapParameters.getMinX();
+        double mapMinY = mapParameters.getMinY();
+        int zoom = mapParameters.getZoom();
+
+        int firstRow = (int)mapMinX / TILE_SIZE;
+        int firstColumn = (int)mapMinY / TILE_SIZE;
+
+        int lastRow = (int)( mapMinX + width ) / TILE_SIZE;
+        int lastColumn = (int)( mapMinY + height ) / TILE_SIZE;
+
+        for ( int row = firstRow ; row < lastRow ; row++ ) {
+            for ( int col = firstColumn ; col < lastColumn ; col++ ) {
+                if ( TileManager.TileId.isValid( zoom, row, col ) ) {
+                    continue;
+                }
+
+                TileManager.TileId tileId = new TileManager.TileId( zoom, row, col );
+                try {
+                    Image tile = tileManager.imageForTileAt( tileId );
+                    graphicsContext.drawImage( tile, row, col );
+                    //TODO i don't think row and col are the right variables -- see in tests and if not find a formula
+                }
+                catch ( IOException ignored ) {
+                    ignored.printStackTrace();
+                }
+            }
         }
     }
 
@@ -69,21 +138,12 @@ public final class BaseMapController {
     }
 
 
-    public Pane pane() {
-        return pane;
-    }
-
-
-    public void centerOn(GeoPos position) {
-        //TODO
-    }
-
-
     private void redrawIfNeeded() {
         if ( !redrawNeeded ) {
             return;
         }
         redrawNeeded = false;
+        defineGraphicsContexts();
         redrawOnNextPulse();
     }
 
@@ -92,4 +152,6 @@ public final class BaseMapController {
         redrawNeeded = true;
         Platform.requestNextPulse();
     }
+
+    // TODO: events manager etc when seen lambda
 }
