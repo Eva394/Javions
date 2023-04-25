@@ -60,7 +60,7 @@ public final class TileManager {
      * @return the image with the give tile identity
      * @throws IOException if there is an input/output error
      */
-    public Image imageForTixleAt(TileId tileId) throws IOException {
+    public Image imageForTileAt(TileId tileId) throws IOException {
         int tileZoom = tileId.zoom;
         int tileX = tileId.x;
         int tileY = tileId.y;
@@ -120,6 +120,7 @@ public final class TileManager {
          * @param zoom zoom level
          * @param x    x coordinate
          * @param y    y coordinate
+         * @throws IllegalArgumentException if the parameters don't constitute a valid tile identity
          */
         public TileId {
             Preconditions.checkArgument( isValid( zoom, x, y ) );
