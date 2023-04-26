@@ -60,7 +60,8 @@ public final class TileManager {
      * @return the image with the give tile identity
      * @throws IOException if there is an input/output error
      */
-    public Image imageForTileAt(TileId tileId) throws IOException {
+    public Image imageForTileAt(TileId tileId) throws
+                                               IOException {
         int tileZoom = tileId.zoom;
         int tileX = tileId.x;
         int tileY = tileId.y;
@@ -86,7 +87,7 @@ public final class TileManager {
         else {
             Files.createDirectories( directoryPath );
 
-            String urlString = "https:\\" + serverName + "\\" + tileZoom + "\\" + tileX + "\\" + tileY + ".png";
+            String urlString = "https://" + serverName + "/" + tileZoom + "/" + tileX + "/" + tileY + ".png";
             URL url = new URL( urlString );
             URLConnection urlConnection = url.openConnection();
             urlConnection.setRequestProperty( "User-Agent", "Javions" );
