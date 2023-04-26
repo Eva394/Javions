@@ -43,20 +43,21 @@ public final class BaseMapController {
         this.tileManager = tileManager;
         this.mapParameters = mapParameters;
         this.canvas = new Canvas();
-        this.pane = new Pane( canvas );
+        this.pane = new Pane();
+        pane.getChildren()
+            .add( canvas );
         this.redrawNeeded = true;
         this.minScrollTime = new SimpleLongProperty();
         this.lastMousePosition = new SimpleObjectProperty<>();
         bindCanvasToPane();
+        installListeners();
+        installHandlers();
 
         canvas.sceneProperty()
               .addListener( (p, oldS, newS) -> {
                   assert oldS == null;
                   newS.addPreLayoutPulseListener( this::redrawIfNeeded );
               } );
-
-        installListeners();
-        installHandlers();
     }
 
 
@@ -146,12 +147,12 @@ public final class BaseMapController {
         int firstRow = (int)mapMinX / TILE_SIZE;
         int firstColumn = (int)mapMinY / TILE_SIZE;
 
-        int lastRow = (int)( mapMinX + width ) / TILE_SIZE; //TODO i think theres a +1
-        int lastColumn = (int)( mapMinY + height ) / TILE_SIZE; //TODO same here
+        int lastRow = (int)( mapMinX + width ) / TILE_SIZE + 1;
+        int lastColumn = (int)( mapMinY + height ) / TILE_SIZE + 1;
 
-        int shiftedRow = mapMinX - firstRow * TILE_SIZE;
+        int shiftedRow = -( mapMinX - firstRow * TILE_SIZE );
         for ( int row = firstRow ; row < lastRow ; row++ ) {
-            int shiftedCol = mapMinY - firstColumn * TILE_SIZE;
+            int shiftedCol = -( mapMinY - firstColumn * TILE_SIZE );
             for ( int col = firstColumn ; col < lastColumn ; col++ ) {
                 if ( !TileManager.TileId.isValid( zoom, row, col ) ) {
                     continue;
