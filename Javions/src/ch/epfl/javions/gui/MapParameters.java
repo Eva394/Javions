@@ -1,46 +1,63 @@
 package ch.epfl.javions.gui;
-/*
- *  Author :        Mangano Eva
- *  Date :          25/04/2023
- */
 
-
+import ch.epfl.javions.Preconditions;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.DoubleProperty;
 
 public final class MapParameters {
-
     private final IntegerProperty zoom;
+    private final DoubleProperty minX;
+    private final DoubleProperty minY;
 
-    //TODO idk if this is double or int
-    private final IntegerProperty minX;
-    //TODO idk if this is double or int
-    private final IntegerProperty minY;
-
-
-    public MapParameters(int zoom, int minX, int minY) {
-        //TODO i needed intellij to stop doing errors everywhere so i created this
-        //  it should be correct so far but idk if theres something more to do or not
-        this.zoom = new SimpleIntegerProperty( zoom );
-        this.minX = new SimpleIntegerProperty( minX );
-        this.minY = new SimpleIntegerProperty( minY );
+    public MapParameters(int zoom, double minX, double minY) {
+        Preconditions.checkArgument(zoom < 6 || zoom > 19); {
+        }
+        this.zoom = new SimpleIntegerProperty(zoom);
+        this.minX = new SimpleDoubleProperty(minX);
+        this.minY = new SimpleDoubleProperty(minY);
     }
 
+    public IntegerProperty zoomProperty() {
+        return zoom;
+    }
+
+    public DoubleProperty minXProperty() {
+        return minX;
+    }
+
+    public DoubleProperty minYProperty() {
+        return minY;
+    }
 
     public int getZoom() {
-        //TODO i needed intellij to stop doing errors everywhere so i created this but the body is still to do
-        return 0;
+        return zoom.get();
     }
-
 
     public int getMinX() {
-        //TODO i needed intellij to stop doing errors everywhere so i created this but the body is still to do
-        return 0;
+        return (int) minX.get();
     }
 
-
     public int getMinY() {
-        //TODO i needed intellij to stop doing errors everywhere so i created this but the body is still to do
-        return 0;
+        return (int) minY.get();
+    }
+
+    public void scroll(double deltaX, double deltaY) {
+        minX.set(minX.get() + deltaX);
+        minY.set(minY.get() + deltaY);
+    }
+
+    public void changeZoomLevel(int deltaZoom) {
+        int newZoom = zoom.get() + deltaZoom;
+        if (newZoom < 6) {
+            newZoom = 6;
+        } else if (newZoom > 19) {
+            newZoom = 19;
+        }
+        double factor = Math.pow(2, newZoom - zoom.get());
+        minX.set(minX.get() * factor);
+        minY.set(minY.get() * factor);
+        zoom.set(newZoom);
     }
 }
