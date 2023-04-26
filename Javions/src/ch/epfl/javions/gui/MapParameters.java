@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.Math2;
 import ch.epfl.javions.Preconditions;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -50,11 +51,9 @@ public final class MapParameters {
 
     public void changeZoomLevel(int deltaZoom) {
         int newZoom = zoom.get() + deltaZoom;
-        if (newZoom < 6) {
-            newZoom = 6;
-        } else if (newZoom > 19) {
-            newZoom = 19;
-        }
+
+        Math2.clamp(6, newZoom,19);
+
         double factor = Math.pow(2, newZoom - zoom.get());
         minX.set(minX.get() * factor);
         minY.set(minY.get() * factor);
