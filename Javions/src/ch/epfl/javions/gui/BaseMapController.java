@@ -19,6 +19,9 @@ import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 
+/**
+ * Represents the base of the map. Manages the display and the interactions with the background.
+ */
 public final class BaseMapController {
 
     private static final int TILE_SIZE = 256;
@@ -31,6 +34,11 @@ public final class BaseMapController {
     private boolean redrawNeeded;
 
 
+    /**
+     * Constructor. Builds an instance of <code>BaseMapManager</code>
+     * @param tileManager   tile manager
+     * @param mapParameters parameters of the map (position and zoom)
+     */
     public BaseMapController(TileManager tileManager, MapParameters mapParameters) {
         this.tileManager = tileManager;
         this.mapParameters = mapParameters;
@@ -52,11 +60,19 @@ public final class BaseMapController {
     }
 
 
+    /**
+     * Returns the JavaFX pane which displays the base of the map
+     * @return the JavaFX pane which displays the base of the map
+     */
     public Pane pane() {
         return pane;
     }
 
 
+    /**
+     * Centers the map on the given position (<code>position</code>)
+     * @param position the position to center the map on
+     */
     public void centerOn(GeoPos position) {
         //TODO i dont understand
     }
@@ -179,6 +195,4 @@ public final class BaseMapController {
         redrawNeeded = true;
         Platform.requestNextPulse();
     }
-
-    // TODO: events manager etc when seen lambda
 }
