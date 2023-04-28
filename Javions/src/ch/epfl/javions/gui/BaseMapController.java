@@ -8,11 +8,16 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -87,58 +92,50 @@ public final class BaseMapController {
 
 
     private void installHandlers() {
+        pane.setOnScroll( this::zoomHandler );
+        pane.setOnMouseDragged( this::movementHandler );
         pane.setOnMousePressed( event -> storeMousePosition( new Point2D( event.getX(), event.getY() ) ) );
-
-        pane.setOnMouseDragged( event -> {
-            Point2D newMousePosition = new Point2D( event.getX(), event.getY() );
-            double xTranslation = lastMousePosition.get()
-                                                   .getX() - newMousePosition.getX();
-            double yTranslation = lastMousePosition.get()
-                                                   .getY() - newMousePosition.getY();
-
-            mapParameters.get()
-                         .scroll( xTranslation, yTranslation );
-            storeMousePosition( newMousePosition );
-        } );
-
         pane.setOnMouseReleased( event -> storeMousePosition( new Point2D( event.getX(), event.getY() ) ) );
+    }
 
-        pane.setOnScroll( event -> {
-            int zoomDelta = (int)Math.signum( event.getDeltaY() );
-            if ( zoomDelta == 0 ) {
-                return;
-            }
-            long currentTime = System.currentTimeMillis();
-            if ( currentTime < minScrollTime.get() ) {
-                return;
-            }
-            minScrollTime.set( currentTime + 200 );
 
-            double posMouseX = event.getX();
-            double posMouseY = event.getY();
+    private void movementHandler(MouseEvent event) {
+        Point2D newMousePosition = new Point2D( event.getX(), event.getY() );
+        double xTranslation = lastMousePosition.get()
+                                               .getX() - newMousePosition.getX();
+        double yTranslation = lastMousePosition.get()
+                                               .getY() - newMousePosition.getY();
 
-            DoubleProperty mapMinXProperty = mapParameters.get()
-                                                          .minXProperty();
-            DoubleProperty mapMinYProperty = mapParameters.get()
-                                                          .minYProperty();
+        mapParameters.get()
+                     .scroll( xTranslation, yTranslation );
+        storeMousePosition( newMousePosition );
+    }
 
-            double firstTileX = mapMinXProperty.get();
-            double firstTileY = mapMinYProperty.get();
 
-            double deltaX = firstTileX - posMouseX;
-            double deltaY = firstTileY - posMouseY;
+    private void zoomHandler(ScrollEvent event) {
+        int zoomDelta = (int)Math.signum( event.getDeltaY() );
+        if ( zoomDelta == 0 ) {
+            return;
+        }
+        long currentTime = System.currentTimeMillis();
+        if ( currentTime < minScrollTime.get() ) {
+            return;
+        }
+        minScrollTime.set( currentTime + 200 );
 
-            mapParameters.get()
-                         .scroll( deltaX, deltaY );
+        double posMouseX = event.getX();
+        double posMouseY = event.getY();
 
-            mapParameters.get()
-                         .changeZoomLevel( zoomDelta );
+        mapParameters.get()
+                     .scroll( posMouseX, posMouseY );
 
-            mapParameters.get()
-                         .scroll( -deltaX, -deltaY );
+        mapParameters.get()
+                     .changeZoomLevel( zoomDelta );
 
-            storeMousePosition( new Point2D( posMouseX, posMouseY ) );
-        } );
+        mapParameters.get()
+                     .scroll( -posMouseX, -posMouseY );
+
+        storeMousePosition( new Point2D( posMouseX, posMouseY ) );
     }
 
 
