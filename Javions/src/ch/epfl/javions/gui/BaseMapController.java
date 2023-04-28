@@ -73,13 +73,12 @@ public final class BaseMapController {
      * @param position the position to center the map on
      */
     public void centerOn(GeoPos position) {
-        mapParameters.get()
-                     .scroll( WebMercator.x( mapParameters.get()
-                                                          .getZoom(), canvas.getWidth() / 2 ), WebMercator.y(
-                             mapParameters.get()
-                                          .getZoom(), canvas.getHeight() / 2 ) );
+        int currentZoomLevel = mapParameters.get().getZoom();
+        mapParameters.get().scroll(
+                WebMercator.x(currentZoomLevel, canvas.getWidth()/2),
+                WebMercator.y(currentZoomLevel,  canvas.getHeight()/2)
+        );
     }
-
 
     private void storeMousePosition(Point2D position) {
         lastMousePosition.set( position );

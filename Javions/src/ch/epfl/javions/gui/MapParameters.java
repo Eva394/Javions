@@ -7,12 +7,24 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+/**
+ * represents the parameters of the portion of the map visible in the graphical interface
+ * @author Nagyung Kim (339628)
+ */
+
 public final class MapParameters {
     public static final int MIN_ZOOM_LEVEL = 6;
     public static final int MAX_ZOOM_LEVEL = 19;
     private final IntegerProperty zoom;
     private final DoubleProperty minX;
     private final DoubleProperty minY;
+
+    /**
+     *
+     * @param zoom a value of type int representing the zoom level
+     * @param minX a double value representing the x-coordinate of the top-left corner of the visible portion of the map
+     * @param minY
+     */
 
 
     public MapParameters(int zoom, double minX, double minY) {
@@ -22,41 +34,82 @@ public final class MapParameters {
         this.minY = new SimpleDoubleProperty( minY );
     }
 
+    /**
+     *
+     * @return
+     */
+
 
     public IntegerProperty zoomProperty() {
         return zoom;
     }
+
+    /**
+     *
+     * @return
+     */
 
 
     public DoubleProperty minXProperty() {
         return minX;
     }
 
+    /**
+     *
+     * @return
+     */
+
 
     public DoubleProperty minYProperty() {
         return minY;
     }
+
+    /**
+     *
+     * @return
+     */
 
 
     public int getZoom() {
         return zoom.get();
     }
 
+    /**
+     *
+     * @return
+     */
 
-    public int getMinX() {
-        return (int)minX.get();
+
+    public double getMinX() {
+        return minX.get();
     }
 
+    /**
+     *
+     * @return
+     */
 
-    public int getMinY() {
-        return (int)minY.get();
+
+    public double getMinY() {
+        return minY.get();
     }
+
+    /**
+     *
+     * @param deltaX
+     * @param deltaY
+     */
 
 
     public void scroll(double deltaX, double deltaY) {
         minX.set( minX.get() + deltaX );
         minY.set( minY.get() + deltaY );
     }
+
+    /**
+     *
+     * @param deltaZoom
+     */
 
 
     public void changeZoomLevel(int deltaZoom) {
