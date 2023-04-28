@@ -73,12 +73,13 @@ public final class BaseMapController {
      * @param position the position to center the map on
      */
     public void centerOn(GeoPos position) {
-        int currentZoomLevel = mapParameters.get().getZoom();
-        mapParameters.get().scroll(
-                WebMercator.x(currentZoomLevel, canvas.getWidth()/2),
-                WebMercator.y(currentZoomLevel,  canvas.getHeight()/2)
-        );
+        int currentZoomLevel = mapParameters.get()
+                                            .getZoom();
+        mapParameters.get()
+                     .scroll( WebMercator.x( currentZoomLevel, canvas.getWidth() / 2 ),
+                              WebMercator.y( currentZoomLevel, canvas.getHeight() / 2 ) );
     }
+
 
     private void storeMousePosition(Point2D position) {
         lastMousePosition.set( position );
@@ -151,10 +152,10 @@ public final class BaseMapController {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         double width = canvas.getWidth();
         double height = canvas.getHeight();
-        int mapMinX = mapParameters.get()
-                                   .getMinX();
-        int mapMinY = mapParameters.get()
-                                   .getMinY();
+        double mapMinX = mapParameters.get()
+                                      .getMinX();
+        double mapMinY = mapParameters.get()
+                                      .getMinY();
         int zoom = mapParameters.get()
                                 .getZoom();
 
@@ -164,9 +165,9 @@ public final class BaseMapController {
         int lastRow = (int)( mapMinX + width ) / TILE_SIZE + 1;
         int lastColumn = (int)( mapMinY + height ) / TILE_SIZE + 1;
 
-        int shiftedRow = -( mapMinX - firstRow * TILE_SIZE );
+        double shiftedRow = -( mapMinX - firstRow * TILE_SIZE );
         for ( int row = firstRow ; row < lastRow ; row++ ) {
-            int shiftedCol = -( mapMinY - firstColumn * TILE_SIZE );
+            double shiftedCol = -( mapMinY - firstColumn * TILE_SIZE );
             for ( int col = firstColumn ; col < lastColumn ; col++ ) {
                 if ( !TileManager.TileId.isValid( zoom, row, col ) ) {
                     continue;
@@ -176,7 +177,6 @@ public final class BaseMapController {
                 try {
                     Image tile = tileManager.imageForTileAt( tileId );
                     graphicsContext.drawImage( tile, shiftedRow, shiftedCol );
-                    //TODO idk if its the right formula for shiftedRow and shiftedCol
                 }
                 catch ( IOException ignored ) {
                     ignored.printStackTrace();
