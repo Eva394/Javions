@@ -58,10 +58,12 @@ public final class AdsbDemodulator {
             if ( windowContainsPreamble( previousSpikesSum, nextSpikesSum, currentValleySum, currentSpikesSum ) ) {
                 long timestampNs = powerWindow.position() * TO_NANOSECONDS;
 
-                for ( int i = 0 ; i < RawMessage.LENGTH ; i++ ) {
-                    computeByte( bytes, i );
-                }
+                computeByte( bytes, 0 );
+
                 if ( RawMessage.size( bytes[0] ) == RawMessage.LENGTH ) {
+                    for ( int i = 1 ; i < RawMessage.LENGTH ; i++ ) {
+                        computeByte( bytes, i );
+                    }
                     RawMessage rawMessage = RawMessage.of( timestampNs, bytes );
                     if ( rawMessage != null ) {
                         powerWindow.advanceBy( WINDOW_SIZE );

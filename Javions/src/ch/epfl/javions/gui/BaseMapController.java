@@ -134,8 +134,6 @@ public final class BaseMapController {
             mapParameters.get()
                          .scroll( -deltaX, -deltaY );
 
-            redrawOnNextPulse();
-
             storeMousePosition( new Point2D( posMouseX, posMouseY ) );
         } );
     }
