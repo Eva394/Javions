@@ -23,7 +23,7 @@ public final class MapParameters {
      *
      * @param zoom a value of type int representing the zoom level
      * @param minX a double value representing the x-coordinate of the top-left corner of the visible portion of the map
-     * @param minY
+     * @param minY a double value representing the y-coordinate of the top-left corner of the visible portion of the map
      */
 
 
@@ -36,7 +36,7 @@ public final class MapParameters {
 
     /**
      *
-     * @return
+     * @return zoom value
      */
 
 
@@ -46,7 +46,7 @@ public final class MapParameters {
 
     /**
      *
-     * @return
+     * @return minX value
      */
 
 
@@ -56,7 +56,7 @@ public final class MapParameters {
 
     /**
      *
-     * @return
+     * @return minY value
      */
 
 
@@ -66,7 +66,7 @@ public final class MapParameters {
 
     /**
      *
-     * @return
+     * @return zoom level
      */
 
 
@@ -76,7 +76,7 @@ public final class MapParameters {
 
     /**
      *
-     * @return
+     * @return minX value
      */
 
 
@@ -86,7 +86,7 @@ public final class MapParameters {
 
     /**
      *
-     * @return
+     * @return minY value
      */
 
 
@@ -96,8 +96,8 @@ public final class MapParameters {
 
     /**
      *
-     * @param deltaX
-     * @param deltaY
+     * @param deltaX change in x value
+     * @param deltaY change in y value
      */
 
 
@@ -108,7 +108,7 @@ public final class MapParameters {
 
     /**
      *
-     * @param deltaZoom
+     * @param deltaZoom change in zoom level
      */
 
 
