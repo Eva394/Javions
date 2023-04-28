@@ -25,8 +25,8 @@ import java.util.Objects;
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x,
                                       double y) implements Message {
 
-
-    public static final int[] ALT_BITS_ORDER = new int[]{2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7};
+//TODO find name for INT
+private static final int[] ALT_BITS_ORDER = new int[]{2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7};
     private static final int ALT_START = 36;
     private static final int ALT_SIZE = 12;
     private static final int Q_START = 40;
@@ -48,6 +48,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static final int MSB0_SIZE = 9;
     private static final int LSB0_START = 0;
     private static final int LSB0_SIZE = 3;
+    private static final int CPR_SIZE = -17;
 
 
     /**
@@ -183,6 +184,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     private static double normalize(double value) {
-        return Math.scalb( value, -17 );
+        return Math.scalb( value, CPR_SIZE );
     }
 }

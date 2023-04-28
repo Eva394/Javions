@@ -71,11 +71,11 @@ public final class ByteString {
      */
     public long bytesInRange(int fromIndex, int toIndex) {
         Objects.checkFromToIndex( fromIndex, toIndex, bytes.length );
-//        int numBytes = toIndex - fromIndex;
-//
-//        if ( numBytes > Long.SIZE ) {
-//            throw new IndexOutOfBoundsException();
-//        }
+        int numBytes = toIndex - fromIndex;
+
+        if ( numBytes > Long.SIZE ) {
+            throw new IndexOutOfBoundsException();
+        }
 
         long result = 0;
         for ( int i = fromIndex ; i < toIndex ; i++ ) {
@@ -123,14 +123,5 @@ public final class ByteString {
 
     private static boolean isEven(String hexString) {
         return hexString.length() % 2 == 0;
-    }
-
-
-    /**
-     * copy the array which passed the constructor
-     * @return a copy of the array which passed the constructor
-     */
-    private byte[] getBytes() {
-        return bytes.clone();
     }
 }

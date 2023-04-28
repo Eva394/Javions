@@ -19,6 +19,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
     private static final String ELEMENTS = "-ABCDEFGHIJKLMNOPQRSTUVWXYZ----- ---------------0123456789------";
     private static final int PARTIAL_CATEGORY_START = 48;
     private static final int PARTIAL_CATEGORY_SIZE = 3;
+    private static final int CALL_SIGN_SIZE = 8;
 
 
     /**
@@ -70,7 +71,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
 
 
     private static void buildCallSignStr(long payload, StringBuilder cS) {
-        for ( int i = 0 ; i < Byte.SIZE ; i++ ) {
+        for ( int i = 0 ; i < CALL_SIGN_SIZE ; i++ ) {
             int character = Bits.extractUInt( payload, CALLSIGN_CHAR_SIZE * i, CALLSIGN_CHAR_SIZE );
             char c = ELEMENTS.charAt( character );
             if ( !( c == ' ' ) ) {
