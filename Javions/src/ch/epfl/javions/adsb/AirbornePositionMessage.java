@@ -25,8 +25,7 @@ import java.util.Objects;
 public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x,
                                       double y) implements Message {
 
-//TODO find name for INT
-private static final int[] ALT_BITS_ORDER = new int[]{2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7};
+    private static final int[] ALT_BITS_ORDER = new int[]{2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7};
     private static final int ALT_START = 36;
     private static final int ALT_SIZE = 12;
     private static final int Q_START = 40;

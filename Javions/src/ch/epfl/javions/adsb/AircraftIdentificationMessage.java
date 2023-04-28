@@ -11,8 +11,8 @@ import java.util.Objects;
  * @author Nagyung KIM (339628)
  */
 
-public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAddress, int category,
-                                            CallSign callSign) implements Message {
+public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAddress, int category, CallSign callSign)
+        implements Message {
 
     private static final int MSB_BASE = 0xE;
     private static final int CALLSIGN_CHAR_SIZE = 6;
@@ -74,9 +74,10 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         for ( int i = 0 ; i < CALL_SIGN_SIZE ; i++ ) {
             int character = Bits.extractUInt( payload, CALLSIGN_CHAR_SIZE * i, CALLSIGN_CHAR_SIZE );
             char c = ELEMENTS.charAt( character );
-            if ( !( c == ' ' ) && !(cS.isEmpty())) {
-                cS.append( c );
+            if ( ( c == ' ' ) && cS.isEmpty() ) {
+                continue;
             }
+            cS.append( c );
         }
     }
 }

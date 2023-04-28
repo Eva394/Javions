@@ -44,7 +44,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
         switch ( message ) {
             case AirbornePositionMessage positionMessage -> {
-                updatePositionMessage( message, positionMessage );
+                updatePositionMessage( positionMessage );
             }
             case AircraftIdentificationMessage identificationMessage -> {
                 updateIdentificationMessage( identificationMessage );
@@ -69,20 +69,22 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     }
 
 
-    private void updatePositionMessage(Message message, AirbornePositionMessage positionMessage) {
-        storeMessage( positionMessage );
+    private void updatePositionMessage(AirbornePositionMessage positionMessage) {
+        lastOddAndEvenPositionMessages[positionMessage.parity()] = positionMessage;
         stateSetter.setAltitude( positionMessage.altitude() );
         boolean isEven = isEven( positionMessage );
         GeoPos position = null;
 
         if ( isEven && lastOddAndEvenPositionMessages[1] != null
-             && ( message.timeStampNs() - lastOddAndEvenPositionMessages[1].timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {
-            position = CprDecoder.decodePosition( positionMessage.x(), positionMessage.y(),
+             && ( positionMessage.timeStampNs() - lastOddAndEvenPositionMessages[1].timeStampNs() )
+                <= MAX_TIMESTAMP_DIFF ) {
+            position = CprDecoder.decodePosition( lastOddAndEvenPositionMessages[0].x(),
+                                                  lastOddAndEvenPositionMessages[0].y(),
                                                   lastOddAndEvenPositionMessages[1].x(),
                                                   lastOddAndEvenPositionMessages[1].y(), EVEN_MESSAGE );
         }
         else if ( !isEven && lastOddAndEvenPositionMessages[0] != null
-                  && ( message.timeStampNs() - lastOddAndEvenPositionMessages[0].timeStampNs() )
+                  && ( positionMessage.timeStampNs() - lastOddAndEvenPositionMessages[0].timeStampNs() )
                      <= MAX_TIMESTAMP_DIFF ) {
             position = CprDecoder.decodePosition( lastOddAndEvenPositionMessages[0].x(),
                                                   lastOddAndEvenPositionMessages[0].y(), positionMessage.x(),
@@ -113,16 +115,6 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     private void updateVelocityMessage(AirborneVelocityMessage velocityMessage) {
         stateSetter.setVelocity( velocityMessage.speed() );
         stateSetter.setTrackOrHeading( velocityMessage.trackOrHeading() );
-    }
-
-
-    private void storeMessage(AirbornePositionMessage message) {
-        if ( isEven( message ) ) {
-            lastOddAndEvenPositionMessages[0] = message;
-        }
-        else {
-            lastOddAndEvenPositionMessages[1] = message;
-        }
     }
 
 
