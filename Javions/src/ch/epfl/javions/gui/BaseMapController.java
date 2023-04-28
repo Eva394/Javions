@@ -24,7 +24,7 @@ public final class BaseMapController {
 
     private static final int TILE_SIZE = 256;
     private final TileManager tileManager;
-    private final ObjectProperty<MapParameters> mapParameters;
+    private final ObjectProperty<MapParameters> mapParameters;  //TODO idk if this is a property or not
     private final Canvas canvas;
     private final Pane pane;
     private final LongProperty minScrollTime;
@@ -76,8 +76,8 @@ public final class BaseMapController {
         int currentZoomLevel = mapParameters.get()
                                             .getZoom();
         mapParameters.get()
-                     .scroll( WebMercator.x( currentZoomLevel, canvas.getWidth() / 2 ),
-                              WebMercator.y( currentZoomLevel, canvas.getHeight() / 2 ) );
+                     .scroll( WebMercator.x( currentZoomLevel, position.longitude() / 2 ),
+                              WebMercator.y( currentZoomLevel, position.latitude() / 2 ) );
     }
 
 
@@ -88,6 +88,7 @@ public final class BaseMapController {
 
     private void installHandlers() {
         pane.setOnMousePressed( event -> storeMousePosition( new Point2D( event.getX(), event.getY() ) ) );
+
         pane.setOnMouseDragged( event -> {
             Point2D newMousePosition = new Point2D( event.getX(), event.getY() );
             double xTranslation = lastMousePosition.get()
@@ -99,7 +100,9 @@ public final class BaseMapController {
                          .scroll( xTranslation, yTranslation );
             storeMousePosition( newMousePosition );
         } );
+
         pane.setOnMouseReleased( event -> storeMousePosition( new Point2D( event.getX(), event.getY() ) ) );
+
         pane.setOnScroll( event -> {
             int zoomDelta = (int)Math.signum( event.getDeltaY() );
             if ( zoomDelta == 0 ) {
@@ -122,8 +125,8 @@ public final class BaseMapController {
             double firstTileX = mapMinXProperty.get();
             double firstTileY = mapMinYProperty.get();
 
-            double deltaX = posMouseX - firstTileX;
-            double deltaY = posMouseY - firstTileY;
+            double deltaX = firstTileX - posMouseX;
+            double deltaY = firstTileY - posMouseY;
 
             mapParameters.get()
                          .scroll( deltaX, deltaY );
@@ -144,7 +147,7 @@ public final class BaseMapController {
               .addListener( (heightProperty, oldHeight, newHeight) -> redrawOnNextPulse() );
         canvas.widthProperty()
               .addListener( (width, oldWidth, newWidth) -> redrawOnNextPulse() );
-        mapParameters.addListener( (parameter, oldParameter, newParameter) -> redrawOnNextPulse() );
+        //mapParameters.addListener( (parameter, oldParameter, newParameter) -> redrawOnNextPulse() );
     }
 
 

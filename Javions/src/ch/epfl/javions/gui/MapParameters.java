@@ -19,11 +19,13 @@ public final class MapParameters {
     private final DoubleProperty minX;
     private final DoubleProperty minY;
 
+
     /**
-     *
      * @param zoom a value of type int representing the zoom level
-     * @param minX a double value representing the x-coordinate of the top-left corner of the visible portion of the map
-     * @param minY a double value representing the y-coordinate of the top-left corner of the visible portion of the map
+     * @param minX a double value representing the x-coordinate of the top-left corner of the visible portion of the
+     *             map
+     * @param minY a double value representing the y-coordinate of the top-left corner of the visible portion of the
+     *             map
      */
 
 
@@ -34,8 +36,8 @@ public final class MapParameters {
         this.minY = new SimpleDoubleProperty( minY );
     }
 
+
     /**
-     *
      * @return zoom value
      */
 
@@ -44,8 +46,8 @@ public final class MapParameters {
         return zoom;
     }
 
+
     /**
-     *
      * @return minX value
      */
 
@@ -54,8 +56,8 @@ public final class MapParameters {
         return minX;
     }
 
+
     /**
-     *
      * @return minY value
      */
 
@@ -64,8 +66,8 @@ public final class MapParameters {
         return minY;
     }
 
+
     /**
-     *
      * @return zoom level
      */
 
@@ -74,8 +76,8 @@ public final class MapParameters {
         return zoom.get();
     }
 
+
     /**
-     *
      * @return minX value
      */
 
@@ -84,8 +86,8 @@ public final class MapParameters {
         return minX.get();
     }
 
+
     /**
-     *
      * @return minY value
      */
 
@@ -94,8 +96,8 @@ public final class MapParameters {
         return minY.get();
     }
 
+
     /**
-     *
      * @param deltaX change in x value
      * @param deltaY change in y value
      */
@@ -106,8 +108,8 @@ public final class MapParameters {
         minY.set( minY.get() + deltaY );
     }
 
+
     /**
-     *
      * @param deltaZoom change in zoom level
      */
 
@@ -118,7 +120,7 @@ public final class MapParameters {
 
         Math2.clamp( MIN_ZOOM_LEVEL, newZoom, MAX_ZOOM_LEVEL );
 
-        double factor = Math.pow( 2, newZoom - zoom.get() );
+        double factor = Math.scalb( 1d, newZoom - zoom.get() );
         minX.set( minX.get() * factor );
         minY.set( minY.get() * factor );
         zoom.set( newZoom );
