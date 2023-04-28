@@ -70,10 +70,10 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
 
 
     private static void buildCallSignStr(long payload, StringBuilder cS) {
-        for ( int i = 0 ; i < Byte.SIZE ; i++ ) {
+        for ( int i = 0 ; i < 8 ; i++ ) {
             int character = Bits.extractUInt( payload, CALLSIGN_CHAR_SIZE * i, CALLSIGN_CHAR_SIZE );
             char c = ELEMENTS.charAt( character );
-            if ( !( c == ' ' ) ) {
+            if ( !( c == ' ' ) && !(cS.isEmpty())) {
                 cS.append( c );
             }
         }
