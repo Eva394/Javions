@@ -6,6 +6,7 @@ package ch.epfl.javions.gui;
 
 
 import ch.epfl.javions.GeoPos;
+import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.geometry.Point2D;
@@ -72,10 +73,11 @@ public final class BaseMapController {
      * @param position the position to center the map on
      */
     public void centerOn(GeoPos position) {
-        //TODO i dont understand
-        //  ed says to use WebMercator somewhere
+        mapParameters.get().scroll(
+                WebMercator.x(mapParameters.get().getZoom(), canvas.getWidth()/2),
+                WebMercator.y(mapParameters.get().getZoom(), canvas.getHeight()/2)
+        );
     }
-
 
     private void storeMousePosition(Point2D position) {
         lastMousePosition.set( position );

@@ -74,7 +74,7 @@ public record AircraftIdentificationMessage(long timeStampNs, IcaoAddress icaoAd
         for ( int i = 0 ; i < CALL_SIGN_SIZE ; i++ ) {
             int character = Bits.extractUInt( payload, CALLSIGN_CHAR_SIZE * i, CALLSIGN_CHAR_SIZE );
             char c = ELEMENTS.charAt( character );
-            if ( !( c == ' ' ) ) {
+            if ( !( c == ' ' ) && !(cS.isEmpty())) {
                 cS.append( c );
             }
         }
