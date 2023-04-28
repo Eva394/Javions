@@ -1,8 +1,4 @@
 package ch.epfl.javions.aircraft;
-/*
- *  Author :        Mangano Eva
- *  Date :          26/02/2023
- */
 
 
 import ch.epfl.javions.Preconditions;
@@ -16,10 +12,7 @@ import java.util.regex.Pattern;
  */
 public record AircraftDescription(String string) {
 
-    /**
-     * Description
-     */
-    private static Pattern descriptionPattern;
+    public static final Pattern DESCRIPTION_PATTERN = Pattern.compile( "[ABDGHLPRSTV-][0123468][EJPT-]" );
 
 
     /**
@@ -29,8 +22,7 @@ public record AircraftDescription(String string) {
      * @author Eva Mangano 345375
      */
     public AircraftDescription {
-        descriptionPattern = Pattern.compile( "[ABDGHLPRSTV-][0123468][EJPT-]" );
-        Preconditions.checkArgument( descriptionPattern.matcher( string )
-                                                       .matches() || string.equals( "" ) );
+        Preconditions.checkArgument( DESCRIPTION_PATTERN.matcher( string )
+                                                        .matches() || string.isEmpty() );
     }
 }

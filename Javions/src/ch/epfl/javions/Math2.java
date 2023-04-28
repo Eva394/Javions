@@ -23,13 +23,9 @@ public final class Math2 {
      *                                  v and value v if it is in range
      */
     public static int clamp(int min, int v, int max) {
-
         Preconditions.checkArgument( min <= max );
 
-        v = Math.min( v, max );
-        v = Math.max( v, min );
-
-        return v;
+        return Math.max( Math.min( v, max ), min );
     }
 
 
@@ -40,6 +36,6 @@ public final class Math2 {
      */
     public static double asinh(double x) {
 
-        return Math.log( x + Math.sqrt( Math.pow( x, 2 ) + 1 ) );
+        return Math.log( x + Math.hypot( x, 1d ) );
     }
 }

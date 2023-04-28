@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 
 public record CallSign(String string) {
 
-    private static Pattern CallSign;
+    public static final Pattern CALL_SIGN = Pattern.compile( "[A-Z0-9 ]{0,8}" );
 
 
     /**
@@ -21,8 +21,7 @@ public record CallSign(String string) {
      * @throws IllegalArgumentException if the string is not the valid type of call sign
      */
     public CallSign {
-        CallSign = Pattern.compile( "[A-Z0-9 ]{0,8}" );
-        Preconditions.checkArgument( CallSign.matcher( string )
-                                             .matches() || string.equals( "" ) );
+        Preconditions.checkArgument( CALL_SIGN.matcher( string )
+                                              .matches() || string.isEmpty() );
     }
 }

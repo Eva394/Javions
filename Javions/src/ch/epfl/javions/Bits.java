@@ -1,15 +1,11 @@
 package ch.epfl.javions;
-/*
- *  Author :        Mangano Eva
- *  Date :          21/02/2023
- */
 
 import java.util.Objects;
 
 /**
  * @author Eva Mangano 345375 Contains methods for extracting a subset of a 64bit long value
  */
-public class Bits {
+public final class Bits {
 
 
     private Bits() {

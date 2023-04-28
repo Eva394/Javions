@@ -1,9 +1,4 @@
 package ch.epfl.javions;
-/*
- *  Author :        Mangano Eva
- *  Date :          21/02/2023
- */
-
 
 
 /**
@@ -61,14 +56,14 @@ public final class Units {
      * @author Eva Mangano 345375
      */
     public static double convertTo(double value, double toUnit) {
-        return value * ( 1 / toUnit );
+        return value * ( 1d / toUnit );
     }
 
 
     /**
      * @author Eva Mangano 345375 Defines the units of the angles.
      */
-    public final class Angle {
+    public static final class Angle {
 
         /**
          * Value af a radian (reference unit)
@@ -97,7 +92,7 @@ public final class Units {
     /**
      * @author Eva Mangano 345375 Defines the units of length
      */
-    public final class Length {
+    public static final class Length {
 
         /**
          * Value of a meter (reference unit)
@@ -134,7 +129,7 @@ public final class Units {
     /**
      * @author Eva Mangano 345375 Defines the units of time
      */
-    public final class Time {
+    public static final class Time {
 
         /**
          * Value of a second (reference unit)
@@ -160,7 +155,7 @@ public final class Units {
      * @author Eva Mangano 345375 Defines the units of speed
      */
 
-    public final class Speed {
+    public static final class Speed {
 
         /**
          * Value of a knot

@@ -1,8 +1,4 @@
 package ch.epfl.javions.aircraft;
-/*
- *  Author :        Mangano Eva
- *  Date :          26/02/2023
- */
 
 
 import ch.epfl.javions.Preconditions;
@@ -16,10 +12,7 @@ import java.util.regex.Pattern;
  */
 public record AircraftRegistration(String string) {
 
-    /**
-     * Immatriculation
-     */
-    private static Pattern immatriculationPattern;
+    public static final Pattern IMMATRICULATION_PATTERN = Pattern.compile( "[A-Z0-9 .?/_+-]+" );
 
 
     /**
@@ -29,8 +22,7 @@ public record AircraftRegistration(String string) {
      * @author Eva Mangano 345375
      */
     public AircraftRegistration {
-        immatriculationPattern = Pattern.compile( "[A-Z0-9 .?/_+-]+" );
-        Preconditions.checkArgument( immatriculationPattern.matcher( string )
-                                                           .matches() );
+        Preconditions.checkArgument( IMMATRICULATION_PATTERN.matcher( string )
+                                                            .matches() );
     }
 }

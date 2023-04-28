@@ -12,6 +12,8 @@ import java.util.Objects;
  */
 public final class ByteString {
 
+    private static final HexFormat HEX_FORMAT = HexFormat.of()
+                                                         .withUpperCase();
     private final byte[] bytes;
 
 
@@ -30,26 +32,9 @@ public final class ByteString {
      * @return a byte string which is equal to the given hexadecimal representation
      */
     public static ByteString ofHexadecimalString(String hexString) {
-        Preconditions.checkArgument( isEven( hexString ) );
 
-        HexFormat hexFormat = HexFormat.of()
-                                       .withUpperCase();
-        byte[] tempBytes = hexFormat.parseHex( hexString );
+        byte[] tempBytes = HEX_FORMAT.parseHex( hexString );
         return new ByteString( tempBytes );
-    }
-
-
-    private static boolean isEven(String hexString) {
-        return hexString.length() % 2 == 0;
-    }
-
-
-    /**
-     * copy the array which passed the constructor
-     * @return a copy of the array which passed the constructor
-     */
-    public byte[] getBytes() {
-        return bytes.clone();
     }
 
 
@@ -71,9 +56,6 @@ public final class ByteString {
      */
     public int byteAt(int index) {
 
-        if ( index < 0 || index >= bytes.length ) {
-            throw new IndexOutOfBoundsException();
-        }
         return Byte.toUnsignedInt( bytes[index] );
     }
 
@@ -89,15 +71,16 @@ public final class ByteString {
      */
     public long bytesInRange(int fromIndex, int toIndex) {
         Objects.checkFromToIndex( fromIndex, toIndex, bytes.length );
-        int numBytes = toIndex - fromIndex;
-
-        if ( numBytes > Long.SIZE ) {
-            throw new IndexOutOfBoundsException();
-        }
+//        int numBytes = toIndex - fromIndex;
+//
+//        if ( numBytes > Long.SIZE ) {
+//            throw new IndexOutOfBoundsException();
+//        }
 
         long result = 0;
         for ( int i = fromIndex ; i < toIndex ; i++ ) {
-            result = ( result << Byte.SIZE ) | Byte.toUnsignedLong( bytes[i] );
+//            result = ( result << Byte.SIZE ) | Byte.toUnsignedLong( bytes[i] );
+            result = ( result << Byte.SIZE ) | byteAt( i );
         }
         return result;
     }
@@ -133,9 +116,21 @@ public final class ByteString {
      */
     @Override
     public String toString() {
-        HexFormat hf = HexFormat.of()
-                                .withUpperCase();
-        String string = hf.formatHex( bytes );
-        return string;
+
+        return HEX_FORMAT.formatHex( bytes );
+    }
+
+
+    private static boolean isEven(String hexString) {
+        return hexString.length() % 2 == 0;
+    }
+
+
+    /**
+     * copy the array which passed the constructor
+     * @return a copy of the array which passed the constructor
+     */
+    private byte[] getBytes() {
+        return bytes.clone();
     }
 }

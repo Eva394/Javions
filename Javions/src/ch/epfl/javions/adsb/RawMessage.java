@@ -26,6 +26,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * length of an ADS-B message
      */
     public static final int LENGTH = 14;
+    private static final HexFormat HEX_FORMAT = HexFormat.of()
+                                                         .withUpperCase();
+    private static final Crc24 CRC_24 = new Crc24( Crc24.GENERATOR );
     private static final int DOWNLINK_FORMAT = 17;
     private static final int DF_SIZE = 5;
     private static final int DF_START = 3;
@@ -47,7 +50,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @author Eva Mangano 345375
      */
     public RawMessage {
-        Preconditions.checkArgument( ( timeStampNs >= 0 ) && ( bytes.size() == LENGTH ) );
+        Preconditions.checkArgument( ( timeStampNs >= 0 ) );
+        Preconditions.checkArgument( ( bytes.size() == LENGTH ) );
     }
 
 
@@ -59,13 +63,10 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @author Eva Mangano 345375
      */
     public static RawMessage of(long timeStampNs, byte[] bytes) {
-        Crc24 crc24 = new Crc24( Crc24.GENERATOR );
 
-        if ( crc24.crc( bytes ) != 0 ) {
-            return null;
-        }
-
-        return new RawMessage( timeStampNs, new ByteString( bytes ) );
+        return CRC_24.crc( bytes ) == 0
+               ? new RawMessage( timeStampNs, new ByteString( bytes ) )
+               : null;
     }
 
 
@@ -78,11 +79,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     public static int size(byte byte0) {
         int downlinkFormat = Bits.extractUInt( byte0, DF_START, DF_SIZE );
 
-        if ( downlinkFormat != DOWNLINK_FORMAT ) {
-            return 0;
-        }
-
-        return LENGTH;
+        return downlinkFormat == DOWNLINK_FORMAT
+               ? LENGTH
+               : 0;
     }
 
 
@@ -93,8 +92,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @author Eva Mangano 345375
      */
     public static int typeCode(long payload) {
-        int typeCode = Bits.extractUInt( payload, MSB_POSITION, TYPE_CODE_SIZE );
-        return typeCode;
+        return Bits.extractUInt( payload, MSB_POSITION, TYPE_CODE_SIZE );
     }
 
 
@@ -104,9 +102,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @author Eva Mangano 345375
      */
     public int downLinkFormat() {
-        int downLinKFormat = Bits.extractUInt( bytes.byteAt( 0 ), DL_POSITION, DL_SIZE );
-
-        return downLinKFormat;
+        return Bits.extractUInt( bytes.byteAt( 0 ), DL_POSITION, DL_SIZE );
     }
 
 
@@ -117,11 +113,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public IcaoAddress icaoAddress() {
         long icaoAddressBytes = bytes.bytesInRange( ICAO_START, ICAO_END );
-        HexFormat hexFormat = HexFormat.of();
-        IcaoAddress icaoAddress = new IcaoAddress( hexFormat.withUpperCase()
-                                                            .toHexDigits( icaoAddressBytes, NUMBER_OF_HEX_ICAO ) );
-
-        return icaoAddress;
+        return new IcaoAddress( HEX_FORMAT.toHexDigits( icaoAddressBytes, NUMBER_OF_HEX_ICAO ) );
     }
 
 
@@ -131,8 +123,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @author Eva Mangano 345375
      */
     public long payload() {
-        long payload = bytes.bytesInRange( ME_START, ME_END );
-        return payload;
+        return bytes.bytesInRange( ME_START, ME_END );
     }
 
 
@@ -142,7 +133,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @author Eva Mangano 345375
      */
     public int typeCode() {
-        int typeCode = Bits.extractUInt( payload(), MSB_POSITION, TYPE_CODE_SIZE );
-        return typeCode;
+        return typeCode( payload() );
     }
 }

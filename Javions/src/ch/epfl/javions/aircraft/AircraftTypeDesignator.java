@@ -1,8 +1,4 @@
 package ch.epfl.javions.aircraft;
-/*
- *  Author :        Mangano Eva
- *  Date :          26/02/2023
- */
 
 
 import ch.epfl.javions.Preconditions;
@@ -16,10 +12,7 @@ import java.util.regex.Pattern;
  */
 public record AircraftTypeDesignator(String string) {
 
-    /**
-     * Type designator
-     */
-    private static Pattern typeDesignatorPattern;
+    public static final Pattern TYPE_DESIGNATOR_PATTERN = Pattern.compile( "[A-Z0-9]{2,4}" );
 
 
     /**
@@ -29,8 +22,7 @@ public record AircraftTypeDesignator(String string) {
      * @author Eva Mangano 345375
      */
     public AircraftTypeDesignator {
-        typeDesignatorPattern = Pattern.compile( "[A-Z0-9]{2,4}" );
-        Preconditions.checkArgument( typeDesignatorPattern.matcher( string )
-                                                          .matches() || string.equals( "" ) );
+        Preconditions.checkArgument( TYPE_DESIGNATOR_PATTERN.matcher( string )
+                                                            .matches() || string.isEmpty() );
     }
 }

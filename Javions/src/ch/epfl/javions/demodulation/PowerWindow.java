@@ -13,14 +13,14 @@ import java.util.Objects;
  */
 public final class PowerWindow {
 
-    public static final int SAMPLE_SIZE = 1 << 16;
-    private PowerComputer powerComputer;
+    private static final int SAMPLE_SIZE = 1 << 16;
+    private final PowerComputer powerComputer;
+    private final int windowSize;
     private int[] tab1;
     private int[] tab2;
-    private int windowSize;
     private int position;
     private int positionInTab;
-    private int bytesLeft;
+    private int samplesLeft;
 
 
     /**
@@ -30,7 +30,8 @@ public final class PowerWindow {
      * @throws IOException if there is an input or output error
      * @author Eva Mangano 345375
      */
-    public PowerWindow(InputStream stream, int windowSize) throws IOException {
+    public PowerWindow(InputStream stream, int windowSize) throws
+                                                           IOException {
         Preconditions.checkArgument( ( windowSize > 0 ) && ( windowSize <= SAMPLE_SIZE ) );
 
         this.powerComputer = new PowerComputer( stream, SAMPLE_SIZE );
@@ -40,7 +41,7 @@ public final class PowerWindow {
         this.position = 0;
         this.positionInTab = 0;
 
-        bytesLeft = powerComputer.readBatch( tab1 );
+        samplesLeft = powerComputer.readBatch( tab1 );
     }
 
 
@@ -70,7 +71,7 @@ public final class PowerWindow {
      * @author Eva Mangano 345375
      */
     public boolean isFull() {
-        return ( windowSize <= bytesLeft );
+        return ( windowSize <= samplesLeft );
     }
 
 
@@ -99,14 +100,15 @@ public final class PowerWindow {
      * @throws IOException if there is an input or output error
      * @author Eva Mangano 345375
      */
-    public void advance() throws IOException {
+    public void advance() throws
+                          IOException {
 
         positionInTab++;
         position++;
-        bytesLeft--;
+        samplesLeft--;
 
         if ( windowSize + positionInTab - 1 == SAMPLE_SIZE ) {
-            bytesLeft += powerComputer.readBatch( tab2 );
+            samplesLeft += powerComputer.readBatch( tab2 );
         }
 
         if ( positionInTab == tab1.length ) {
@@ -125,7 +127,8 @@ public final class PowerWindow {
      * @throws IOException if there is an input or output error
      * @author Eva Mangano 345375
      */
-    public void advanceBy(int offset) throws IOException {
+    public void advanceBy(int offset) throws
+                                      IOException {
         Preconditions.checkArgument( offset >= 0 );
 
         for ( int i = 0 ; i < offset ; i++ ) {

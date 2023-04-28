@@ -18,10 +18,9 @@ import java.util.Objects;
 public final class SamplesDecoder {
 
     private static final int BIAIS = 1 << 11;
-    private byte[] sample;
-    private InputStream stream;
-    private int batchSize;
-    private int bytesRead;
+    private final byte[] sample;
+    private final InputStream stream;
+    private final int batchSize;
 
 
     /**
@@ -37,7 +36,7 @@ public final class SamplesDecoder {
         Objects.requireNonNull( stream );
 
         this.stream = stream;
-        this.sample = new byte[batchSize * 2];
+        this.sample = new byte[batchSize * Short.BYTES];
         this.batchSize = batchSize;
     }
 
@@ -50,18 +49,19 @@ public final class SamplesDecoder {
      * @throws IllegalArgumentException if the size of <code>batch</code> is not equal to <code>batchSize</code>
      * @author Eva Mangano 345375
      */
-    public int readBatch(short[] batch) throws IOException {
+    public int readBatch(short[] batch) throws
+                                        IOException {
         Preconditions.checkArgument( batch.length == batchSize );
 
-        bytesRead = stream.readNBytes( sample, 0, batchSize * 2 );
+        int bytesRead = stream.readNBytes( sample, 0, batchSize * Short.BYTES );
 
-        for ( int i = 0 ; i < sample.length ; i += 2 ) {
-            int a = Byte.toUnsignedInt( sample[i] );
-            int b = Byte.toUnsignedInt( sample[i + 1] );
+        for ( int i = 0 ; i < sample.length ; i += Short.BYTES ) {
+            int lsb = Byte.toUnsignedInt( sample[i] );
+            int msb = Byte.toUnsignedInt( sample[i + 1] );
 
-            batch[i / 2] = (short)( ( ( b << Byte.SIZE ) | a ) - BIAIS );
+            batch[i / Short.BYTES] = (short)( ( ( msb << Byte.SIZE ) | lsb ) - BIAIS );
         }
-        return bytesRead / 2;
+        return bytesRead / Short.BYTES;
     }
 }
 

@@ -7,13 +7,16 @@ import java.io.InputStream;
 
 /**
  * Represents a demodulator of ADS-B messages
+ * @author Eva Mangano 345375
  */
 public final class AdsbDemodulator {
 
+    public static final int[] SPIKES_INDEXES = new int[]{0, 10, 35, 45};
+    public static final int[] VALLEY_INDEXES = new int[]{5, 15, 20, 25, 30, 40};
     private static final int WINDOW_SIZE = 1200;
     private static final int TO_NANOSECONDS = 100;
+    private final byte[] bytes = new byte[RawMessage.LENGTH];
     private final PowerWindow powerWindow;
-    private long timestampNs;
 
 
     /**
@@ -22,16 +25,9 @@ public final class AdsbDemodulator {
      * @throws IOException if there is an input/output error
      * @author Eva Mangano 345375
      */
-    public AdsbDemodulator(InputStream samplesStream) throws IOException {
+    public AdsbDemodulator(InputStream samplesStream) throws
+                                                      IOException {
         this.powerWindow = new PowerWindow( samplesStream, WINDOW_SIZE );
-    }
-
-
-    private static boolean windowContainsPreamble(int previousSpikesSum, int nextSpikesSum, int currentValleySum,
-                                                  int currentSpikesSum) {
-        return ( previousSpikesSum < currentSpikesSum ) && ( currentSpikesSum > nextSpikesSum ) && ( currentSpikesSum
-                                                                                                     >= 2
-                                                                                                        * currentValleySum );
     }
 
 
@@ -41,31 +37,26 @@ public final class AdsbDemodulator {
      * @throws IOException if there is an input/output error
      * @author Eva Mangano 345375
      */
-    public RawMessage nextMessage() throws IOException {
-
-        byte[] bytes = new byte[RawMessage.LENGTH];
-
-        int[] spikesIndexes = new int[]{0, 10, 35, 45};
-        int[] valleyIndexes = new int[]{5, 15, 20, 25, 30, 40};
+    public RawMessage nextMessage() throws
+                                    IOException {
 
         int previousSpikesSum = 0;
+        int currentSpikesSum = 0;
 
         while ( powerWindow.isFull() ) {
             int nextSpikesSum = 0;
             int currentValleySum = 0;
-            int currentSpikesSum = 0;
 
-            for ( int spikesIndex : spikesIndexes ) {
-                currentSpikesSum += powerWindow.get( spikesIndex );
+            for ( int spikesIndex : SPIKES_INDEXES ) {
                 nextSpikesSum += powerWindow.get( spikesIndex + 1 );
             }
 
-            for ( int valleyIndex : valleyIndexes ) {
+            for ( int valleyIndex : VALLEY_INDEXES ) {
                 currentValleySum += powerWindow.get( valleyIndex );
             }
 
             if ( windowContainsPreamble( previousSpikesSum, nextSpikesSum, currentValleySum, currentSpikesSum ) ) {
-                timestampNs = powerWindow.position() * TO_NANOSECONDS;
+                long timestampNs = powerWindow.position() * TO_NANOSECONDS;
 
                 for ( int i = 0 ; i < RawMessage.LENGTH ; i++ ) {
                     computeByte( bytes, i );
@@ -80,10 +71,19 @@ public final class AdsbDemodulator {
             }
 
             previousSpikesSum = currentSpikesSum;
+            currentSpikesSum = nextSpikesSum;
             powerWindow.advance();
         }
 
         return null;
+    }
+
+
+    private static boolean windowContainsPreamble(int previousSpikesSum, int nextSpikesSum, int currentValleySum,
+                                                  int currentSpikesSum) {
+        return ( previousSpikesSum < currentSpikesSum ) && ( currentSpikesSum > nextSpikesSum ) && ( currentSpikesSum
+                                                                                                     >= 2
+                                                                                                        * currentValleySum );
     }
 
 
@@ -101,6 +101,8 @@ public final class AdsbDemodulator {
 
 
     private int getBit(int i) {
-        return ( powerWindow.get( 80 + 10 * i ) < powerWindow.get( 85 + 10 * i ) ? 0 : 1 );
+        return ( powerWindow.get( 80 + 10 * i ) < powerWindow.get( 85 + 10 * i )
+                 ? 0
+                 : 1 );
     }
 }

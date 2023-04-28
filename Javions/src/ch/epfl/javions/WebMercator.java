@@ -4,7 +4,11 @@ package ch.epfl.javions;
  * Define coordinates x and y
  * @author Nagyung Kim (339628)
  */
-public class WebMercator {
+public final class WebMercator {
+
+
+    private WebMercator() {
+    }
 
 
     /**
@@ -14,9 +18,8 @@ public class WebMercator {
      * @return x coordinate
      */
     public static double x(int zoomlevel, double longitude) {
-        double l = Units.convertTo( longitude, Units.Angle.RADIAN );
-        double x = Math.pow( 2, 8 + zoomlevel ) * ( l / ( 2 * Math.PI ) + 0.5 );
-        return x;
+        double lon = Units.convertTo( longitude, Units.Angle.RADIAN );
+        return Math.scalb( ( lon / ( 2 * Math.PI ) + 0.5 ), 8 + zoomlevel );
     }
 
 
@@ -28,7 +31,6 @@ public class WebMercator {
      */
     public static double y(int zoomlevel, double latitude) {
         double lat = Units.convertTo( latitude, Units.Angle.RADIAN );
-        double y = Math.scalb( 1d, 8 + zoomlevel ) * ( ( -Math2.asinh( Math.tan( lat ) ) ) / ( 2 * Math.PI ) + 0.5 );
-        return y;
+        return Math.scalb( ( ( -Math2.asinh( Math.tan( lat ) ) ) / ( 2 * Math.PI ) + 0.5 ), 8 + zoomlevel );
     }
 }

@@ -16,8 +16,8 @@ import java.util.Objects;
  * @author Nagyung Kim (339628)
  * @author Eva Mangano 345375
  */
-public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress, double speed,
-                                      double trackOrHeading) implements Message {
+public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress, double speed, double trackOrHeading)
+        implements Message {
 
 
     private static final int HEADING_START = 11;
@@ -54,7 +54,9 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
      */
     public AirborneVelocityMessage {
         Objects.requireNonNull( icaoAddress );
-        checkArguments( timeStampNs, speed, trackOrHeading );
+        Preconditions.checkArgument( timeStampNs >= 0 );
+        Preconditions.checkArgument( speed >= 0 );
+        Preconditions.checkArgument( trackOrHeading >= 0 );
     }
 
 
@@ -83,11 +85,6 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
     }
 
 
-    private static void checkArguments(long timeStampNs, double speed, double trackOrHeading) {
-        Preconditions.checkArgument( ( timeStampNs >= 0 ) && ( speed >= 0 ) && ( trackOrHeading >= 0 ) );
-    }
-
-
     private static AirborneVelocityMessage velocityMessageGroundSpeed(RawMessage rawMessage, int subType,
                                                                       int stDependentBits) {
         int directionEW = Bits.extractUInt( stDependentBits, DEW_START, DIRECTION_SIZE );
@@ -105,10 +102,10 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
         double angle = Math.atan2( velocityEW, velocityNS );
         if ( angle < 0 ) {
-            angle += 2 * Math.PI;
+            angle += Units.Angle.TURN;
         }
 
-        speed = convertSpeedToKnot( speed, subType, GROUND_SPEED_SUPERSONIC);
+        speed = convertSpeedToKnot( speed, subType, GROUND_SPEED_SUPERSONIC );
 
         return new AirborneVelocityMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, angle );
     }
@@ -126,14 +123,16 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
         double angle = Units.convertFrom( Math.scalb( (double)heading, -10 ), Units.Angle.TURN );
         double speed;
 
-        speed = convertSpeedToKnot( airSpeed, subType, AIR_SPEED_SUPERSONIC);
+        speed = convertSpeedToKnot( airSpeed, subType, AIR_SPEED_SUPERSONIC );
 
         return new AirborneVelocityMessage( rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, angle );
     }
 
 
     private static int velocitySign(int direction, int velocity) {
-        return direction == 0 ? velocity : -velocity;
+        return direction == 0
+               ? velocity
+               : -velocity;
     }
 
 
@@ -143,7 +142,9 @@ public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     private static double convertSpeedToKnot(double speed, int subType, int fourKnotsUnitSubType) {
-        speed = subType == fourKnotsUnitSubType ? 4. * speed : speed;
+        speed = subType == fourKnotsUnitSubType
+                ? 4. * speed
+                : speed;
         return Units.convertFrom( speed, Units.Speed.KNOT );
     }
 }

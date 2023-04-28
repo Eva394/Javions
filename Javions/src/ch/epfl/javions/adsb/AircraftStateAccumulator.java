@@ -18,9 +18,8 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     private static final int EVEN_MESSAGE = 0;
     private static final int ODD_MESSAGE = 1;
     private static final long MAX_TIMESTAMP_DIFF = (long)1e10;
-    private T stateSetter;
-    private AirbornePositionMessage evenMessage;
-    private AirbornePositionMessage oddMessage;
+    private final T stateSetter;
+    private final AirbornePositionMessage[] lastOddAndEvenPositionMessages = new AirbornePositionMessage[]{null, null};
 
 
     /**
@@ -30,8 +29,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @author Eva Mangano 345375
      */
     public AircraftStateAccumulator(T stateSetter) {
-        Objects.requireNonNull( stateSetter );
-        this.stateSetter = stateSetter;
+        this.stateSetter = Objects.requireNonNull( stateSetter );
     }
 
 
@@ -77,19 +75,32 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
         boolean isEven = isEven( positionMessage );
         GeoPos position = null;
 
-        if ( isEven && oddMessage != null
-             && ( message.timeStampNs() - oddMessage.timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {
-            position = CprDecoder.decodePosition( positionMessage.x(), positionMessage.y(), oddMessage.x(),
-                                                  oddMessage.y(), EVEN_MESSAGE );
+        if ( isEven && lastOddAndEvenPositionMessages[1] != null
+             && ( message.timeStampNs() - lastOddAndEvenPositionMessages[1].timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {
+            position = CprDecoder.decodePosition( positionMessage.x(), positionMessage.y(),
+                                                  lastOddAndEvenPositionMessages[1].x(),
+                                                  lastOddAndEvenPositionMessages[1].y(), EVEN_MESSAGE );
         }
-        else if ( !isEven && evenMessage != null
-                  && ( message.timeStampNs() - evenMessage.timeStampNs() ) <= MAX_TIMESTAMP_DIFF ) {
-            position = CprDecoder.decodePosition( evenMessage.x(), evenMessage.y(), positionMessage.x(),
+        else if ( !isEven && lastOddAndEvenPositionMessages[0] != null
+                  && ( message.timeStampNs() - lastOddAndEvenPositionMessages[0].timeStampNs() )
+                     <= MAX_TIMESTAMP_DIFF ) {
+            position = CprDecoder.decodePosition( lastOddAndEvenPositionMessages[0].x(),
+                                                  lastOddAndEvenPositionMessages[0].y(), positionMessage.x(),
                                                   positionMessage.y(), ODD_MESSAGE );
         }
         if ( Objects.nonNull( position ) ) {
             stateSetter.setPosition( position );
         }
+    }
+
+
+    private GeoPos getPosition(Message message, AirbornePositionMessage positionMessage, int parity) {
+        return lastOddAndEvenPositionMessages[parity] != null
+               && ( message.timeStampNs() - lastOddAndEvenPositionMessages[parity].timeStampNs() ) <= MAX_TIMESTAMP_DIFF
+               ? CprDecoder.decodePosition( positionMessage.x(), positionMessage.y(),
+                                            lastOddAndEvenPositionMessages[parity].x(),
+                                            lastOddAndEvenPositionMessages[parity].y(), parity )
+               : null;
     }
 
 
@@ -107,10 +118,10 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
     private void storeMessage(AirbornePositionMessage message) {
         if ( isEven( message ) ) {
-            evenMessage = message;
+            lastOddAndEvenPositionMessages[0] = message;
         }
         else {
-            oddMessage = message;
+            lastOddAndEvenPositionMessages[1] = message;
         }
     }
 

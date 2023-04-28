@@ -1,8 +1,4 @@
 package ch.epfl.javions.aircraft;
-/*
- *  Author :        Mangano Eva
- *  Date :          26/02/2023
- */
 
 
 import ch.epfl.javions.Preconditions;
@@ -16,10 +12,7 @@ import java.util.regex.Pattern;
  */
 public record IcaoAddress(String string) {
 
-    /**
-     * ICAO address
-     */
-    private static Pattern addressPattern;
+    private static final Pattern ICAO_ADDRESS_PATTERN = Pattern.compile( "[0-9A-F]{6}" );
 
 
     /**
@@ -29,8 +22,8 @@ public record IcaoAddress(String string) {
      * @author Eva Mangano 345375
      */
     public IcaoAddress {
-        addressPattern = Pattern.compile( "[0-9A-F]{6}" );
-        Preconditions.checkArgument( addressPattern.matcher( string )
-                                                   .matches() );
+
+        Preconditions.checkArgument( ICAO_ADDRESS_PATTERN.matcher( string )
+                                                         .matches() );
     }
 }

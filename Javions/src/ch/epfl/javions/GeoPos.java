@@ -1,9 +1,4 @@
 package ch.epfl.javions;
-/*
- *  Author :        Mangano Eva
- *  Date :          21/02/2023
- */
-
 
 
 /**

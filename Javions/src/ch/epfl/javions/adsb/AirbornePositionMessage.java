@@ -26,6 +26,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
                                       double y) implements Message {
 
 
+    public static final int[] ALT_BITS_ORDER = new int[]{2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7};
     private static final int ALT_START = 36;
     private static final int ALT_SIZE = 12;
     private static final int Q_START = 40;
@@ -64,7 +65,10 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
      */
     public AirbornePositionMessage {
         Objects.requireNonNull( icaoAddress );
-        checkArguments( timeStampNs, parity, x, y );
+        Preconditions.checkArgument( timeStampNs >= 0 );
+        Preconditions.checkArgument( parity == 0 || parity == 1 );
+        Preconditions.checkArgument( x >= 0 && x < 1 );
+        Preconditions.checkArgument( y >= 0 && y < 1 );
     }
 
 
@@ -97,12 +101,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         latitude = normalize( latitude );
 
         return new AirbornePositionMessage( timeStampsNs, icaoAddress, alt, parity, longitude, latitude );
-    }
-
-
-    private static void checkArguments(long timeStampNs, int parity, double x, double y) {
-        Preconditions.checkArgument(
-                timeStampNs >= 0 && ( parity == 0 || parity == 1 ) && x >= 0 && x < 1 && y >= 0 && y < 1 );
     }
 
 
@@ -154,9 +152,8 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
     private static int untangle(int attributeALT) {
         int untangled = 0;
-        int[] order = {2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7};
-        for ( int i = 0 ; i < order.length ; i++ ) {
-            untangled |= ( Bits.extractUInt( attributeALT, order[i], 1 ) << ( ME_SIZE - 2 - i ) );
+        for ( int i = 0 ; i < ALT_BITS_ORDER.length ; i++ ) {
+            untangled |= ( Bits.extractUInt( attributeALT, ALT_BITS_ORDER[i], 1 ) << ( ME_SIZE - 2 - i ) );
         }
         return untangled;
     }
@@ -186,6 +183,6 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
 
 
     private static double normalize(double value) {
-        return value * Math.scalb( 1d, -17 );
+        return Math.scalb( value, -17 );
     }
 }

@@ -1,9 +1,4 @@
 package ch.epfl.javions;
-/*
- *  Author :        Mangano Eva
- *  Date :          28/02/2023
- */
-
 
 
 /**
@@ -17,7 +12,8 @@ public final class Crc24 {
      */
     public final static int GENERATOR = 0xFFF409;
     private final static int CRC_SIZE = 24;
-    private int[] table;
+    private static final int GENERATOR_SIZE = 256;
+    private final int[] table;
 
 
     /**
@@ -27,6 +23,31 @@ public final class Crc24 {
      */
     public Crc24(int generator) {
         this.table = buildtable( generator );
+    }
+
+
+    /**
+     * Computes the crc of the array </bytes>
+     * @param bytes array to be treated
+     * @return the crc
+     */
+    public int crc(byte[] bytes) {
+        int crc = 0;
+
+        for ( byte aByte : bytes ) {
+            int o = Byte.toUnsignedInt( aByte );
+            int crcHighOrderByte = Bits.extractUInt( crc, CRC_SIZE - Byte.SIZE, Byte.SIZE );
+
+            crc = ( ( crc << Byte.SIZE ) | o ) ^ table[crcHighOrderByte];
+        }
+
+        for ( int octet = 0 ; octet < CRC_SIZE / Byte.SIZE ; octet++ ) {
+            int crcHighOrderByte = Bits.extractUInt( crc, CRC_SIZE - Byte.SIZE, Byte.SIZE );
+
+            crc = ( crc << Byte.SIZE ) ^ table[crcHighOrderByte];
+        }
+
+        return Bits.extractUInt( crc, 0, CRC_SIZE );
     }
 
 
@@ -66,37 +87,12 @@ public final class Crc24 {
 
 
     private static int[] buildtable(int generator) {
-        int[] generatorTable = new int[256];
+        int[] generatorTable = new int[GENERATOR_SIZE];
 
         for ( int i = 0 ; i < 256 ; i++ ) {
             generatorTable[i] = crcBitwise( new byte[]{(byte)i}, generator );
         }
 
         return generatorTable;
-    }
-
-
-    /**
-     * Computes the crc of the array </bytes>
-     * @param bytes array to be treated
-     * @return the crc
-     */
-    public int crc(byte[] bytes) {
-        int crc = 0;
-
-        for ( byte aByte : bytes ) {
-            int o = Byte.toUnsignedInt( aByte );
-            int crcHighOrderByte = Bits.extractUInt( crc, CRC_SIZE - Byte.SIZE, Byte.SIZE );
-
-            crc = ( ( crc << Byte.SIZE ) | o ) ^ table[crcHighOrderByte];
-        }
-
-        for ( int octet = 0 ; octet < CRC_SIZE / Byte.SIZE ; octet++ ) {
-            int crcHighOrderByte = Bits.extractUInt( crc, CRC_SIZE - Byte.SIZE, Byte.SIZE );
-
-            crc = ( crc << Byte.SIZE ) ^ table[crcHighOrderByte];
-        }
-
-        return Bits.extractUInt( crc, 0, CRC_SIZE );
     }
 }

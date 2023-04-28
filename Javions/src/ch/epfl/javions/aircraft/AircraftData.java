@@ -1,9 +1,4 @@
 package ch.epfl.javions.aircraft;
-/*
- *  Author :        Mangano Eva
- *  Date :          28/02/2023
- */
-
 
 import java.util.Objects;
 
