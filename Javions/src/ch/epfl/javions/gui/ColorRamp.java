@@ -7,12 +7,25 @@ public final class ColorRamp {
 
     private final Color[] colors;
 
+
     public ColorRamp(Color...colors){
 
         Preconditions.checkArgument(colors.length<2);
         this.colors = colors;
+
     }
 
+    public Color at(double value) {
+        if (value <= 0) {
+            return colors[0];
+        } else if (value >= 1) {
+            return colors[colors.length - 1];
+        } else {
+            int i = (int) (value * (colors.length - 1));
+            double location = (value - i * 1.0 / (colors.length - 1)) * (colors.length - 1);
+            return colors[i].interpolate(colors[i+1], location);
+        }
+    }/*
     public Color at(double value) {
         if (value < 0) {
             return colors[0];
@@ -26,6 +39,7 @@ public final class ColorRamp {
         Color c2 = colors[index + 1];
         return c1.interpolate(c2, fraction);
     }
+    */
 
     public static final ColorRamp PLASMA = new ColorRamp(
             Color.valueOf("0x0d0887ff"), Color.valueOf("0x220690ff"),
