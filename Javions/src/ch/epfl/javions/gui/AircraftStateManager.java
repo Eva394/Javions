@@ -1,8 +1,4 @@
 package ch.epfl.javions.gui;
-/*
- *  Author :        Mangano Eva
- *  Date :          18/04/2023
- */
 
 
 import ch.epfl.javions.adsb.AircraftStateAccumulator;
@@ -58,7 +54,8 @@ public final class AircraftStateManager {
      * @param message message received from an aircraft
      * @throws IOException if there is an input/output error
      */
-    public void updateWithMessage(Message message) throws IOException {
+    public void updateWithMessage(Message message) throws
+                                                   IOException {
 
         lastUpdatedTimeStampNs = message.timeStampNs();
         IcaoAddress icaoAddress = message.icaoAddress();

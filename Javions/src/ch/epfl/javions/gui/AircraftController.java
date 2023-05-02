@@ -1,81 +1,129 @@
 package ch.epfl.javions.gui;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import ch.epfl.javions.WebMercator;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
-import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.StrokeLineCap;
-import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.shape.SVGPath;
 
+import java.util.Objects;
+
+/**
+ * Manages the view of the aircrafts
+ * @author Eva Mangano 345375
+ */
 public final class AircraftController {
 
+    private static final String AIRCRAFT_CSS = "aircraft.css";
+    private final MapParameters mapParameters;
+    private final ObservableSet<ObservableAircraftState> aircraftStates;
+    private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
     private final Pane pane;
 
-    public AircraftController(double viewWidth, double viewHeight, ObservableSet<AircraftState> aircraftStates, ObservableValue<AircraftState> selectedAircraftState) {
-        pane = new Pane();
-        pane.setPrefSize(viewWidth, viewHeight);
-        pane.setPickOnBounds(false);
 
-        // create a group for each aircraft
-        for (AircraftState aircraftState : aircraftStates) {
-            Group aircraftGroup = new Group();
+    public AircraftController(MapParameters mapParameters, ObservableSet<ObservableAircraftState> aircraftStates,
+                              ObjectProperty<ObservableAircraftState> selectedAircraftState) {
+        this.mapParameters = Objects.requireNonNull( mapParameters );
+        this.aircraftStates = Objects.requireNonNull( aircraftStates );
+        this.selectedAircraftState = selectedAircraftState;
 
-            // create a line representing the aircraft's trajectory
-            Line trajectoryLine = new Line();
-            trajectoryLine.setStrokeWidth(1.0);
-            trajectoryLine.setStrokeLineCap(StrokeLineCap.ROUND);
-            trajectoryLine.setStrokeLineJoin(StrokeLineJoin.ROUND);
-            trajectoryLine.setOpacity(0.0); // initially hidden
-            aircraftGroup.getChildren().add(trajectoryLine);
+        this.pane = new Pane();
+        pane.setPickOnBounds( false );
+        pane.getStylesheets()
+            .add( AIRCRAFT_CSS );
 
-            // create an icon representing the aircraft
-            ImageView aircraftIcon = new ImageView(aircraftState.getIcon());
-            aircraftIcon.setPreserveRatio(true);
-            aircraftIcon.setSmooth(true);
-            aircraftIcon.setCache(true);
-            aircraftGroup.getChildren().add(aircraftIcon);
-
-            // create a label displaying the aircraft's call sign
-            Label callSignLabel = new Label(aircraftState.getCallSign());
-            callSignLabel.getStyleClass().add("call-sign-label");
-            callSignLabel.setWrapText(true);
-            callSignLabel.setOpacity(0.0); // initially hidden
-            aircraftGroup.getChildren().add(callSignLabel);
-
-            // bind the icon's position to the aircraft's position
-            aircraftIcon.xProperty().bind(aircraftState.getXProperty().subtract(aircraftIcon.getImage().getWidth() / 2));
-            aircraftIcon.yProperty().bind(aircraftState.getYProperty().subtract(aircraftIcon.getImage().getHeight() / 2));
-
-            // bind the label's position to the aircraft's position
-            callSignLabel.layoutXProperty().bind(aircraftState.getXProperty().subtract(callSignLabel.widthProperty().divide(2)));
-            callSignLabel.layoutYProperty().bind(aircraftState.getYProperty().add(aircraftIcon.getImage().getHeight() / 2).add(5));
-
-            // hide/show the trajectory and label depending on the selected aircraft state
-            ChangeListener<? super AircraftState> selectedAircraftStateListener = new ChangeListener<>() {
-                @Override
-                public void changed(ObservableValue<? extends AircraftState> observable, AircraftState oldValue, AircraftState newValue) {
-                    if (newValue == null || newValue == aircraftState) {
-                        trajectoryLine.setOpacity(1.0);
-                        callSignLabel.setOpacity(1.0);
-                    } else {
-                        trajectoryLine.setOpacity(0.0);
-                        callSignLabel.setOpacity(0.0);
-                    }
-                }
-            };
-            selectedAircraftState.addListener(selectedAircraftStateListener);
-
-            // add the aircraft group to the pane
-            pane.getChildren().add(aircraftGroup);
-        }
+        aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
+            if ( change.wasAdded() ) {
+                createAircraftGroup( change.getElementAdded() );
+            }
+        } );
+        aircraftStates.removeListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
+            if ( change.wasRemoved() ) {
+                pane.getChildren()
+                    .remove();
+            }
+        } );
     }
 
-    public Pane getPane() {
+
+    public Pane pane() {
         return pane;
     }
 
+
+    private void createAircraftGroup(ObservableAircraftState addedAircraft) {
+        Group aircrafsGroup = new Group();
+        aircrafsGroup.setId( addedAircraft.getIcaoAddress()
+                                          .string() );
+        aircrafsGroup.viewOrderProperty()
+                     .bind( addedAircraft.altitudeProperty()
+                                         .negate() );
+        pane.getChildren()
+            .add( aircrafsGroup );
+
+        createIconAndLabelGroup( aircrafsGroup, addedAircraft );
+        createTrajectoryGroup( aircrafsGroup, addedAircraft );
+    }
+
+
+    private void createIconAndLabelGroup(Group aircrafsGroup, ObservableAircraftState addedAircraft) {
+        Group iconAndLabelGroup = new Group();
+        aircrafsGroup.getChildren()
+                     .add( iconAndLabelGroup );
+        iconAndLabelGroup.layoutXProperty()
+                         .bind( Bindings.createDoubleBinding( () -> {
+                                                                  double longitude = addedAircraft.positionProperty()
+                                                                                                  .get()
+                                                                                                  .longitude();
+                                                                  double xPos =
+                                                                          WebMercator.x( mapParameters.getZoom(),
+                                                                                         longitude );
+                                                                  return xPos - mapParameters.minXProperty()
+                                                                                             .get();
+                                                              },
+                                                              addedAircraft.positionProperty(),
+                                                              mapParameters.minXProperty(),
+                                                              mapParameters.zoomProperty() ) );
+        iconAndLabelGroup.layoutYProperty()
+                         .bind( Bindings.createDoubleBinding( () -> {
+                                                                  double latitude = addedAircraft.positionProperty()
+                                                                                                 .get()
+                                                                                                 .longitude();
+                                                                  double yPos =
+                                                                          WebMercator.y( mapParameters.getZoom(),
+                                                                                         latitude );
+                                                                  return yPos - mapParameters.minYProperty()
+                                                                                             .get();
+                                                              },
+                                                              addedAircraft.positionProperty(),
+                                                              mapParameters.minYProperty(),
+                                                              mapParameters.zoomProperty() ) );
+
+        createIcon( iconAndLabelGroup, addedAircraft );
+    }
+
+
+    private void createIcon(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
+        AircraftIcon icon = AircraftIcon.iconFor( addedAircraft.getAircraftData()
+                                                               .typeDesignator(),
+                                                  addedAircraft.getAircraftData()
+                                                               .description(),
+                                                  addedAircraft.getCategory(),
+                                                  addedAircraft.getAircraftData()
+                                                               .wakeTurbulenceCategory() );
+        pane.getStyleClass()
+            .add( "aircraft" );
+        SVGPath iconPath = new SVGPath();
+        iconPath.contentProperty()
+                .set( icon.svgPath() );
+        iconAndLabelGroup.getChildren()
+                         .add( iconPath );
+    }
+
+
+    private void createTrajectoryGroup(Group aircrafsGroup, ObservableAircraftState addedAircraft) {
+    }
 }
