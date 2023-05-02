@@ -40,12 +40,12 @@ public final class AircraftController {
                 createAircraftGroup( change.getElementAdded() );
             }
         } );
-        aircraftStates.removeListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
-            if ( change.wasRemoved() ) {
-                pane.getChildren()
-                    .remove();
-            }
-        } );
+//        aircraftStates.removeListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
+//            if ( change.wasRemoved() ) {
+//                pane.getChildren()
+//                    .remove();
+//            }
+//        } );
     }
 
 
@@ -107,18 +107,35 @@ public final class AircraftController {
 
 
     private void createIcon(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
+        SVGPath iconPath = new SVGPath();
         AircraftIcon icon = AircraftIcon.iconFor( addedAircraft.getAircraftData()
                                                                .typeDesignator(),
                                                   addedAircraft.getAircraftData()
                                                                .description(),
-                                                  addedAircraft.getCategory(),
+                                                  addedAircraft.categoryProperty()
+                                                               .get(),
                                                   addedAircraft.getAircraftData()
                                                                .wakeTurbulenceCategory() );
-        pane.getStyleClass()
-            .add( "aircraft" );
-        SVGPath iconPath = new SVGPath();
+
         iconPath.contentProperty()
-                .set( icon.svgPath() );
+                .bind( Bindings.createObjectBinding( icon::svgPath, addedAircraft.categoryProperty() ) );
+
+        if ( icon.canRotate() ) {
+            iconPath.rotateProperty()
+                    .bind( Bindings.createObjectBinding( () -> addedAircraft.trackOrHeadingProperty()
+                                                                            .get(),
+                                                         addedAircraft.trackOrHeadingProperty() ) );
+        }
+
+        iconPath.fillProperty()
+                .bind( addedAircraft.altitudeProperty()
+                                    .map( altitude -> ColorRamp.PLASMA.at( (Double)altitude ) ) );
+//                .bind( Bindings.createObjectBinding( () -> ColorRamp.PLASMA.at( addedAircraft.altitudeProperty()
+//                                                                                             .get() ),
+//                                                     addedAircraft.altitudeProperty() ) );
+
+        pane.getStyleClass()
+            .add( icon.svgPath() );
         iconAndLabelGroup.getChildren()
                          .add( iconPath );
     }
