@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.Math2;
 import ch.epfl.javions.Preconditions;
 import javafx.scene.paint.Color;
 
@@ -48,7 +49,10 @@ public final class ColorRamp {
 
 
     public Color at(double value) {
-        //TODO clamp
+
+
+        Math2.clamp(0, value, 1);
+
         if ( value <= 0 ) {
             return colors[0];
         }
