@@ -53,10 +53,10 @@ public final class ColorRamp {
 
         Math2.clamp(0, value, 1);
 
-        if ( value <= 0 ) {
+        if ( value == 0 ) {
             return colors[0];
         }
-        else if ( value >= 1 ) {
+        else if ( value == 1 ) {
             return colors[colors.length - 1];
         }
         else {

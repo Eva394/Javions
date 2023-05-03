@@ -115,6 +115,8 @@ public final class AircraftController {
 
     private void createLabelGroup(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
 
+
+
     }
 
 
@@ -154,7 +156,7 @@ public final class AircraftController {
 
         iconPath.fillProperty()
                 .bind( addedAircraft.altitudeProperty()
-                                    .map( altitude -> ColorRamp.PLASMA.at( (Double)altitude ) ) );
+                                    .map( altitude -> ColorRamp.PLASMA.at( Math.pow((Double)altitude/12000, Math.pow(3,-1)) ) ) );
 //                .bind( Bindings.createObjectBinding( () -> ColorRamp.PLASMA.at( addedAircraft.altitudeProperty()
 //                                                                                             .get() ),
 //                                                     addedAircraft.altitudeProperty() ) );
