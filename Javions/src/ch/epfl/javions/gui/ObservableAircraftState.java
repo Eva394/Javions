@@ -304,6 +304,6 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      * @param position longitude and latitude of the aircraft
      * @param altitude altitude of the aircraft
      */
-    private record AirbonePos(GeoPos position, double altitude) {
+    public record AirbonePos(GeoPos position, double altitude) {
     }
 }

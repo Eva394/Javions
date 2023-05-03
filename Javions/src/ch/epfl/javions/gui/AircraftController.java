@@ -14,6 +14,7 @@ import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -179,7 +180,7 @@ public final class AircraftController {
 //                                                     addedAircraft.altitudeProperty() ) );
 
         iconPath.getStyleClass()
-                .add( icon.svgPath() );
+                .add( "aircraft" );
         iconAndLabelGroup.getChildren()
                          .add( iconPath );
     }
@@ -188,7 +189,15 @@ public final class AircraftController {
     private void createTrajectoryGroup(Group aircrafGroup, ObservableAircraftState addedAircraft) {
         Group trajectoryGroup = new Group();
         trajectoryGroup.getStyleClass()
-                       .add() aircrafGroup.getChildren()
-                                          .add( trajectoryGroup );
+                       .add( "trajectory" );
+        aircrafGroup.getChildren()
+                    .add( trajectoryGroup );
+
+        ArrayList<ObservableAircraftState.AirbonePos> trajectory =
+                (ArrayList<ObservableAircraftState.AirbonePos>)addedAircraft.getUnmodifiableTrajectory();
+
+        for ( int i = 0 ; i < trajectory.size() - 2 ; i++ ) {
+
+        }
     }
 }
