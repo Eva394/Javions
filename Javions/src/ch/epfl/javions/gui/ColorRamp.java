@@ -42,7 +42,7 @@ public final class ColorRamp {
 
     public ColorRamp(Color... colors) {
 
-        Preconditions.checkArgument( colors.length < 2 );
+        Preconditions.checkArgument( colors.length >= 2 );
         this.colors = colors;
     }
 

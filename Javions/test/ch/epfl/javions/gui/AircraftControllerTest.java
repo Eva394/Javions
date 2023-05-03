@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public final class AircraftControllerTest extends Application {
     public static void main(String[] args) {
         launch( args );
@@ -28,10 +29,11 @@ public final class AircraftControllerTest extends Application {
     @Override
     public void start(Stage primaryStage) throws
                                           Exception {
+        // … à compléter (voir TestBaseMapController)
         Path tileCache = Path.of( "tile-cache" );
-        TileManager tm = new TileManager( tileCache, "tile.openstreetmap.org" );
+        TileManager tileManager = new TileManager( tileCache, "tile.openstreetmap.org" );
         MapParameters mp = new MapParameters( 17, 17_389_327, 11_867_430 );
-        BaseMapController bmc = new BaseMapController( tm, mp );
+        BaseMapController bmc = new BaseMapController( tileManager, mp );
 
         // Création de la base de données
         URL dbUrl = getClass().getResource( "/aircraft.zip" );
@@ -47,7 +49,8 @@ public final class AircraftControllerTest extends Application {
         primaryStage.setScene( new Scene( root ) );
         primaryStage.show();
 
-        var mi = readAllMessages( "messages_20230318_0915.bin" ).iterator();
+        var mi = readAllMessages( "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - "
+                                  + "BA2\\PROJET\\Javions\\resources\\messages_20230318_0915.bin" ).iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {
@@ -55,9 +58,11 @@ public final class AircraftControllerTest extends Application {
             public void handle(long now) {
                 try {
                     for ( int i = 0 ; i < 10 ; i += 1 ) {
-                        Message m = MessageParser.parse( mi.next() );
-                        if ( m != null ) {
-                            asm.updateWithMessage( m );
+                        if ( mi.hasNext() ) {
+                            Message m = MessageParser.parse( mi.next() );
+                            if ( m != null ) {
+                                asm.updateWithMessage( m );
+                            }
                         }
                     }
                 }
@@ -71,37 +76,24 @@ public final class AircraftControllerTest extends Application {
 
     static List<RawMessage> readAllMessages(String fileName) throws
                                                              IOException {
-
-        byte[] bytes = new byte[RawMessage.LENGTH];
-        AircraftDatabase aircraftDatabase = new AircraftDatabase( fileName );
-        AircraftStateManager stateManager = new AircraftStateManager( aircraftDatabase );
-
         List<RawMessage> list = new ArrayList<>();
 
-        try ( DataInputStream s = new DataInputStream( new BufferedInputStream( new FileInputStream(
-                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - "
-                + "BA2\\PROJET\\Javions\\resources\\messages_20230318_0915.bin" ) ) ) ) {
-
-            while ( true ) {
+        int index = 0;
+        byte[] bytes = new byte[RawMessage.LENGTH];
+        try ( DataInputStream s = new DataInputStream( new BufferedInputStream( new FileInputStream( fileName ) ) ) ) {
+            while ( index < 1e4 ) {
+                index++;
                 long timeStampNs = s.readLong();
                 int bytesRead = s.readNBytes( bytes, 0, bytes.length );
                 assert bytesRead == RawMessage.LENGTH;
-                assert bytes != null;
 
                 ByteString message = new ByteString( bytes );
                 assert message != null;
 
-                RawMessage rawMessage = RawMessage.of( timeStampNs, bytes );
-                assert rawMessage != null;
-
-                list.add( rawMessage );
-
-                Message theMessage = MessageParser.parse( rawMessage );
-                assert theMessage != null;
-
-                stateManager.updateWithMessage( theMessage );
-                stateManager.purge();
+                list.add( RawMessage.of( timeStampNs, bytes ) );
             }
         }
+
+        return list;
     }
 }

@@ -35,17 +35,23 @@ public final class AircraftController {
         pane.getStylesheets()
             .add( AIRCRAFT_CSS );
 
+//        aircraftStates.forEach( observableAircraftState -> aircraftStates.addListener( (SetChangeListener<?
+//                super ObservableAircraftState>)change -> createAircraftGroup(
+//                change.getElementAdded() ) ) );
         aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
             if ( change.wasAdded() ) {
                 createAircraftGroup( change.getElementAdded() );
             }
         } );
-//        aircraftStates.removeListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
-//            if ( change.wasRemoved() ) {
-//                pane.getChildren()
-//                    .remove();
-//            }
-//        } );
+        aircraftStates.removeListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
+            if ( change.wasRemoved() ) {
+                pane.getChildren()
+                    .removeIf( group -> group.getId()
+                                             .equals( change.getElementRemoved()
+                                                            .getIcaoAddress()
+                                                            .string() ) );
+            }
+        } );
     }
 
 
@@ -55,31 +61,33 @@ public final class AircraftController {
 
 
     private void createAircraftGroup(ObservableAircraftState addedAircraft) {
-        Group aircrafsGroup = new Group();
-        aircrafsGroup.setId( addedAircraft.getIcaoAddress()
-                                          .string() );
-        aircrafsGroup.viewOrderProperty()
-                     .bind( addedAircraft.altitudeProperty()
-                                         .negate() );
+        Group aircrafGroup = new Group();
+        aircrafGroup.setId( addedAircraft.getIcaoAddress()
+                                         .string() );
+        aircrafGroup.viewOrderProperty()
+                    .bind( addedAircraft.altitudeProperty()
+                                        .negate() );
         pane.getChildren()
-            .add( aircrafsGroup );
+            .add( aircrafGroup );
 
-        createIconAndLabelGroup( aircrafsGroup, addedAircraft );
-        createTrajectoryGroup( aircrafsGroup, addedAircraft );
+        createIconAndLabelGroup( aircrafGroup, addedAircraft );
+        createTrajectoryGroup( aircrafGroup, addedAircraft );
     }
 
 
-    private void createIconAndLabelGroup(Group aircrafsGroup, ObservableAircraftState addedAircraft) {
+    private void createIconAndLabelGroup(Group aircrafGroup, ObservableAircraftState addedAircraft) {
         Group iconAndLabelGroup = new Group();
-        aircrafsGroup.getChildren()
-                     .add( iconAndLabelGroup );
+        aircrafGroup.getChildren()
+                    .add( iconAndLabelGroup );
+
         iconAndLabelGroup.layoutXProperty()
                          .bind( Bindings.createDoubleBinding( () -> {
                                                                   double longitude = addedAircraft.positionProperty()
                                                                                                   .get()
                                                                                                   .longitude();
                                                                   double xPos =
-                                                                          WebMercator.x( mapParameters.getZoom(),
+                                                                          WebMercator.x( mapParameters.zoomProperty()
+                                                                                                            .get(),
                                                                                          longitude );
                                                                   return xPos - mapParameters.minXProperty()
                                                                                              .get();
@@ -93,7 +101,8 @@ public final class AircraftController {
                                                                                                  .get()
                                                                                                  .longitude();
                                                                   double yPos =
-                                                                          WebMercator.y( mapParameters.getZoom(),
+                                                                          WebMercator.y( mapParameters.zoomProperty()
+                                                                                                            .get(),
                                                                                          latitude );
                                                                   return yPos - mapParameters.minYProperty()
                                                                                              .get();
@@ -141,6 +150,6 @@ public final class AircraftController {
     }
 
 
-    private void createTrajectoryGroup(Group aircrafsGroup, ObservableAircraftState addedAircraft) {
+    private void createTrajectoryGroup(Group aircrafGroup, ObservableAircraftState addedAircraft) {
     }
 }

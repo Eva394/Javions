@@ -115,18 +115,11 @@ public final class MapParameters {
 
 
     public void changeZoomLevel(int deltaZoom) {
-        System.out.println( "changing zoom level" );
-
         int newZoom = Math2.clamp( MIN_ZOOM_LEVEL, zoom.get() + deltaZoom, MAX_ZOOM_LEVEL );
-        System.out.println( "newZoom = " + newZoom );
         double factor = Math.scalb( 1d, newZoom - zoom.get() );
+
         minX.set( minX.get() * factor );
         minY.set( minY.get() * factor );
         zoom.set( newZoom );
-
-        System.out.println( "zoomProperty().get() = " + zoomProperty().get() );
-        System.out.println( "minXProperty().get() = " + minXProperty().get() );
-        System.out.println( "minYProperty().get() = " + minYProperty().get() );
-        System.out.println( "*******************************************" );
     }
 }
