@@ -1,6 +1,10 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.WebMercator;
+import ch.epfl.javions.aircraft.AircraftData;
+import ch.epfl.javions.aircraft.AircraftDescription;
+import ch.epfl.javions.aircraft.AircraftTypeDesignator;
+import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.ObservableSet;
@@ -42,9 +46,7 @@ public final class AircraftController {
             if ( change.wasAdded() ) {
                 createAircraftGroup( change.getElementAdded() );
             }
-        } );
-        aircraftStates.removeListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
-            if ( change.wasRemoved() ) {
+            else {
                 pane.getChildren()
                     .removeIf( group -> group.getId()
                                              .equals( change.getElementRemoved()
@@ -52,6 +54,11 @@ public final class AircraftController {
                                                             .string() ) );
             }
         } );
+//        aircraftStates.removeListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
+//            if ( change.wasRemoved() ) {
+//
+//            }
+//        } );
     }
 
 
@@ -99,7 +106,7 @@ public final class AircraftController {
                          .bind( Bindings.createDoubleBinding( () -> {
                                                                   double latitude = addedAircraft.positionProperty()
                                                                                                  .get()
-                                                                                                 .longitude();
+                                                                                                 .latitude();
                                                                   double yPos =
                                                                           WebMercator.y( mapParameters.zoomProperty()
                                                                                                             .get(),
@@ -117,14 +124,23 @@ public final class AircraftController {
 
     private void createIcon(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
         SVGPath iconPath = new SVGPath();
-        AircraftIcon icon = AircraftIcon.iconFor( addedAircraft.getAircraftData()
-                                                               .typeDesignator(),
-                                                  addedAircraft.getAircraftData()
-                                                               .description(),
+        AircraftData data = addedAircraft.getAircraftData();
+        boolean dataIsNull = data == null;
+        AircraftTypeDesignator typeDesignator = dataIsNull
+                                                ? new AircraftTypeDesignator( "" )
+                                                : data.typeDesignator();
+        AircraftDescription description = dataIsNull
+                                          ? new AircraftDescription( "" )
+                                          : data.description();
+        WakeTurbulenceCategory wakeTurbulenceCategory = dataIsNull
+                                                        ? WakeTurbulenceCategory.of( "" )
+                                                        : data.wakeTurbulenceCategory();
+
+        AircraftIcon icon = AircraftIcon.iconFor( typeDesignator,
+                                                  description,
                                                   addedAircraft.categoryProperty()
                                                                .get(),
-                                                  addedAircraft.getAircraftData()
-                                                               .wakeTurbulenceCategory() );
+                                                  wakeTurbulenceCategory );
 
         iconPath.contentProperty()
                 .bind( Bindings.createObjectBinding( icon::svgPath, addedAircraft.categoryProperty() ) );
