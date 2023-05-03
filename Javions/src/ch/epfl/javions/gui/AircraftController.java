@@ -85,8 +85,10 @@ public final class AircraftController {
                                                                   double longitude = addedAircraft.positionProperty()
                                                                                                   .get()
                                                                                                   .longitude();
-                                                                  double xPos = WebMercator.x( mapParameters.zoomProperty()
-                                                                                                            .get(), longitude );
+                                                                  double xPos =
+                                                                          WebMercator.x( mapParameters.zoomProperty()
+                                                                                                            .get(),
+                                                                                         longitude );
                                                                   return xPos - mapParameters.minXProperty()
                                                                                              .get();
                                                               },
@@ -98,9 +100,10 @@ public final class AircraftController {
                                                                   double latitude = addedAircraft.positionProperty()
                                                                                                  .get()
                                                                                                  .latitude();
-                                                                  double yPos = WebMercator.y( mapParameters.zoomProperty()
+                                                                  double yPos =
+                                                                          WebMercator.y( mapParameters.zoomProperty()
                                                                                                             .get(),
-                                                                                               latitude );
+                                                                                         latitude );
                                                                   return yPos - mapParameters.minYProperty()
                                                                                              .get();
                                                               },
@@ -114,6 +117,20 @@ public final class AircraftController {
 
 
     private void createLabelGroup(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
+        Group labelGroup = new Group();
+        iconAndLabelGroup.getChildren()
+                         .add( labelGroup );
+
+        createRectangle( iconAndLabelGroup, addedAircraft );
+        createText( iconAndLabelGroup, addedAircraft );
+    }
+
+
+    private void createText(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
+    }
+
+
+    private void createRectangle(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
 
 
 
@@ -161,13 +178,17 @@ public final class AircraftController {
 //                                                                                             .get() ),
 //                                                     addedAircraft.altitudeProperty() ) );
 
-        pane.getStyleClass()
-            .add( icon.svgPath() );
+        iconPath.getStyleClass()
+                .add( icon.svgPath() );
         iconAndLabelGroup.getChildren()
                          .add( iconPath );
     }
 
 
     private void createTrajectoryGroup(Group aircrafGroup, ObservableAircraftState addedAircraft) {
+        Group trajectoryGroup = new Group();
+        trajectoryGroup.getStyleClass()
+                       .add() aircrafGroup.getChildren()
+                                          .add( trajectoryGroup );
     }
 }
