@@ -64,7 +64,8 @@ public final class ColorRamp {
             double location = ( value - i * 1.0 / ( colors.length - 1 ) ) * ( colors.length - 1 );
             return colors[i].interpolate( colors[i + 1], location );
         }
-    }/*
+    }
+    /*
     public Color at(double value) {
         if (value < 0) {
             return colors[0];

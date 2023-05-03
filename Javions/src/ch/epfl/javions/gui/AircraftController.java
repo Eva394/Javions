@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
 import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.AircraftDescription;
@@ -39,9 +40,6 @@ public final class AircraftController {
         pane.getStylesheets()
             .add( AIRCRAFT_CSS );
 
-//        aircraftStates.forEach( observableAircraftState -> aircraftStates.addListener( (SetChangeListener<?
-//                super ObservableAircraftState>)change -> createAircraftGroup(
-//                change.getElementAdded() ) ) );
         aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
             if ( change.wasAdded() ) {
                 createAircraftGroup( change.getElementAdded() );
@@ -54,11 +52,6 @@ public final class AircraftController {
                                                             .string() ) );
             }
         } );
-//        aircraftStates.removeListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
-//            if ( change.wasRemoved() ) {
-//
-//            }
-//        } );
     }
 
 
@@ -92,10 +85,8 @@ public final class AircraftController {
                                                                   double longitude = addedAircraft.positionProperty()
                                                                                                   .get()
                                                                                                   .longitude();
-                                                                  double xPos =
-                                                                          WebMercator.x( mapParameters.zoomProperty()
-                                                                                                            .get(),
-                                                                                         longitude );
+                                                                  double xPos = WebMercator.x( mapParameters.zoomProperty()
+                                                                                                            .get(), longitude );
                                                                   return xPos - mapParameters.minXProperty()
                                                                                              .get();
                                                               },
@@ -107,10 +98,9 @@ public final class AircraftController {
                                                                   double latitude = addedAircraft.positionProperty()
                                                                                                  .get()
                                                                                                  .latitude();
-                                                                  double yPos =
-                                                                          WebMercator.y( mapParameters.zoomProperty()
+                                                                  double yPos = WebMercator.y( mapParameters.zoomProperty()
                                                                                                             .get(),
-                                                                                         latitude );
+                                                                                               latitude );
                                                                   return yPos - mapParameters.minYProperty()
                                                                                              .get();
                                                               },
@@ -119,6 +109,12 @@ public final class AircraftController {
                                                               mapParameters.zoomProperty() ) );
 
         createIcon( iconAndLabelGroup, addedAircraft );
+        createLabelGroup( iconAndLabelGroup, addedAircraft );
+    }
+
+
+    private void createLabelGroup(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
+
     }
 
 
@@ -147,9 +143,13 @@ public final class AircraftController {
 
         if ( icon.canRotate() ) {
             iconPath.rotateProperty()
-                    .bind( Bindings.createObjectBinding( () -> addedAircraft.trackOrHeadingProperty()
-                                                                            .get(),
-                                                         addedAircraft.trackOrHeadingProperty() ) );
+                    .bind( addedAircraft.trackOrHeadingProperty()
+                                        .map( trackOrHeading -> ( Units.convertTo( addedAircraft.trackOrHeadingProperty()
+                                                                                                .get(),
+                                                                                   Units.Angle.DEGREE ) ) ) );
+//                            Bindings.createObjectBinding( () -> addedAircraft.trackOrHeadingProperty()
+//                                                                             .get(),
+//                                                  addedAircraft.trackOrHeadingProperty() ) );
         }
 
         iconPath.fillProperty()
