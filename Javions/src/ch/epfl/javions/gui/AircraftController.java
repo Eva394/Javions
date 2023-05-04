@@ -193,11 +193,13 @@ public final class AircraftController {
         aircrafGroup.getChildren()
                     .add( trajectoryGroup );
 
-        ArrayList<ObservableAircraftState.AirbonePos> trajectory =
-                (ArrayList<ObservableAircraftState.AirbonePos>)addedAircraft.getUnmodifiableTrajectory();
+        //TODO apparently this is illegal?
 
-        for ( int i = 0 ; i < trajectory.size() - 2 ; i++ ) {
+//        ??ArrayList<ObservableAircraftState.AirbonePos> trajectory =
+//                (ArrayList<ObservableAircraftState.AirbonePos>)addedAircraft.getUnmodifiableTrajectory();
 
-        }
+//        for ( int i = 0 ; i < trajectory.size() - 2 ; i++ ) {
+
+ //       }
     }
 }

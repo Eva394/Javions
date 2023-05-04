@@ -50,6 +50,8 @@ public final class ColorRamp {
 
     public Color at(double value) {
 
+        //TODO index i out of range
+
 
         Math2.clamp(0, value, 1);
 
