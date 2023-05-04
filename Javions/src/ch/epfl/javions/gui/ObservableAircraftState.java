@@ -20,7 +20,7 @@ import java.util.Observable;
 /**
  * Represents the state of an aircraft, which is observable
  */
-public final class ObservableAircraftState extends Observable implements AircraftStateSetter {
+public final class ObservableAircraftState implements AircraftStateSetter {
 
     private final IcaoAddress icaoAddress;
     private final AircraftData aircraftData;
