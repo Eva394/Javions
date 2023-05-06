@@ -180,8 +180,9 @@ public final class AircraftController {
 
         bindPositionToLayout( addedAircraft, trajectoryGroup );
 
-        //TODO BIND VISIBLE PROPERTY
-
+        trajectoryGroup.visibleProperty()
+                       .bind( Bindings.createBooleanBinding( () -> addedAircraft.equals( selectedAircraftState.get() ),
+                                                             selectedAircraftState ) );
         ObservableList<ObservableAircraftState.AirbonePos> trajectory = addedAircraft.getUnmodifiableTrajectory();
         trajectory.addListener( (ListChangeListener<? super ObservableAircraftState.AirbonePos>)change -> {
             if ( trajectoryGroup.visibleProperty()
