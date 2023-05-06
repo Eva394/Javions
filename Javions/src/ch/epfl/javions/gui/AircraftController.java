@@ -1,6 +1,5 @@
 package ch.epfl.javions.gui;
 
-import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
 import ch.epfl.javions.aircraft.AircraftData;
@@ -29,11 +28,11 @@ import java.util.Objects;
  */
 public final class AircraftController {
 
-    private static final String AIRCRAFT_CSS = "aircraft.css";
     private final MapParameters mapParameters;
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
     private final Pane pane;
+    private static final String AIRCRAFT_CSS = "aircraft.css";
 
 
     public AircraftController(MapParameters mapParameters, ObservableSet<ObservableAircraftState> aircraftStates,
@@ -151,13 +150,13 @@ public final class AircraftController {
                 .bind( addedAircraft.categoryProperty()
                                     .map( aircraft -> icon.svgPath() ) );
 
-        if ( icon.canRotate() ) {
-            iconPath.rotateProperty()
-                    .bind( addedAircraft.trackOrHeadingProperty()
-                                        .map( trackOrHeading -> ( Units.convertTo( addedAircraft.trackOrHeadingProperty()
-                                                                                                .get(),
-                                                                                   Units.Angle.DEGREE ) ) ) );
-        }
+        iconPath.rotateProperty()
+                .bind( addedAircraft.trackOrHeadingProperty()
+                                    .map( trackOrHeading -> icon.canRotate()
+                                                            ? ( Units.convertTo( addedAircraft.trackOrHeadingProperty()
+                                                                                              .get(),
+                                                                                 Units.Angle.DEGREE ) )
+                                                            : 0 ) );
 
         iconPath.fillProperty()
                 .bind( addedAircraft.altitudeProperty()
@@ -181,23 +180,22 @@ public final class AircraftController {
 
         bindPositionToLayout( addedAircraft, trajectoryGroup );
 
-//        ObservableValue isVisible = new SimpleBooleanProperty( addedAircraft.getIcaoAddress()
-//                                                                            .string()
-//                                                                            .equals( selectedAircraftState.get()
-//                                                                                                          .getIcaoAddress()
-//                                                                                                          .string()
-//                                                                                                          ) );
-//        trajectoryGroup.visibleProperty()
-//                       .bind( isVisible );
+        //TODO BIND VISIBLE PROPERTY
 
         ObservableList<ObservableAircraftState.AirbonePos> trajectory = addedAircraft.getUnmodifiableTrajectory();
-        trajectory.addListener( (ListChangeListener<? super ObservableAircraftState.AirbonePos>)change -> createLines(
-                trajectoryGroup,
-                trajectory ) );
+        trajectory.addListener( (ListChangeListener<? super ObservableAircraftState.AirbonePos>)change -> {
+            if ( trajectoryGroup.visibleProperty()
+                                .get() ) {
+                createLines( trajectoryGroup, trajectory );
+            }
+        } );
 
         mapParameters.zoomProperty()
                      .addListener( change -> {
-                         createLines( trajectoryGroup, trajectory );
+                         if ( trajectoryGroup.visibleProperty()
+                                             .get() ) {
+                             createLines( trajectoryGroup, trajectory );
+                         }
                      } );
     }
 
@@ -206,65 +204,43 @@ public final class AircraftController {
         trajectoryGroup.getChildren()
                        .clear();
 
+        double lastX = WebMercator.x( mapParameters.getZoom(),
+                                      trajectory.get( trajectory.size() - 1 )
+                                                .position()
+                                                .longitude() );
+        double lastY = WebMercator.y( mapParameters.getZoom(),
+                                      trajectory.get( trajectory.size() - 1 )
+                                                .position()
+                                                .latitude() );
+
+        ObservableAircraftState.AirbonePos currentAirbornePos = trajectory.get( 0 );
+        ObservableAircraftState.AirbonePos nextAirbornePos;
+
         for ( int i = 0 ; i < trajectory.size() - 1 ; i++ ) {
-            //TODO x/y dist -- lon lat angle modif names
-            ObservableAircraftState.AirbonePos currentAirbonePos = trajectory.get( i );
-            ObservableAircraftState.AirbonePos nextAirbonePos = trajectory.get( i + 1 );
-            double currentAltitude = currentAirbonePos.altitude();
-            double nextAltitude = nextAirbonePos.altitude();
-            GeoPos currentPoint = currentAirbonePos.position();
-            double currentLongitude = WebMercator.x( mapParameters.getZoom(), currentPoint.longitude() );
-            double currentLatitude = WebMercator.y( mapParameters.getZoom(), currentPoint.latitude() );
+            nextAirbornePos = trajectory.get( i + 1 );
 
-            GeoPos nextPoint = nextAirbonePos.position();
-            double nextLongitude = WebMercator.x( mapParameters.getZoom(), nextPoint.longitude() );
-            double nextLatitude = WebMercator.y( mapParameters.getZoom(), nextPoint.latitude() );
+            double currentAltitude = currentAirbornePos.altitude();
+            double nextAltitude = nextAirbornePos.altitude();
 
-            double firstLongitude = WebMercator.x( mapParameters.getZoom(),
-                                                   trajectory.get( 0 )
-                                                             .position()
-                                                             .longitude() );
-            double firstLatitude = WebMercator.y( mapParameters.getZoom(),
-                                                  trajectory.get( 0 )
-                                                            .position()
-                                                            .latitude() );
-            double lastLongitude = WebMercator.x( mapParameters.getZoom(),
-                                                  trajectory.get( trajectory.size() - 1 )
-                                                            .position()
-                                                            .longitude() );
-            double lastLatitude = WebMercator.y( mapParameters.getZoom(),
-                                                 trajectory.get( trajectory.size() - 1 )
-                                                           .position()
-                                                           .latitude() );
-            Line line = new Line( currentLongitude - lastLongitude,
-                                  currentLatitude - lastLatitude,
-                                  nextLongitude - lastLongitude,
-                                  nextLatitude - lastLatitude );
+            double startX = WebMercator.x( mapParameters.getZoom(),
+                                           currentAirbornePos.position()
+                                                             .longitude() ) - lastX;
+            double startY = WebMercator.y( mapParameters.getZoom(),
+                                           currentAirbornePos.position()
+                                                             .latitude() ) - lastY;
+            double endX = WebMercator.x( mapParameters.getZoom(),
+                                         nextAirbornePos.position()
+                                                        .longitude() ) - lastX;
+            double endY = WebMercator.y( mapParameters.getZoom(),
+                                         nextAirbornePos.position()
+                                                        .latitude() ) - lastY;
+            Line line = new Line( startX, startY, endX, endY );
             trajectoryGroup.getChildren()
                            .add( line );
 
-            if ( Double.compare( currentAltitude, nextAltitude ) == 0 ) {
-                line.setStroke( ColorRamp.PLASMA.at( Math.pow( currentAltitude / 12000, Math.pow( 3, -1 ) ) ) );
-            }
-            else {
-                Stop color1 = new Stop( 0,
-                                        ColorRamp.PLASMA.at( Math.pow( currentAltitude / 12000, Math.pow( 3, -1 ) ) ) );
-                Stop color2 = new Stop( 1, ColorRamp.PLASMA.at( Math.pow( nextAltitude / 12000, Math.pow( 3, -1 ) ) ) );
+            applyColour( currentAltitude, nextAltitude, startX, startY, endX, endY, line );
 
-                LinearGradient gradient = new LinearGradient( currentLongitude - mapParameters.minXProperty()
-                                                                                              .get(),
-                                                              currentLatitude - mapParameters.minYProperty()
-                                                                                             .get(),
-                                                              nextLongitude - mapParameters.minXProperty()
-                                                                                           .get(),
-                                                              nextLatitude - mapParameters.minYProperty()
-                                                                                          .get(),
-                                                              true,
-                                                              CycleMethod.NO_CYCLE,
-                                                              color1,
-                                                              color2 );
-                line.setStroke( gradient );
-            }
+            currentAirbornePos = nextAirbornePos;
         }
     }
 
@@ -290,5 +266,26 @@ public final class AircraftController {
                  return yPos - mapParameters.minYProperty()
                                             .get();
              }, addedAircraft.positionProperty(), mapParameters.minYProperty(), mapParameters.zoomProperty() ) );
+    }
+
+
+    private static void applyColour(double currentAltitude, double nextAltitude, double startX, double startY,
+                                    double endX, double endY, Line line) {
+        if ( Double.compare( currentAltitude, nextAltitude ) == 0 ) {
+            line.setStroke( ColorRamp.PLASMA.at( Math.pow( currentAltitude / 12000, Math.pow( 3, -1 ) ) ) );
+        }
+        else {
+            Stop color1 = new Stop( 0, ColorRamp.PLASMA.at( Math.pow( currentAltitude / 12000, Math.pow( 3, -1 ) ) ) );
+            Stop color2 = new Stop( 1, ColorRamp.PLASMA.at( Math.pow( nextAltitude / 12000, Math.pow( 3, -1 ) ) ) );
+            LinearGradient gradient = new LinearGradient( startX,
+                                                          startY,
+                                                          endX,
+                                                          endY,
+                                                          true,
+                                                          CycleMethod.NO_CYCLE,
+                                                          color1,
+                                                          color2 );
+            line.setStroke( gradient );
+        }
     }
 }
