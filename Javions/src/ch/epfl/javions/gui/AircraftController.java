@@ -86,16 +86,7 @@ public final class AircraftController {
         pane.getChildren()
             .add( aircrafGroup );
 
-        selectedAircraftState.addListener( i -> {
-            if ( selectedAircraftState.get() != null && addedAircraft.getIcaoAddress()
-                                                                     .string()
-                                                                     .equals( selectedAircraftState.get()
-                                                                                                   .getIcaoAddress()
-                                                                                                   .string() ) ) {
-                createTrajectoryGroup( aircrafGroup, addedAircraft );
-            }
-        } );
-
+        createTrajectoryGroup( aircrafGroup, addedAircraft );
         createIconAndLabelGroup( aircrafGroup, addedAircraft );
     }
 
