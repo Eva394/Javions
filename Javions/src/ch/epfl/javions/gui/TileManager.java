@@ -138,7 +138,7 @@ public final class TileManager {
          */
         public static boolean isValid(int zoom, int x, int y) {
             double n = Math.pow( 2, zoom );
-            return ( 0 <= zoom && zoom < 19 ) && ( 0 <= x && x < n ) && ( 0 <= y && y < n );
+            return ( 0 <= zoom && zoom <= 19 ) && ( 0 <= x && x < n ) && ( 0 <= y && y < n );
         }
     }
 }
