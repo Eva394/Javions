@@ -18,7 +18,9 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.text.Text;
 
 import java.util.Objects;
 
@@ -28,11 +30,16 @@ import java.util.Objects;
  */
 public final class AircraftController {
 
+
+    public static final double ALTITUDE_POWER = 1. / 3.;
+    public static final double ALTITUDE_FACTOR = 1. / 12000.;
+    private static final int MIN_ZOOM_LEVEL_FOR_VISIBLE_LABELS = 11;
+    private static final int LABEL_MARGIN = 4;
+    private static final String AIRCRAFT_CSS = "aircraft.css";
     private final MapParameters mapParameters;
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
     private final Pane pane;
-    private static final String AIRCRAFT_CSS = "aircraft.css";
 
 
     public AircraftController(MapParameters mapParameters, ObservableSet<ObservableAircraftState> aircraftStates,
@@ -75,8 +82,6 @@ public final class AircraftController {
                                         .negate() );
         aircrafGroup.setOnMouseClicked( event -> {
             selectedAircraftState.set( addedAircraft );
-            System.out.println( "selected aircraft " + addedAircraft.getIcaoAddress()
-                                                                    .string() );
         } );
         pane.getChildren()
             .add( aircrafGroup );
@@ -98,31 +103,75 @@ public final class AircraftController {
     private void createIconAndLabelGroup(Group aircrafGroup, ObservableAircraftState addedAircraft) {
 
         Group iconAndLabelGroup = new Group();
+
         aircrafGroup.getChildren()
                     .add( iconAndLabelGroup );
 
         bindPositionToLayout( addedAircraft, iconAndLabelGroup );
-        createIcon( iconAndLabelGroup, addedAircraft );
+
         createLabelGroup( iconAndLabelGroup, addedAircraft );
+        createIcon( iconAndLabelGroup, addedAircraft );
     }
 
 
     private void createLabelGroup(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
         Group labelGroup = new Group();
+        labelGroup.getStyleClass()
+                  .add( "label" );
+
         iconAndLabelGroup.getChildren()
                          .add( labelGroup );
 
-        createRectangle( iconAndLabelGroup, addedAircraft );
-        createText( iconAndLabelGroup, addedAircraft );
-    }
+        Rectangle labelBase = new Rectangle();
+        Text labelText = new Text();
 
+        labelGroup.getChildren()
+                  .add( labelBase );
+        labelGroup.getChildren()
+                  .add( labelText );
 
-    private void createText(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
-    }
+        labelBase.widthProperty()
+                 .bind( labelText.layoutBoundsProperty()
+                                 .map( text -> text.getWidth() + LABEL_MARGIN ) );
+        labelBase.heightProperty()
+                 .bind( labelText.layoutBoundsProperty()
+                                 .map( text -> text.getHeight() + LABEL_MARGIN ) );
+        labelGroup.visibleProperty()
+                  .bind( Bindings.createBooleanBinding( () -> ( addedAircraft.equals( selectedAircraftState.get() ) ||
+                                                                mapParameters.zoomProperty()
+                                                                             .get()
+                                                                >= MIN_ZOOM_LEVEL_FOR_VISIBLE_LABELS ),
+                                                        selectedAircraftState,
+                                                        mapParameters.zoomProperty() ) );
 
+        String aircraftID = addedAircraft.getAircraftData() != null && addedAircraft.getAircraftData()
+                                                                                    .registration() != null
+                            ? addedAircraft.getAircraftData()
+                                           .registration()
+                                           .string()
+                            : ( addedAircraft.getCallSign() != null
+                                ? addedAircraft.getCallSign()
+                                               .string()
+                                : addedAircraft.getIcaoAddress()
+                                               .string() );
 
-    private void createRectangle(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
-
+        //TODO this doenst update the values
+        //TODO "?" doesnt work
+        labelText.textProperty()
+                 .bind( Bindings.format( "%s\n%f m\u2002%f km/h",
+                                         aircraftID,
+                                         !Double.isNaN( addedAircraft.velocityProperty()
+                                                                     .get() )
+                                         ? addedAircraft.velocityProperty()
+                                                        .get()
+                                         : "?",
+                                         !Double.isNaN( addedAircraft.altitudeProperty()
+                                                                     .get() )
+                                         ? addedAircraft.altitudeProperty()
+                                                        .get()
+                                         : "?" ) );
+//                                         addedAircraft.altitudeProperty(),
+//                                         addedAircraft.velocityProperty() ) );
     }
 
 
@@ -160,8 +209,8 @@ public final class AircraftController {
 
         iconPath.fillProperty()
                 .bind( addedAircraft.altitudeProperty()
-                                    .map( altitude -> ColorRamp.PLASMA.at( Math.pow( (Double)altitude / 12000,
-                                                                                     Math.pow( 3, -1 ) ) ) ) );
+                                    .map( altitude -> ColorRamp.PLASMA.at( Math.pow( (Double)altitude * ALTITUDE_FACTOR,
+                                                                                     ALTITUDE_POWER ) ) ) );
 
         iconPath.getStyleClass()
                 .add( "aircraft" );
@@ -169,20 +218,23 @@ public final class AircraftController {
                          .add( iconPath );
     }
 
+    //TODO the trajectory is above the icon -- ASK ASSISTANT
+
 
     private void createTrajectoryGroup(Group aircrafGroup, ObservableAircraftState addedAircraft) {
 
         Group trajectoryGroup = new Group();
         trajectoryGroup.getStyleClass()
                        .add( "trajectory" );
+        trajectoryGroup.visibleProperty()
+                       .bind( Bindings.createBooleanBinding( () -> addedAircraft.equals( selectedAircraftState.get() ),
+                                                             selectedAircraftState ) );
+
         aircrafGroup.getChildren()
                     .add( trajectoryGroup );
 
         bindPositionToLayout( addedAircraft, trajectoryGroup );
 
-        trajectoryGroup.visibleProperty()
-                       .bind( Bindings.createBooleanBinding( () -> addedAircraft.equals( selectedAircraftState.get() ),
-                                                             selectedAircraftState ) );
         ObservableList<ObservableAircraftState.AirbonePos> trajectory = addedAircraft.getUnmodifiableTrajectory();
         trajectory.addListener( (ListChangeListener<? super ObservableAircraftState.AirbonePos>)change -> {
             if ( trajectoryGroup.visibleProperty()
@@ -273,11 +325,14 @@ public final class AircraftController {
     private static void applyColour(double currentAltitude, double nextAltitude, double startX, double startY,
                                     double endX, double endY, Line line) {
         if ( Double.compare( currentAltitude, nextAltitude ) == 0 ) {
-            line.setStroke( ColorRamp.PLASMA.at( Math.pow( currentAltitude / 12000, Math.pow( 3, -1 ) ) ) );
+            line.setStroke( ColorRamp.PLASMA.at( Math.pow( currentAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
         }
         else {
-            Stop color1 = new Stop( 0, ColorRamp.PLASMA.at( Math.pow( currentAltitude / 12000, Math.pow( 3, -1 ) ) ) );
-            Stop color2 = new Stop( 1, ColorRamp.PLASMA.at( Math.pow( nextAltitude / 12000, Math.pow( 3, -1 ) ) ) );
+            Stop color1 = new Stop( 0,
+                                    ColorRamp.PLASMA.at( Math.pow( currentAltitude * ALTITUDE_FACTOR,
+                                                                   ALTITUDE_POWER ) ) );
+            Stop color2 = new Stop( 1,
+                                    ColorRamp.PLASMA.at( Math.pow( nextAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
             LinearGradient gradient = new LinearGradient( startX,
                                                           startY,
                                                           endX,
