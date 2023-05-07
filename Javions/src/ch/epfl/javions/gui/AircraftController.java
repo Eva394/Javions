@@ -209,8 +209,6 @@ public final class AircraftController {
                          .add( iconPath );
     }
 
-    //TODO the trajectory is above the icon -- ASK ASSISTANT
-
 
     private void createTrajectoryGroup(Group aircrafGroup, ObservableAircraftState addedAircraft) {
 
