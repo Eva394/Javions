@@ -8,6 +8,9 @@ import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableDoubleValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -24,6 +27,8 @@ import javafx.scene.text.Text;
 
 import java.util.Objects;
 
+import static javafx.beans.binding.Bindings.when;
+
 /**
  * Manages the view of the aircrafts
  * @author Eva Mangano 345375
@@ -31,8 +36,9 @@ import java.util.Objects;
 public final class AircraftController {
 
 
-    public static final double ALTITUDE_POWER = 1. / 3.;
-    public static final double ALTITUDE_FACTOR = 1. / 12000.;
+    private static final double ALTITUDE_POWER = 1. / 3.;
+    private static final double ALTITUDE_FACTOR = 1. / 12000.;
+    private static final String STRING_FOR_UNKNOWN_VALUE = "?";
     private static final int MIN_ZOOM_LEVEL_FOR_VISIBLE_LABELS = 11;
     private static final int LABEL_MARGIN = 4;
     private static final String AIRCRAFT_CSS = "aircraft.css";
@@ -128,10 +134,9 @@ public final class AircraftController {
                  .bind( labelText.layoutBoundsProperty()
                                  .map( text -> text.getHeight() + LABEL_MARGIN ) );
         labelGroup.visibleProperty()
-                  .bind( Bindings.createBooleanBinding( () -> ( addedAircraft.equals( selectedAircraftState.get() ) ||
-                                                                mapParameters.zoomProperty()
-                                                                             .get()
-                                                                >= MIN_ZOOM_LEVEL_FOR_VISIBLE_LABELS ),
+                  .bind( Bindings.createBooleanBinding( () -> ( addedAircraft.equals( selectedAircraftState.get() ) || mapParameters.zoomProperty()
+                                                                                                                                    .get()
+                                                                                                                       >= MIN_ZOOM_LEVEL_FOR_VISIBLE_LABELS ),
                                                         selectedAircraftState,
                                                         mapParameters.zoomProperty() ) );
 
@@ -148,21 +153,36 @@ public final class AircraftController {
 
         //TODO this doenst update the values
         //TODO "?" doesnt work
+        /*!Double.isNaN( addedAircraft.altitudeProperty().get() ) */
+
+        ObservableDoubleValue notANumber = new SimpleDoubleProperty( Double.NaN );
+
         labelText.textProperty()
-                 .bind( Bindings.format( "%s\n%f m\u2002%f km/h",
+                 .bind( Bindings.format( "%s\n%s m\u2002%s km/h",
                                          aircraftID,
-                                         !Double.isNaN( addedAircraft.velocityProperty()
-                                                                     .get() )
-                                         ? addedAircraft.velocityProperty()
-                                                        .get()
-                                         : "?",
-                                         !Double.isNaN( addedAircraft.altitudeProperty()
-                                                                     .get() )
-                                         ? addedAircraft.altitudeProperty()
-                                                        .get()
-                                         : "?" ) );
-//                                         addedAircraft.altitudeProperty(),
-//                                         addedAircraft.velocityProperty() ) );
+                                         when( new SimpleBooleanProperty( !Double.isNaN( addedAircraft.altitudeProperty()
+                                                                                                      .get() ) ) ).then( String.valueOf( ( (int)addedAircraft.altitudeProperty()
+                                                                                                                                                             .get() ) ) )
+                                                                                                                  .otherwise( STRING_FOR_UNKNOWN_VALUE ),
+                                         when( new SimpleBooleanProperty( !Double.isNaN( addedAircraft.velocityProperty()
+                                                                                                      .get() ) ) ).then( String.valueOf( ( (int)addedAircraft.velocityProperty()
+                                                                                                                                                             .get() ) ) )
+                                                                                                                  .otherwise( STRING_FOR_UNKNOWN_VALUE ) ) );
+
+                /* .bind( Bindings.format( ,
+                                         aircraftID,
+                                         Bindings.when( altitudeIsValidProperty( addedAircraft ) )
+                                                 .then( new SimpleStringProperty( String.valueOf( (int)addedAircraft
+                                                 .altitudeProperty()
+                                                                                                                    .get() ) ) )
+                                                 .otherwise( STRING_FOR_UNKNOWN_VALUE ),
+                                         Bindings.when( velocityIsValidProperty( addedAircraft ) )
+                                                 .then( new SimpleStringProperty( String.valueOf( (int)addedAircraft
+                                                 .velocityProperty()
+                                                                                                                    .get() ) ) )
+                                                 .otherwise( STRING_FOR_UNKNOWN_VALUE ) ) );
+
+                 */
     }
 
 
@@ -185,7 +205,6 @@ public final class AircraftController {
                                                   addedAircraft.categoryProperty()
                                                                .get(),
                                                   wakeTurbulenceCategory );
-
         iconPath.contentProperty()
                 .bind( addedAircraft.categoryProperty()
                                     .map( aircraft -> icon.svgPath() ) );
@@ -194,14 +213,12 @@ public final class AircraftController {
                 .bind( addedAircraft.trackOrHeadingProperty()
                                     .map( trackOrHeading -> icon.canRotate()
                                                             ? ( Units.convertTo( addedAircraft.trackOrHeadingProperty()
-                                                                                              .get(),
-                                                                                 Units.Angle.DEGREE ) )
+                                                                                              .get(), Units.Angle.DEGREE ) )
                                                             : 0 ) );
 
         iconPath.fillProperty()
                 .bind( addedAircraft.altitudeProperty()
-                                    .map( altitude -> ColorRamp.PLASMA.at( Math.pow( (Double)altitude * ALTITUDE_FACTOR,
-                                                                                     ALTITUDE_POWER ) ) ) );
+                                    .map( altitude -> ColorRamp.PLASMA.at( Math.pow( (Double)altitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) ) );
 
         iconPath.getStyleClass()
                 .add( "aircraft" );
@@ -216,8 +233,7 @@ public final class AircraftController {
         trajectoryGroup.getStyleClass()
                        .add( "trajectory" );
         trajectoryGroup.visibleProperty()
-                       .bind( Bindings.createBooleanBinding( () -> addedAircraft.equals( selectedAircraftState.get() ),
-                                                             selectedAircraftState ) );
+                       .bind( Bindings.createBooleanBinding( () -> addedAircraft.equals( selectedAircraftState.get() ), selectedAircraftState ) );
 
         aircrafGroup.getChildren()
                     .add( trajectoryGroup );
@@ -311,25 +327,14 @@ public final class AircraftController {
     }
 
 
-    private static void applyColour(double currentAltitude, double nextAltitude, double startX, double startY,
-                                    double endX, double endY, Line line) {
+    private static void applyColour(double currentAltitude, double nextAltitude, double startX, double startY, double endX, double endY, Line line) {
         if ( Double.compare( currentAltitude, nextAltitude ) == 0 ) {
             line.setStroke( ColorRamp.PLASMA.at( Math.pow( currentAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
         }
         else {
-            Stop color1 = new Stop( 0,
-                                    ColorRamp.PLASMA.at( Math.pow( currentAltitude * ALTITUDE_FACTOR,
-                                                                   ALTITUDE_POWER ) ) );
-            Stop color2 = new Stop( 1,
-                                    ColorRamp.PLASMA.at( Math.pow( nextAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
-            LinearGradient gradient = new LinearGradient( startX,
-                                                          startY,
-                                                          endX,
-                                                          endY,
-                                                          true,
-                                                          CycleMethod.NO_CYCLE,
-                                                          color1,
-                                                          color2 );
+            Stop color1 = new Stop( 0, ColorRamp.PLASMA.at( Math.pow( currentAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
+            Stop color2 = new Stop( 1, ColorRamp.PLASMA.at( Math.pow( nextAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
+            LinearGradient gradient = new LinearGradient( startX, startY, endX, endY, true, CycleMethod.NO_CYCLE, color1, color2 );
             line.setStroke( gradient );
         }
     }

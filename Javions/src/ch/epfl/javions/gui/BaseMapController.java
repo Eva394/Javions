@@ -100,7 +100,6 @@ public final class BaseMapController {
 
 
     private void movementHandler(MouseEvent event) {
-        System.out.println( "moving" );
         Point2D newMousePosition = new Point2D( event.getX(), event.getY() );
         double xTranslation = lastMousePosition.get()
                                                .getX() - newMousePosition.getX();

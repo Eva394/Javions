@@ -5,7 +5,6 @@ import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
-import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
@@ -20,8 +19,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+public final class AircraftTableControllerTest extends Application {
 
-public final class AircraftControllerTest extends Application {
+
     @Override
     public void start(Stage primaryStage) throws
                                           Exception {
@@ -29,7 +29,7 @@ public final class AircraftControllerTest extends Application {
         Path tileCache = Path.of( "tile-cache" );
         TileManager tileManager = new TileManager( tileCache, "tile.openstreetmap.org" );
         MapParameters mp = new MapParameters( 17, 17_389_327, 11_867_430 );
-        BaseMapController bmc = new BaseMapController( tileManager, mp );
+//        BaseMapController bmc = new BaseMapController( tileManager, mp );
 
         // Création de la base de données
         URL dbUrl = getClass().getResource( "/aircraft.zip" );
@@ -40,12 +40,11 @@ public final class AircraftControllerTest extends Application {
 
         AircraftStateManager asm = new AircraftStateManager( db );
         AircraftDatabase aircraftDatabase = new AircraftDatabase(
-                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft"
-                + ".zip" );
-        IcaoAddress icaoAddress = new IcaoAddress( "49328A" );
+                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft" + ".zip" );
         ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
-        AircraftController ac = new AircraftController( mp, asm.states(), sap );
-        var root = new StackPane( bmc.pane(), ac.pane() );
+//        AircraftController ac = new AircraftController( mp, asm.states(), sap );
+        AircraftTableController atc = new AircraftTableController( asm.states(), sap );
+        var root = new StackPane( atc.pane() );
         primaryStage.setScene( new Scene( root ) );
         primaryStage.show();
 
