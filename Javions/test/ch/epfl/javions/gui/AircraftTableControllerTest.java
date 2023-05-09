@@ -39,8 +39,13 @@ public final class AircraftTableControllerTest extends Application {
         var db = new AircraftDatabase( f );
 
         AircraftStateManager asm = new AircraftStateManager( db );
+
         AircraftDatabase aircraftDatabase = new AircraftDatabase(
+                "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\aircraft" + ".zip" );
+        /*AircraftDatabase aircraftDatabase = new AircraftDatabase(
                 "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\aircraft" + ".zip" );
+
+         */
         ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
 //        AircraftController ac = new AircraftController( mp, asm.states(), sap );
         AircraftTableController atc = new AircraftTableController( asm.states(), sap );
@@ -48,9 +53,14 @@ public final class AircraftTableControllerTest extends Application {
         primaryStage.setScene( new Scene( root ) );
         primaryStage.show();
 
-        var mi = readAllMessages( "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - "
+        var mi = readAllMessages( "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\messages_20230318_0915.bin" ).iterator();
+
+
+        /*var mi = readAllMessages( "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - "
                                   + "BA2\\PROJET\\Javions\\resources\\messages_20230318_0915.bin" ).iterator();
 
+
+         */
         // Animation des aéronefs
         new AnimationTimer() {
             @Override
