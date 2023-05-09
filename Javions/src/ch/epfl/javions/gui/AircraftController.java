@@ -8,8 +8,6 @@ import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ObservableDoubleValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
@@ -148,42 +146,17 @@ public final class AircraftController {
                                 : addedAircraft.getIcaoAddress()
                                                .string() );
 
-        //TODO this doenst update the values
-        //TODO "?" doesnt work
-        /*!Double.isNaN( addedAircraft.altitudeProperty().get() ) */
-
-        ObservableDoubleValue notANumber = new SimpleDoubleProperty( Double.NaN );
-
-//        labelText.textProperty()
-//                 .bind( Bindings.format( "%s\n%s m\u2002%s km/h",
-//                                         aircraftID,
-//                                         when( new SimpleBooleanProperty( !Double.isNaN( addedAircraft.altitudeProperty()
-//                                                                                                      .get() ) ) ).then( String.valueOf( ( (int)
-//                                                                                                      addedAircraft.altitudeProperty()
-//                                                                                                                                                             .get() ) ) )
-//                                                                                                                  .otherwise(
-//                                                                                                                  STRING_FOR_UNKNOWN_VALUE ),
-//                                         when( new SimpleBooleanProperty( !Double.isNaN( addedAircraft.velocityProperty()
-//                                                                                                      .get() ) ) ).then( String.valueOf( ( (int)
-//                                                                                                      addedAircraft.velocityProperty()
-//                                                                                                                                                             .get() ) ) )
-//                                                                                                                  .otherwise(
-//                                                                                                                  STRING_FOR_UNKNOWN_VALUE ) ) );
-
-                /* .bind( Bindings.format( ,
+        labelText.textProperty()
+                 .bind( Bindings.format( "%s\n%s km/h\u2002%s m",
                                          aircraftID,
-                                         Bindings.when( altitudeIsValidProperty( addedAircraft ) )
-                                                 .then( new SimpleStringProperty( String.valueOf( (int)addedAircraft
-                                                 .altitudeProperty()
-                                                                                                                    .get() ) ) )
-                                                 .otherwise( STRING_FOR_UNKNOWN_VALUE ),
-                                         Bindings.when( velocityIsValidProperty( addedAircraft ) )
-                                                 .then( new SimpleStringProperty( String.valueOf( (int)addedAircraft
-                                                 .velocityProperty()
-                                                                                                                    .get() ) ) )
-                                                 .otherwise( STRING_FOR_UNKNOWN_VALUE ) ) );
-
-                 */
+                                         addedAircraft.velocityProperty()
+                                                      .map( velocity -> !Double.isNaN( velocity.doubleValue() )
+                                                                        ? (int)Units.convertTo( velocity.intValue(), Units.Speed.KILOMETER_PER_HOUR )
+                                                                        : STRING_FOR_UNKNOWN_VALUE ),
+                                         addedAircraft.altitudeProperty()
+                                                      .map( altitude -> !Double.isNaN( altitude.doubleValue() )
+                                                                        ? (int)Units.convertTo( altitude.doubleValue(), Units.Length.METER )
+                                                                        : STRING_FOR_UNKNOWN_VALUE ) ) );
     }
 
 
