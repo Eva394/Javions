@@ -8,7 +8,6 @@ import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableDoubleValue;
 import javafx.collections.ListChangeListener;
@@ -26,8 +25,6 @@ import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
 import java.util.Objects;
-
-import static javafx.beans.binding.Bindings.when;
 
 /**
  * Manages the view of the aircrafts
@@ -157,17 +154,21 @@ public final class AircraftController {
 
         ObservableDoubleValue notANumber = new SimpleDoubleProperty( Double.NaN );
 
-        labelText.textProperty()
-                 .bind( Bindings.format( "%s\n%s m\u2002%s km/h",
-                                         aircraftID,
-                                         when( new SimpleBooleanProperty( !Double.isNaN( addedAircraft.altitudeProperty()
-                                                                                                      .get() ) ) ).then( String.valueOf( ( (int)addedAircraft.altitudeProperty()
-                                                                                                                                                             .get() ) ) )
-                                                                                                                  .otherwise( STRING_FOR_UNKNOWN_VALUE ),
-                                         when( new SimpleBooleanProperty( !Double.isNaN( addedAircraft.velocityProperty()
-                                                                                                      .get() ) ) ).then( String.valueOf( ( (int)addedAircraft.velocityProperty()
-                                                                                                                                                             .get() ) ) )
-                                                                                                                  .otherwise( STRING_FOR_UNKNOWN_VALUE ) ) );
+//        labelText.textProperty()
+//                 .bind( Bindings.format( "%s\n%s m\u2002%s km/h",
+//                                         aircraftID,
+//                                         when( new SimpleBooleanProperty( !Double.isNaN( addedAircraft.altitudeProperty()
+//                                                                                                      .get() ) ) ).then( String.valueOf( ( (int)
+//                                                                                                      addedAircraft.altitudeProperty()
+//                                                                                                                                                             .get() ) ) )
+//                                                                                                                  .otherwise(
+//                                                                                                                  STRING_FOR_UNKNOWN_VALUE ),
+//                                         when( new SimpleBooleanProperty( !Double.isNaN( addedAircraft.velocityProperty()
+//                                                                                                      .get() ) ) ).then( String.valueOf( ( (int)
+//                                                                                                      addedAircraft.velocityProperty()
+//                                                                                                                                                             .get() ) ) )
+//                                                                                                                  .otherwise(
+//                                                                                                                  STRING_FOR_UNKNOWN_VALUE ) ) );
 
                 /* .bind( Bindings.format( ,
                                          aircraftID,
