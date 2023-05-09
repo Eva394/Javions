@@ -27,6 +27,7 @@ public final class AircraftTableController {
     public static final String TYPE_COLUMN_TITLE = "Type";
     public static final String DESCRIPTION_COLUMN_TITLE = "Description";
     public static final String LONGITUDE_COLUMN_TITLE = "Longitude (°)";
+    public static final String LATITUDE_COLUMN_TITLE = "Latitude (°)";
     private static final NumberFormat LONGITUDE_AND_LATITUDE_NUMBER_FORMAT = NumberFormat.getInstance();
     private static final NumberFormat ALTITUDE_AND_VELOCITY_NUMBER_FORMAT = NumberFormat.getInstance();
     private static final String TABLE_CSS = "table.css";
@@ -38,7 +39,6 @@ public final class AircraftTableController {
     private static final int TYPE_COLUMN_WIDTH = 50;
     private static final int DESCRIPTION_COLUMN_WIDTH = CALL_SIGN_COLUMN_WIDTH;
     private static final int DOUBLE_CLICK_COUNT = 2;
-    public static final String LATITUDE_COLUMN_TITLE = "Latitude (°)";
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
     private final TableView pane;
@@ -130,75 +130,65 @@ public final class AircraftTableController {
 
  */
 
-    private void createLatitudeColumn(){
+
+    private void createLatitudeColumn() {
         TableColumn<ObservableAircraftState, String> latitudeColumn = new TableColumn<>();
-        latitudeColumn.setText(LATITUDE_COLUMN_TITLE);
-        latitudeColumn.setPrefWidth(NUMERIC_COLUMN_WIDTH);
-        latitudeColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        latitudeColumn.setText( LATITUDE_COLUMN_TITLE );
+        latitudeColumn.setPrefWidth( NUMERIC_COLUMN_WIDTH );
+        latitudeColumn.getStyleClass()
+                      .add( "numeric" );
+        latitudeColumn.setCellValueFactory( cellData -> {
+            double longitude = Units.convertTo( cellData.getValue()
+                                                        .getPosition()
+                                                        .latitude(), DEGREE );
+            return new SimpleStringProperty( LONGITUDE_AND_LATITUDE_NUMBER_FORMAT.format( longitude ) );
+        } );
 
-        NumberFormat latitudeFormat = NumberFormat.getNumberInstance();
-        latitudeFormat.setMinimumFractionDigits(4);
-        latitudeFormat.setMaximumFractionDigits(4);
-
-
-        latitudeColumn.setCellValueFactory(cellData -> {
-            double longitude = Units.convertTo(cellData.getValue().getPosition().latitude(), DEGREE);
-            return new SimpleStringProperty(latitudeFormat.format(longitude));
-        });
-
-        latitudeColumn.setComparator((latitudeString1, latitudeString2) -> {
-            if (latitudeString1.isEmpty() || latitudeString2.isEmpty()) {
-                return latitudeString1.compareTo(latitudeString2);
-            } else {
-                double longitude1 = Double.parseDouble(latitudeString1);
-                double longitude2 = Double.parseDouble(latitudeString2);
-                return Double.compare(longitude1, longitude2);
+        latitudeColumn.setComparator( (latitudeString1, latitudeString2) -> {
+            if ( latitudeString1.isEmpty() || latitudeString2.isEmpty() ) {
+                return latitudeString1.compareTo( latitudeString2 );
             }
-        });
+            else {
+                double longitude1 = Double.parseDouble( latitudeString1 );
+                double longitude2 = Double.parseDouble( latitudeString2 );
+                return Double.compare( longitude1, longitude2 );
+            }
+        } );
 
-        pane.getColumns().add(latitudeColumn);
+        pane.getColumns()
+            .add( latitudeColumn );
     }
 
 
-
-    private void createLongitudeColumn(){
+    private void createLongitudeColumn() {
         TableColumn<ObservableAircraftState, String> longitudeColumn = new TableColumn<>();
-        longitudeColumn.setText(LONGITUDE_COLUMN_TITLE);
-        longitudeColumn.setPrefWidth(NUMERIC_COLUMN_WIDTH);
-        longitudeColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
+        longitudeColumn.setText( LONGITUDE_COLUMN_TITLE );
+        longitudeColumn.setPrefWidth( NUMERIC_COLUMN_WIDTH );
+        longitudeColumn.getStyleClass()
+                       .add( "numeric" );
 
-        NumberFormat longitudeFormat = NumberFormat.getNumberInstance();
-        longitudeFormat.setMinimumFractionDigits(4);
-        longitudeFormat.setMaximumFractionDigits(4);
+        longitudeColumn.setCellValueFactory( cellData -> {
+            double longitude = Units.convertTo( cellData.getValue()
+                                                        .getPosition()
+                                                        .longitude(), DEGREE );
+            return new SimpleStringProperty( LONGITUDE_AND_LATITUDE_NUMBER_FORMAT.format( longitude ) );
+        } );
 
-
-        longitudeColumn.setCellValueFactory(cellData -> {
-            double longitude = Units.convertTo(cellData.getValue().getPosition().longitude(), DEGREE);
-            return new SimpleStringProperty(longitudeFormat.format(longitude));
-        });
-
-        longitudeColumn.setComparator((longitudeString1, longitudeString2) -> {
-            if (longitudeString1.isEmpty() || longitudeString2.isEmpty()) {
-                return longitudeString1.compareTo(longitudeString2);
-            } else {
-                double longitude1 = Double.parseDouble(longitudeString1);
-                double longitude2 = Double.parseDouble(longitudeString2);
-                return Double.compare(longitude1, longitude2);
+        longitudeColumn.setComparator( (longitudeString1, longitudeString2) -> {
+            if ( longitudeString1.isEmpty() || longitudeString2.isEmpty() ) {
+                return longitudeString1.compareTo( longitudeString2 );
             }
-        });
+            else {
+                double longitude1 = Double.parseDouble( longitudeString1 );
+                double longitude2 = Double.parseDouble( longitudeString2 );
+                return Double.compare( longitude1, longitude2 );
+            }
+        } );
 
         // Add the longitude column to the table
-        pane.getColumns().add(longitudeColumn);
+        pane.getColumns()
+            .add( longitudeColumn );
     }
-
-
-
-
-
-
-
-
-
 
 
     private void createDescriptionColumn() {
