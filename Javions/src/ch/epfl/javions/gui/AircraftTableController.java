@@ -101,23 +101,23 @@ public final class AircraftTableController {
 
 
     private void createLongitudeColumn() {
-        TableColumn<ObservableAircraftState, Double> longitudeColumn = new TableColumn<>();
-        longitudeColumn.getStyleClass()
-                       .add( "numeric" );
-        longitudeColumn.setText( LONGITUDE_COLUMN_TITLE );
-        longitudeColumn.setPrefWidth( NUMERIC_COLUMN_WIDTH );
-        longitudeColumn.setComparator( (o1, o2) -> {
-            String o1String = LONGITUDE_AND_LATITUDE_NUMBER_FORMAT.format( o1 );
-            String o2String = LONGITUDE_AND_LATITUDE_NUMBER_FORMAT.format( o2 );
-            if ( o1String.isEmpty() || o2String.isEmpty() ) {
-                return String.CASE_INSENSITIVE_ORDER.compare( o1String, o2String );
-            }
-            else {
-                return Double.compare( o1, o2 );
-            }
-        } );
-        pane.getColumns()
-            .add( longitudeColumn );
+//        TableColumn<ObservableAircraftState, Double> longitudeColumn = new TableColumn<>();
+//        longitudeColumn.getStyleClass()
+//                       .add( "numeric" );
+//        longitudeColumn.setText( LONGITUDE_COLUMN_TITLE );
+//        longitudeColumn.setPrefWidth( NUMERIC_COLUMN_WIDTH );
+//        longitudeColumn.setComparator( (o1, o2) -> {
+//            String o1String = LONGITUDE_AND_LATITUDE_NUMBER_FORMAT.format( o1 );
+//            String o2String = LONGITUDE_AND_LATITUDE_NUMBER_FORMAT.format( o2 );
+//            if ( o1String.isEmpty() || o2String.isEmpty() ) {
+//                return String.CASE_INSENSITIVE_ORDER.compare( o1String, o2String );
+//            }
+//            else {
+//                return Double.compare( o1, o2 );
+//            }
+//        } );
+//        pane.getColumns()
+//            .add( longitudeColumn );
     }
 
 
