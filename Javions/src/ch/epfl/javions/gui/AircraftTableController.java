@@ -20,8 +20,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static ch.epfl.javions.Units.Angle.DEGREE;
-
 public final class AircraftTableController {
 
     public static final int DIGITS_FOR_POSITION = 4;
@@ -49,71 +47,56 @@ public final class AircraftTableController {
     private static final int DOUBLE_CLICK_COUNT = 2;
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
-    private final TableView<ObservableAircraftState> pane; //TODO find the < > type
+    private final TableView<ObservableAircraftState> pane;
 
 
-    public AircraftTableController(ObservableSet<ObservableAircraftState> aircraftStates,
-                                   ObjectProperty<ObservableAircraftState> selectedAircraftState) {
+    public AircraftTableController( ObservableSet<ObservableAircraftState> aircraftStates,
+                                    ObjectProperty<ObservableAircraftState> selectedAircraftState ) {
 
         this.aircraftStates = Objects.requireNonNull( aircraftStates );
         this.selectedAircraftState = selectedAircraftState;
         this.pane = new TableView<>();
         pane.getStyleClass()
-            .add( TABLE_CSS );
+                .add( TABLE_CSS );
         pane.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS );
         pane.setTableMenuButtonVisible( true );
 
         POSITION_NUMBER_FORMAT.setMinimumFractionDigits( DIGITS_FOR_POSITION );
         POSITION_NUMBER_FORMAT.setMaximumFractionDigits( DIGITS_FOR_POSITION );
         ALT_VEL_NUMBER_FORMAT.setMinimumFractionDigits( DIGITS_FOR_ALT_VEL );
-        ALT_VEL_NUMBER_FORMAT.setMinimumFractionDigits( DIGITS_FOR_ALT_VEL );
+        ALT_VEL_NUMBER_FORMAT.setMaximumFractionDigits( DIGITS_FOR_ALT_VEL );
 
         pane.getColumns()
-            .addAll( createColumns() );
+                .addAll( createColumns() );
 
-        aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
+        aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>) change -> {
             if ( change.wasAdded() ) {
                 pane.getItems()
-                    .add( change.getElementAdded() );
+                        .add( change.getElementAdded() );
                 pane.sort();
-            }
-            else {
+            } else {
                 pane.getItems()
-                    .remove( change.getElementRemoved() );
+                        .remove( change.getElementRemoved() );
                 pane.sort();
             }
         } );
 
-        selectedAircraftState.addListener( (observableState, previousState, newState) -> {
+        selectedAircraftState.addListener( ( observableState, previousState, newState ) -> {
             if ( newState != null && !Objects.equals( previousState, newState ) ) {
                 pane.scrollTo( newState );
                 pane.getSelectionModel()
-                    .select( newState );
+                        .select( newState );
             }
         } );
 
         pane.getSelectionModel()
-            .selectedItemProperty()
-            .addListener( (observableState, previousState, newState) -> {
-                if ( newState != null && !Objects.equals( previousState, newState ) ) {
-                    selectedAircraftState.set( newState );
-                }
-            } );
+                .selectedItemProperty()
+                .addListener( ( observableState, previousState, newState ) -> {
+                    if ( newState != null && !Objects.equals( previousState, newState ) ) {
+                        selectedAircraftState.set( newState );
+                    }
+                } );
     }
-
-    /*
-    TableView<Objet> table = new TableView<>();
-// ... initialisation de la table et de ses colonnes ...
-
-// Ajouter un écouteur sur la propriété selectedItemProperty du modèle de sélection de la table
-table.getSelectionModel().selectedItemProperty().addListener((observable, oldSelection, newSelection) -> {
-    if (newSelection != null) {
-        // Modifier la propriété passée au constructeur pour contenir l'état correspondant
-        // Ici, nous supposons que l'état est stocké dans un champ "etat" de l'objet sélectionné
-        monObjetSelectionne.setEtat(newSelection.getEtat());
-    }
-});
-     */
 
 
     public TableView pane() {
@@ -121,10 +104,10 @@ table.getSelectionModel().selectedItemProperty().addListener((observable, oldSel
     }
 
 
-    public void setOnDoubleClick(Consumer<ObservableAircraftState> consumer) {
+    public void setOnDoubleClick( Consumer<ObservableAircraftState> consumer ) {
         pane.setOnMouseClicked( event -> {
             if ( selectedAircraftState != null && event.getButton()
-                                                       .equals( MouseButton.PRIMARY ) && event.getClickCount() == DOUBLE_CLICK_COUNT ) {
+                    .equals( MouseButton.PRIMARY ) && event.getClickCount() == DOUBLE_CLICK_COUNT ) {
                 consumer.accept( selectedAircraftState.get() );
             }
         } );
@@ -135,56 +118,56 @@ table.getSelectionModel().selectedItemProperty().addListener((observable, oldSel
         List<TableColumn<ObservableAircraftState, String>> columns = new ArrayList<>();
 
         columns.add( createStringColumn( ICAO_COLUMN_TITLE,
-                                         ICAO_COLUMN_WIDTH,
-                                         state -> state.getIcaoAddress()
-                                                       .string() ) );
+                ICAO_COLUMN_WIDTH,
+                state -> state.getIcaoAddress()
+                        .string() ) );
         columns.add( createCallSignColumn() );
 
         columns.add( createStringColumn( REGISTRATION_COLUMN_TITLE,
-                                         REGISTRATION_COLUMN_WIDTH,
-                                         state -> state.getAircraftData() != null
-                                                  ? state.getAircraftData()
-                                                         .registration()
-                                                         .string()
-                                                  : "" ) );
+                REGISTRATION_COLUMN_WIDTH,
+                state -> state.getAircraftData() != null
+                        ? state.getAircraftData()
+                        .registration()
+                        .string()
+                        : "" ) );
         columns.add( createStringColumn( MODEL_COLUMN_TITLE,
-                                         MODEL_COLUMN_WIDTH,
-                                         state -> state.getAircraftData() != null
-                                                  ? state.getAircraftData()
-                                                         .model()
-                                                  : "" ) );
+                MODEL_COLUMN_WIDTH,
+                state -> state.getAircraftData() != null
+                        ? state.getAircraftData()
+                        .model()
+                        : "" ) );
         columns.add( createStringColumn( TYPE_COLUMN_TITLE,
-                                         TYPE_COLUMN_WIDTH,
-                                         state -> state.getAircraftData() != null
-                                                  ? state.getAircraftData()
-                                                         .typeDesignator()
-                                                         .string()
-                                                  : "" ) );
+                TYPE_COLUMN_WIDTH,
+                state -> state.getAircraftData() != null
+                        ? state.getAircraftData()
+                        .typeDesignator()
+                        .string()
+                        : "" ) );
         columns.add( createStringColumn( DESCRIPTION_COLUMN_TITLE,
-                                         DESCRIPTION_COLUMN_WIDTH,
-                                         state -> state.getAircraftData() != null
-                                                  ? state.getAircraftData()
-                                                         .description()
-                                                         .string()
-                                                  : "" ) );
+                DESCRIPTION_COLUMN_WIDTH,
+                state -> state.getAircraftData() != null
+                        ? state.getAircraftData()
+                        .description()
+                        .string()
+                        : "" ) );
         columns.add( createNumericColumn( LONGITUDE_COLUMN_TITLE,
-                                          state -> Bindings.createDoubleBinding( () -> state.getPosition()
-                                                                                            .longitude(), state.positionProperty() ),
-                                          POSITION_NUMBER_FORMAT,
-                                          DEGREE ) );
+                state -> Bindings.createDoubleBinding( () -> state.getPosition()
+                        .longitude(), state.positionProperty() ),
+                POSITION_NUMBER_FORMAT,
+                Units.Angle.DEGREE ) );
         columns.add( createNumericColumn( LATITUDE_COLUMN_TITLE,
-                                          state -> Bindings.createDoubleBinding( () -> state.getPosition()
-                                                                                            .longitude(), state.positionProperty() ),
-                                          POSITION_NUMBER_FORMAT,
-                                          DEGREE ) );
+                state -> Bindings.createDoubleBinding( () -> state.getPosition()
+                        .longitude(), state.positionProperty() ),
+                POSITION_NUMBER_FORMAT,
+                Units.Angle.DEGREE ) );
         columns.add( createNumericColumn( ALTITUDE_COLUMN_TITLE,
-                                          ObservableAircraftState::altitudeProperty,
-                                          ALT_VEL_NUMBER_FORMAT,
-                                          Units.Length.METER ) );
+                ObservableAircraftState::altitudeProperty,
+                ALT_VEL_NUMBER_FORMAT,
+                Units.Length.METER ) );
         columns.add( createNumericColumn( VELOCITY_COLUMN_TITLE,
-                                          ObservableAircraftState::velocityProperty,
-                                          ALT_VEL_NUMBER_FORMAT,
-                                          Units.Speed.KILOMETER_PER_HOUR ) );
+                ObservableAircraftState::velocityProperty,
+                ALT_VEL_NUMBER_FORMAT,
+                Units.Speed.KILOMETER_PER_HOUR ) );
 
         return columns;
     }
@@ -195,14 +178,14 @@ table.getSelectionModel().selectedItemProperty().addListener((observable, oldSel
         callSignColumn.setText( CALL_SIGN_COLUMN_TITLE );
         callSignColumn.setPrefWidth( CALL_SIGN_COLUMN_WIDTH );
         callSignColumn.setCellValueFactory( newLine -> newLine.getValue()
-                                                              .callSignProperty()
-                                                              .map( CallSign::string ) );
+                .callSignProperty()
+                .map( CallSign::string ) );
         return callSignColumn;
     }
 
 
-    private TableColumn<ObservableAircraftState, String> createStringColumn(String columnTitle, int columnWidth,
-                                                                            Function<ObservableAircraftState, String> function) {
+    private TableColumn<ObservableAircraftState, String> createStringColumn( String columnTitle, int columnWidth,
+                                                                             Function<ObservableAircraftState, String> function ) {
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>();
         column.setText( columnTitle );
         column.setPrefWidth( columnWidth );
@@ -211,33 +194,34 @@ table.getSelectionModel().selectedItemProperty().addListener((observable, oldSel
     }
 
 
-    private TableColumn<ObservableAircraftState, String> createNumericColumn(String columnTitle,
-                                                                             Function<ObservableAircraftState, DoubleExpression> function,
-                                                                             NumberFormat numberFormat, double unit) {
+    private TableColumn<ObservableAircraftState, String> createNumericColumn( String columnTitle,
+                                                                              Function<ObservableAircraftState, DoubleExpression> function,
+                                                                              NumberFormat numberFormat, double unit ) {
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>();
         column.setText( columnTitle );
         column.setPrefWidth( NUMERIC_COLUMN_WIDTH );
-        column.setComparator( (longitudeStr1, longitudeStr2) -> {
+        column.setComparator( ( longitudeStr1, longitudeStr2 ) -> {
             if ( longitudeStr1.isEmpty() || longitudeStr2.isEmpty() ) {
                 return longitudeStr1.compareTo( longitudeStr2 );
-            }
-            else {
-                Double longitude1 = null;
-                Double longitude2 = null;
+            } else {
+                Double longitude1;
+                Double longitude2;
                 try {
                     longitude1 = numberFormat.parse( longitudeStr1 )
-                                             .doubleValue();
+                            .doubleValue();
                     longitude2 = numberFormat.parse( longitudeStr2 )
-                                             .doubleValue();
-                }
-                catch ( Exception ignored ) {
+                            .doubleValue();
+                    return Double.compare( longitude1, longitude2 );
+                } catch ( Exception ignored ) {
                     ignored.printStackTrace();
                 }
-                return Double.compare( longitude1, longitude2 );
+                return 0;
             }
         } );
-        column.setCellValueFactory( state -> new ReadOnlyStringWrapper( numberFormat.format( Units.convertTo( function.apply( state.getValue() )
-                                                                                                                      .getValue(), unit ) ) ) );
+        column.setCellValueFactory( state -> {
+            Double value = function.apply( state.getValue() ).getValue();
+            return new ReadOnlyStringWrapper( !Double.isNaN( value ) ? numberFormat.format( Units.convertTo( value, unit ) ) : "" );
+        } );
 
         return column;
     }

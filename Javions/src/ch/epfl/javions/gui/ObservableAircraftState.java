@@ -284,21 +284,6 @@ public final class ObservableAircraftState implements AircraftStateSetter {
                                                              .position() ) {
 
                 trajectory.add( airbonePos );
-
-//                if ( this.icaoAddress.string()
-//                                     .equals( "49328A" ) ) {
-//                    System.out.println( "icaoAddress = " + this.icaoAddress );
-//                    System.out.printf( "%-20s %-20s %-20s %-20s %-20s \n",
-//                                       trajectory.get( trajectory.size() - 1 ).position.longitude(),
-//                                       trajectory.get( trajectory.size() - 1 ).position.latitude(),
-//                                       trajectory.get( trajectory.size() - 1 ).altitude,
-//                                       trajectory.size(),
-//                                       unmodifiableTrajectory.size() );
-//                    System.out.println( "longitude = " + trajectory.get( trajectory.size() - 1 ).position.longitude
-//                    () );
-//                    System.out.println( "latitude = " + trajectory.get( trajectory.size() - 1 ).position.latitude() );
-//                    System.out.println( "altitude = " + trajectory.get( trajectory.size() - 1 ).altitude );
-//                }
                 lastTrajectoryUpdateTimeStampNs = lastMessageTimeStampNs.get();
             }
             else if ( lastTrajectoryUpdateTimeStampNs == lastMessageTimeStampNs.get() ) {
