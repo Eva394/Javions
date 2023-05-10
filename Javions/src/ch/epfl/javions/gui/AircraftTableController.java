@@ -49,7 +49,7 @@ public final class AircraftTableController {
     private static final int DOUBLE_CLICK_COUNT = 2;
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
-    private final TableView pane; //TODO find the < > type
+    private final TableView<ObservableAircraftState> pane; //TODO find the < > type
 
 
     public AircraftTableController(ObservableSet<ObservableAircraftState> aircraftStates,
@@ -84,15 +84,36 @@ public final class AircraftTableController {
             }
         } );
 
-        selectedAircraftState.addListener( change -> {
-            pane.getSelectionModel()
-                .select( change );
-            pane.scrollTo( change );
+        selectedAircraftState.addListener( (observableState, previousState, newState) -> {
+            if ( newState != null && !Objects.equals( previousState, newState ) ) {
+                pane.scrollTo( newState );
+                pane.getSelectionModel()
+                    .select( newState );
+            }
         } );
+
         pane.getSelectionModel()
             .selectedItemProperty()
-            .addListener( newSelectedAircraft -> System.out.println( newSelectedAircraft.getClass() ) );
+            .addListener( (observableState, previousState, newState) -> {
+                if ( newState != null && !Objects.equals( previousState, newState ) ) {
+                    selectedAircraftState.set( newState );
+                }
+            } );
     }
+
+    /*
+    TableView<Objet> table = new TableView<>();
+// ... initialisation de la table et de ses colonnes ...
+
+// Ajouter un écouteur sur la propriété selectedItemProperty du modèle de sélection de la table
+table.getSelectionModel().selectedItemProperty().addListener((observable, oldSelection, newSelection) -> {
+    if (newSelection != null) {
+        // Modifier la propriété passée au constructeur pour contenir l'état correspondant
+        // Ici, nous supposons que l'état est stocké dans un champ "etat" de l'objet sélectionné
+        monObjetSelectionne.setEtat(newSelection.getEtat());
+    }
+});
+     */
 
 
     public TableView pane() {
