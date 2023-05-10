@@ -24,6 +24,8 @@ import static ch.epfl.javions.Units.Angle.DEGREE;
 
 public final class AircraftTableController {
 
+    public static final int DIGITS_FOR_POSITION = 4;
+    public static final int DIGITS_FOR_ALT_VEL = 0;
     private static final String VELOCITY_COLUMN_TITLE = "Vitesse (km/h)";
     private static final String REGISTRATION_COLUMN_TITLE = "Immatriculation";
     private static final String CALL_SIGN_COLUMN_TITLE = "Indicatif";
@@ -61,10 +63,10 @@ public final class AircraftTableController {
         pane.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS );
         pane.setTableMenuButtonVisible( true );
 
-        POSITION_NUMBER_FORMAT.setMinimumFractionDigits( 4 );
-        POSITION_NUMBER_FORMAT.setMaximumFractionDigits( 4 );
-        ALT_VEL_NUMBER_FORMAT.setMinimumFractionDigits( 0 );
-        ALT_VEL_NUMBER_FORMAT.setMinimumFractionDigits( 0 );
+        POSITION_NUMBER_FORMAT.setMinimumFractionDigits( DIGITS_FOR_POSITION );
+        POSITION_NUMBER_FORMAT.setMaximumFractionDigits( DIGITS_FOR_POSITION );
+        ALT_VEL_NUMBER_FORMAT.setMinimumFractionDigits( DIGITS_FOR_ALT_VEL );
+        ALT_VEL_NUMBER_FORMAT.setMinimumFractionDigits( DIGITS_FOR_ALT_VEL );
 
         pane.getColumns()
             .addAll( createColumns() );
@@ -110,31 +112,40 @@ public final class AircraftTableController {
 
     private List<TableColumn<ObservableAircraftState, String>> createColumns() {
         List<TableColumn<ObservableAircraftState, String>> columns = new ArrayList<>();
+
         columns.add( createStringColumn( ICAO_COLUMN_TITLE,
                                          ICAO_COLUMN_WIDTH,
                                          state -> state.getIcaoAddress()
                                                        .string() ) );
-//        columns.add( createStringColumn( CALL_SIGN_COLUMN_TITLE, CALL_SIGN_COLUMN_WIDTH, state -> state.callSignProperty().map( CallSign::string
-//        ) ) );
+        columns.add( createCallSignColumn() );
+
         columns.add( createStringColumn( REGISTRATION_COLUMN_TITLE,
                                          REGISTRATION_COLUMN_WIDTH,
-                                         state -> state.getAircraftData()
-                                                       .registration()
-                                                       .string() ) );
+                                         state -> state.getAircraftData() != null
+                                                  ? state.getAircraftData()
+                                                         .registration()
+                                                         .string()
+                                                  : "" ) );
         columns.add( createStringColumn( MODEL_COLUMN_TITLE,
                                          MODEL_COLUMN_WIDTH,
-                                         state -> state.getAircraftData()
-                                                       .model() ) );
+                                         state -> state.getAircraftData() != null
+                                                  ? state.getAircraftData()
+                                                         .model()
+                                                  : "" ) );
         columns.add( createStringColumn( TYPE_COLUMN_TITLE,
                                          TYPE_COLUMN_WIDTH,
-                                         state -> state.getAircraftData()
-                                                       .typeDesignator()
-                                                       .string() ) );
+                                         state -> state.getAircraftData() != null
+                                                  ? state.getAircraftData()
+                                                         .typeDesignator()
+                                                         .string()
+                                                  : "" ) );
         columns.add( createStringColumn( DESCRIPTION_COLUMN_TITLE,
                                          DESCRIPTION_COLUMN_WIDTH,
-                                         state -> state.getAircraftData()
-                                                       .description()
-                                                       .string() ) );
+                                         state -> state.getAircraftData() != null
+                                                  ? state.getAircraftData()
+                                                         .description()
+                                                         .string()
+                                                  : "" ) );
         columns.add( createNumericColumn( LONGITUDE_COLUMN_TITLE,
                                           state -> Bindings.createDoubleBinding( () -> state.getPosition()
                                                                                             .longitude(), state.positionProperty() ),
@@ -157,150 +168,15 @@ public final class AircraftTableController {
         return columns;
     }
 
-//    private void createLatitudeColumn() {
-//        TableColumn<ObservableAircraftState, String> latitudeColumn = new TableColumn<>();
-//        latitudeColumn.setText( LATITUDE_COLUMN_TITLE );
-//        latitudeColumn.setPrefWidth( NUMERIC_COLUMN_WIDTH );
-//        latitudeColumn.getStyleClass()
-//                      .add( "numeric" );
-//        latitudeColumn.setCellValueFactory( cellData -> {
-//            double longitude = Units.convertTo( cellData.getValue()
-//                                                        .getPosition()
-//                                                        .latitude(), DEGREE );
-//            return new SimpleStringProperty( POSITION_NUMBER_FORMAT.format( longitude ) );
-//        } );
-//
-//        latitudeColumn.setComparator( (latitudeString1, latitudeString2) -> {
-//            if ( latitudeString1.isEmpty() || latitudeString2.isEmpty() ) {
-//                return latitudeString1.compareTo( latitudeString2 );
-//            }
-//            else {
-//                double longitude1 = Double.parseDouble( latitudeString1 );
-//                double longitude2 = Double.parseDouble( latitudeString2 );
-//                return Double.compare( longitude1, longitude2 );
-//            }
-//        } );
-//
-//        pane.getColumns()
-//            .add( latitudeColumn );
-//    }
-//
-//
-//    private void createLongitudeColumn() {
-//        TableColumn<ObservableAircraftState, String> longitudeColumn = new TableColumn<>();
-//        longitudeColumn.setText( LONGITUDE_COLUMN_TITLE );
-//        longitudeColumn.setPrefWidth( NUMERIC_COLUMN_WIDTH );
-//        longitudeColumn.getStyleClass()
-//                       .add( "numeric" );
-//
-//        longitudeColumn.setCellValueFactory( cellData -> {
-//            double longitude = Units.convertTo( cellData.getValue()
-//                                                        .getPosition()
-//                                                        .longitude(), DEGREE );
-//            return new SimpleStringProperty( POSITION_NUMBER_FORMAT.format( longitude ) );
-//        } );
-//
-//        longitudeColumn.setComparator( (longitudeString1, longitudeString2) -> {
-//            if ( longitudeString1.isEmpty() || longitudeString2.isEmpty() ) {
-//                return longitudeString1.compareTo( longitudeString2 );
-//            }
-//            else {
-//                double longitude1 = Double.parseDouble( longitudeString1 );
-//                double longitude2 = Double.parseDouble( longitudeString2 );
-//                return Double.compare( longitude1, longitude2 );
-//            }
-//        } );
-//
-//        // Add the longitude column to the table
-//        pane.getColumns()
-//            .add( longitudeColumn );
-//    }
 
-
-    private void createDescriptionColumn() {
-        TableColumn<ObservableAircraftState, String> descriptionColumn = new TableColumn<>();
-        descriptionColumn.setText( DESCRIPTION_COLUMN_TITLE );
-        descriptionColumn.setPrefWidth( DESCRIPTION_COLUMN_WIDTH );
-        descriptionColumn.setCellValueFactory( newLine -> new ReadOnlyStringWrapper( newLine.getValue()
-                                                                                            .getAircraftData() != null
-                                                                                     ? newLine.getValue()
-                                                                                              .getAircraftData()
-                                                                                              .description()
-                                                                                              .string()
-                                                                                     : "" ) );
-        pane.getColumns()
-            .add( descriptionColumn );
-    }
-
-
-    private void createTypeColumn() {
-        TableColumn<ObservableAircraftState, String> typeColumn = new TableColumn<>();
-        typeColumn.setText( TYPE_COLUMN_TITLE );
-        typeColumn.setPrefWidth( TYPE_COLUMN_WIDTH );
-        typeColumn.setCellValueFactory( newLine -> new ReadOnlyStringWrapper( newLine.getValue()
-                                                                                     .getAircraftData() != null
-                                                                              ? newLine.getValue()
-                                                                                       .getAircraftData()
-                                                                                       .typeDesignator()
-                                                                                       .string()
-                                                                              : "" ) );
-        pane.getColumns()
-            .add( typeColumn );
-    }
-
-
-    private void createModelColumn() {
-        TableColumn<ObservableAircraftState, String> modelColumn = new TableColumn<>();
-        modelColumn.setText( MODEL_COLUMN_TITLE );
-        modelColumn.setPrefWidth( MODEL_COLUMN_WIDTH );
-        modelColumn.setCellValueFactory( newLine -> new ReadOnlyStringWrapper( newLine.getValue()
-                                                                                      .getAircraftData() != null
-                                                                               ? newLine.getValue()
-                                                                                        .getAircraftData()
-                                                                                        .model()
-                                                                               : "" ) );
-        pane.getColumns()
-            .add( modelColumn );
-    }
-
-
-    private void createRegistrationColumn() {
-        TableColumn<ObservableAircraftState, String> registrationColumn = new TableColumn<>();
-        registrationColumn.setText( REGISTRATION_COLUMN_TITLE );
-        registrationColumn.setPrefWidth( REGISTRATION_COLUMN_WIDTH );
-        registrationColumn.setCellValueFactory( newLine -> new ReadOnlyStringWrapper( newLine.getValue()
-                                                                                             .getAircraftData() != null
-                                                                                      ? newLine.getValue()
-                                                                                               .getAircraftData()
-                                                                                               .registration()
-                                                                                               .string()
-                                                                                      : "" ) );
-        pane.getColumns()
-            .add( registrationColumn );
-    }
-
-
-    private void createCallSignColumn() {
+    private TableColumn<ObservableAircraftState, String> createCallSignColumn() {
         TableColumn<ObservableAircraftState, String> callSignColumn = new TableColumn<>();
         callSignColumn.setText( CALL_SIGN_COLUMN_TITLE );
         callSignColumn.setPrefWidth( CALL_SIGN_COLUMN_WIDTH );
         callSignColumn.setCellValueFactory( newLine -> newLine.getValue()
                                                               .callSignProperty()
                                                               .map( CallSign::string ) );
-        pane.getColumns()
-            .add( callSignColumn );
-    }
-
-
-    private void createICAOColumn() {
-        TableColumn<ObservableAircraftState, String> icaoColumn = new TableColumn<>();
-        icaoColumn.setText( ICAO_COLUMN_TITLE );
-        icaoColumn.setPrefWidth( ICAO_COLUMN_WIDTH );
-        icaoColumn.setCellValueFactory( newLine -> new ReadOnlyStringWrapper( newLine.getValue()
-                                                                                     .getIcaoAddress()
-                                                                                     .string() ) );
-        pane.getColumns()
-            .add( icaoColumn );
+        return callSignColumn;
     }
 
 
