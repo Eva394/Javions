@@ -43,8 +43,15 @@ public final class AircraftController {
     private final Pane pane;
 
 
-    public AircraftController(MapParameters mapParameters, ObservableSet<ObservableAircraftState> aircraftStates,
-                              ObjectProperty<ObservableAircraftState> selectedAircraftState) {
+    /**
+     * Constructor. Builds an instance of <code>AircraftController</code>
+     *
+     * @param mapParameters         parameters for the map
+     * @param aircraftStates        set of aircraft states (<code>ObservableAircraftState</code>)
+     * @param selectedAircraftState state of the selected aircraft
+     */
+    public AircraftController( MapParameters mapParameters, ObservableSet<ObservableAircraftState> aircraftStates,
+                               ObjectProperty<ObservableAircraftState> selectedAircraftState ) {
         this.mapParameters = Objects.requireNonNull( mapParameters );
         this.aircraftStates = Objects.requireNonNull( aircraftStates );
         this.selectedAircraftState = selectedAircraftState;
@@ -52,32 +59,36 @@ public final class AircraftController {
         this.pane = new Pane();
         pane.setPickOnBounds( false );
         pane.getStylesheets()
-            .add( AIRCRAFT_CSS );
+                .add( AIRCRAFT_CSS );
 
-        aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>)change -> {
+        this.aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>) change -> {
             if ( change.wasAdded() ) {
                 createAircraftGroup( change.getElementAdded() );
-            }
-            else {
+            } else {
                 pane.getChildren()
-                    .removeIf( group -> group.getId()
-                                             .equals( change.getElementRemoved()
-                                                            .getIcaoAddress()
-                                                            .string() ) );
+                        .removeIf( group -> group.getId()
+                                .equals( change.getElementRemoved()
+                                        .getIcaoAddress()
+                                        .string() ) );
             }
         } );
     }
 
 
+    /**
+     * Getter for the pane of the aircrafts' view
+     *
+     * @return the pane {@link pane}
+     */
     public Pane pane() {
         return pane;
     }
 
 
-    private void createAircraftGroup(ObservableAircraftState addedAircraft) {
+    private void createAircraftGroup( ObservableAircraftState addedAircraft ) {
         Group aircrafGroup = new Group();
         aircrafGroup.setId( addedAircraft.getIcaoAddress()
-                                         .string() );
+                .string() );
         aircrafGroup.viewOrderProperty()
                     .bind( addedAircraft.altitudeProperty()
                                         .negate() );
@@ -179,6 +190,7 @@ public final class AircraftController {
                                                   addedAircraft.categoryProperty()
                                                                .get(),
                                                   wakeTurbulenceCategory );
+
         iconPath.contentProperty()
                 .bind( addedAircraft.categoryProperty()
                                     .map( aircraft -> icon.svgPath() ) );
@@ -217,8 +229,8 @@ public final class AircraftController {
         ObservableList<ObservableAircraftState.AirbonePos> trajectory = addedAircraft.getUnmodifiableTrajectory();
         trajectory.addListener( (ListChangeListener<? super ObservableAircraftState.AirbonePos>)change -> {
             if ( trajectoryGroup.visibleProperty()
-                                .get() ) {
-                createLines( trajectoryGroup, trajectory );
+                    .get() ) {
+                createTrajectoryLines( trajectoryGroup, trajectory );
             }
         } );
 
@@ -226,23 +238,23 @@ public final class AircraftController {
                      .addListener( change -> {
                          if ( trajectoryGroup.visibleProperty()
                                              .get() ) {
-                             createLines( trajectoryGroup, trajectory );
+                             createTrajectoryLines( trajectoryGroup, trajectory );
                          }
                      } );
     }
 
 
-    private void createLines(Group trajectoryGroup, ObservableList<ObservableAircraftState.AirbonePos> trajectory) {
+    private void createTrajectoryLines( Group trajectoryGroup, ObservableList<ObservableAircraftState.AirbonePos> trajectory ) {
         trajectoryGroup.getChildren()
-                       .clear();
+                .clear();
 
         double lastX = WebMercator.x( mapParameters.getZoom(),
-                                      trajectory.get( trajectory.size() - 1 )
-                                                .position()
-                                                .longitude() );
+                trajectory.get( trajectory.size() - 1 )
+                        .position()
+                        .longitude() );
         double lastY = WebMercator.y( mapParameters.getZoom(),
-                                      trajectory.get( trajectory.size() - 1 )
-                                                .position()
+                trajectory.get( trajectory.size() - 1 )
+                        .position()
                                                 .latitude() );
 
         ObservableAircraftState.AirbonePos currentAirbornePos = trajectory.get( 0 );
