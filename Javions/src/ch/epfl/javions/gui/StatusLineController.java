@@ -28,13 +28,15 @@ public class StatusLineController {
                 .bind(new SimpleStringProperty("Visible aircraft: ")
                         .concat(String.valueOf(numLines)));
 
-        Text messageText = new Text();
+        /*Text messageText = new Text();
         messageText.textProperty()
                 .bind(new SimpleStringProperty("Received messages: ")
                         .concat());
 
+         */
+
         pane.setLeft(aircraftText);
-        pane.setRight(messageText);
+        //pane.setRight(messageText);
 
         aircraftCountProperty = new SimpleLongProperty(0L);
         messageCountProperty = new SimpleLongProperty(0L);
@@ -52,4 +54,4 @@ public class StatusLineController {
         return messageCountProperty;
     }
 
-}}
+}
