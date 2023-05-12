@@ -7,9 +7,11 @@ import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -48,7 +50,12 @@ public final class AircraftTableControllerTest extends Application {
         ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
 //        AircraftController ac = new AircraftController( mp, asm.states(), sap );
         AircraftTableController atc = new AircraftTableController( asm.states(), sap );
-        var root = new StackPane( atc.pane() );
+        StatusLineController slc = new StatusLineController();
+
+        slc.aircraftCountProperty().bind(Bindings.size(asm.states()));
+        var root = new BorderPane();
+        root.setCenter(atc.pane());
+        root.setTop(slc.pane());
         primaryStage.setScene( new Scene( root ) );
         primaryStage.show();
 
@@ -67,6 +74,7 @@ public final class AircraftTableControllerTest extends Application {
                             Message m = MessageParser.parse( mi.next() );
                             if ( m != null ) {
                                 asm.updateWithMessage( m );
+                                slc.messageCountProperty();
                             }
                         }
                     }
