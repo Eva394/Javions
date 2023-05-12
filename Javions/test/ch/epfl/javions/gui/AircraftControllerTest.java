@@ -44,9 +44,9 @@ public final class AircraftControllerTest extends Application {
         primaryStage.setScene( new Scene( root ) );
         primaryStage.show();
 
-        var mi = readAllMessages( "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\messages_20230318_0915"
-                                  + ".bin" ).iterator();
-        //var mi = readAllMessages("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\messages_20230318_0915.bin").iterator();
+        //var mi = readAllMessages( "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\messages_20230318_0915"
+                                 // + ".bin" ).iterator();
+        var mi = readAllMessages("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\messages_20230318_0915.bin").iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {

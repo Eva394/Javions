@@ -48,6 +48,7 @@ public final class AircraftTableController {
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
     private final TableView<ObservableAircraftState> pane;
+    private int numLines;
 
 
     public AircraftTableController( ObservableSet<ObservableAircraftState> aircraftStates,
@@ -96,7 +97,17 @@ public final class AircraftTableController {
                         selectedAircraftState.set( newState );
                     }
                 } );
+
+        numLines = pane.getItems().size();
+
+
     }
+
+    public int getNumLines(){
+        return numLines;
+    }
+
+
 
 
     public TableView pane() {
