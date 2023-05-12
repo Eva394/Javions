@@ -1,53 +1,37 @@
 package ch.epfl.javions.gui;
 
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableSet;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 
 public class StatusLineController {
 
     private final BorderPane pane;
-    private final LongProperty aircraftCountProperty;
+    private final IntegerProperty aircraftCountProperty;
     private final LongProperty messageCountProperty;
 
-    public StatusLineController(ObservableSet<ObservableAircraftState> aircraftStates,
-                                ObjectProperty<ObservableAircraftState> selectedAircraftState) {
-
-        AircraftTableController aircraftTableController = new AircraftTableController(aircraftStates, selectedAircraftState);
-        int numLines = aircraftTableController.getNumLines();
-
-        pane = new BorderPane();
-        pane.getStyleClass().add("status");
+    public StatusLineController() {
+        aircraftCountProperty = new SimpleIntegerProperty(0);
+        messageCountProperty = new SimpleLongProperty(0);
 
         Text aircraftText = new Text();
         aircraftText.textProperty()
-                .bind(new SimpleStringProperty("Visible aircraft: ")
-                        .concat(String.valueOf(numLines)));
+                .bind(Bindings.format("aeronef visible : %d",aircraftCountProperty));
 
-        /*Text messageText = new Text();
+        Text messageText = new Text();
         messageText.textProperty()
-                .bind(new SimpleStringProperty("Received messages: ")
-                        .concat());
+                .bind(Bindings.format("messages recus : %d",messageCountProperty));
 
-         */
-
-
-        pane.setLeft(aircraftText);
-        //pane.setRight(messageText);
-
-        aircraftCountProperty = new SimpleLongProperty(0L);
-        messageCountProperty = new SimpleLongProperty(0L);
+        pane = new BorderPane(null, null, messageText, null, aircraftText);
+        pane.getStyleClass().add("status");
     }
 
-    public BorderPane getPane() {
+    public BorderPane pane() {
         return pane;
     }
 
-    public LongProperty aircraftCountProperty() {
+    public IntegerProperty aircraftCountProperty() {
         return aircraftCountProperty;
     }
 
