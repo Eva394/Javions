@@ -17,11 +17,11 @@ public class StatusLineController {
 
         Text aircraftText = new Text();
         aircraftText.textProperty()
-                .bind(Bindings.format("aeronef visible : %d",aircraftCountProperty));
+                .bind(Bindings.format(" Aéronefs visibles : %d",aircraftCountProperty));
 
         Text messageText = new Text();
         messageText.textProperty()
-                .bind(Bindings.format("messages recus : %d",messageCountProperty));
+                .bind(Bindings.format("Messages reçus : %d",messageCountProperty));
 
         pane = new BorderPane(null, null, messageText, null, aircraftText);
         pane.getStyleClass().add("status");

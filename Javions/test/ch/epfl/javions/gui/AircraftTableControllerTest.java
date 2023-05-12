@@ -50,9 +50,10 @@ public final class AircraftTableControllerTest extends Application {
         ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
 //        AircraftController ac = new AircraftController( mp, asm.states(), sap );
         AircraftTableController atc = new AircraftTableController( asm.states(), sap );
-        StatusLineController slc = new StatusLineController();
 
+        StatusLineController slc = new StatusLineController();
         slc.aircraftCountProperty().bind(Bindings.size(asm.states()));
+
         var root = new BorderPane();
         root.setCenter(atc.pane());
         root.setTop(slc.pane());
@@ -74,7 +75,8 @@ public final class AircraftTableControllerTest extends Application {
                             Message m = MessageParser.parse( mi.next() );
                             if ( m != null ) {
                                 asm.updateWithMessage( m );
-                                slc.messageCountProperty();
+                                slc.messageCountProperty().set(slc.messageCountProperty().get() + 1);
+                                slc.aircraftCountProperty().bind(Bindings.size(asm.states()));
                             }
                         }
                     }
