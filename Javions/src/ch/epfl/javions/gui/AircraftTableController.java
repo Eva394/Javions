@@ -20,10 +20,12 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * Manages the view of the table
+ */
 public final class AircraftTableController {
 
-    public static final int DIGITS_FOR_POSITION = 4;
-    public static final int DIGITS_FOR_ALT_VEL = 0;
+    private static final String TABLE_CSS = "/table.css";
     private static final String VELOCITY_COLUMN_TITLE = "Vitesse (km/h)";
     private static final String REGISTRATION_COLUMN_TITLE = "Immatriculation";
     private static final String CALL_SIGN_COLUMN_TITLE = "Indicatif";
@@ -34,9 +36,6 @@ public final class AircraftTableController {
     private static final String LONGITUDE_COLUMN_TITLE = "Longitude (°)";
     private static final String LATITUDE_COLUMN_TITLE = "Latitude (°)";
     private static final String ALTITUDE_COLUMN_TITLE = "Altitude (m)";
-    private static final NumberFormat POSITION_NUMBER_FORMAT = NumberFormat.getInstance();
-    private static final NumberFormat ALT_VEL_NUMBER_FORMAT = NumberFormat.getInstance();
-    private static final String TABLE_CSS = "table.css";
     private static final int NUMERIC_COLUMN_WIDTH = 85;
     private static final int ICAO_COLUMN_WIDTH = 60;
     private static final int CALL_SIGN_COLUMN_WIDTH = 70;
@@ -45,11 +44,13 @@ public final class AircraftTableController {
     private static final int TYPE_COLUMN_WIDTH = 50;
     private static final int DESCRIPTION_COLUMN_WIDTH = CALL_SIGN_COLUMN_WIDTH;
     private static final int DOUBLE_CLICK_COUNT = 2;
+    private static final int DECIMAL_DIGITS_POSITION = 4;
+    private static final int DECIMAL_DIGITS_ALT_VEL = 0;
+    private static final NumberFormat POSITION_NUMBER_FORMAT = NumberFormat.getInstance();
+    private static final NumberFormat ALT_VEL_NUMBER_FORMAT = NumberFormat.getInstance();
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
     private final TableView<ObservableAircraftState> pane;
-    private int numLines;
-
 
     public AircraftTableController( ObservableSet<ObservableAircraftState> aircraftStates,
                                     ObjectProperty<ObservableAircraftState> selectedAircraftState ) {
@@ -57,20 +58,17 @@ public final class AircraftTableController {
         this.aircraftStates = Objects.requireNonNull( aircraftStates );
         this.selectedAircraftState = selectedAircraftState;
         this.pane = new TableView<>();
-        pane.getStyleClass()
+        pane.getStylesheets()
                 .add( TABLE_CSS );
         pane.setColumnResizePolicy( TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS );
         pane.setTableMenuButtonVisible( true );
 
-        POSITION_NUMBER_FORMAT.setMinimumFractionDigits( DIGITS_FOR_POSITION );
-        POSITION_NUMBER_FORMAT.setMaximumFractionDigits( DIGITS_FOR_POSITION );
-        ALT_VEL_NUMBER_FORMAT.setMinimumFractionDigits( DIGITS_FOR_ALT_VEL );
-        ALT_VEL_NUMBER_FORMAT.setMaximumFractionDigits( DIGITS_FOR_ALT_VEL );
+        setNumberFormats();
 
         pane.getColumns()
                 .addAll( createColumns() );
 
-        aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>) change -> {
+        this.aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>) change -> {
             if ( change.wasAdded() ) {
                 pane.getItems()
                         .add( change.getElementAdded() );
@@ -82,7 +80,7 @@ public final class AircraftTableController {
             }
         } );
 
-        selectedAircraftState.addListener( ( observableState, previousState, newState ) -> {
+        this.selectedAircraftState.addListener( ( observableState, previousState, newState ) -> {
             if ( newState != null && !Objects.equals( previousState, newState ) ) {
                 pane.scrollTo( newState );
                 pane.getSelectionModel()
@@ -97,18 +95,14 @@ public final class AircraftTableController {
                         selectedAircraftState.set( newState );
                     }
                 } );
-
-        numLines = pane.getItems().size();
-
-
     }
 
-    public int getNumLines(){
-        return numLines;
+    private static void setNumberFormats() {
+        POSITION_NUMBER_FORMAT.setMinimumFractionDigits( DECIMAL_DIGITS_POSITION );
+        POSITION_NUMBER_FORMAT.setMaximumFractionDigits( DECIMAL_DIGITS_POSITION );
+        ALT_VEL_NUMBER_FORMAT.setMinimumFractionDigits( DECIMAL_DIGITS_ALT_VEL );
+        ALT_VEL_NUMBER_FORMAT.setMaximumFractionDigits( DECIMAL_DIGITS_ALT_VEL );
     }
-
-
-
 
     public TableView pane() {
         return pane;
@@ -211,6 +205,7 @@ public final class AircraftTableController {
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>();
         column.setText( columnTitle );
         column.setPrefWidth( NUMERIC_COLUMN_WIDTH );
+        column.getStyleClass().add( "numeric" );
         column.setComparator( ( longitudeStr1, longitudeStr2 ) -> {
             if ( longitudeStr1.isEmpty() || longitudeStr2.isEmpty() ) {
                 return longitudeStr1.compareTo( longitudeStr2 );

@@ -27,9 +27,10 @@ public final class AircraftStateManager {
 
     /**
      * Constructor. Builds an instance of <code>AircraftStateManager</code>
+     *
      * @param aircraftDatabase database for mictronics data of the aircrafts
      */
-    public AircraftStateManager(AircraftDatabase aircraftDatabase) {
+    public AircraftStateManager( AircraftDatabase aircraftDatabase ) {
         this.aircraftDatabase = aircraftDatabase;
         this.receivedStates = new HashMap<>();
         this.knownStates = FXCollections.observableSet();
@@ -41,6 +42,7 @@ public final class AircraftStateManager {
     /**
      * Getter for an unmodifiable wrapper list on top of the list <code>knownStates</code>
      * (<code>unmodifiableKnownStates</code>)
+     *
      * @return an unmodifiable wrapper list on top of observable list of known states <code>knownStates</code>
      */
     public ObservableSet<ObservableAircraftState> states() {
@@ -51,11 +53,12 @@ public final class AircraftStateManager {
     /**
      * Updates the state of the aircraft from which we received the <code>message</code> to the new state contained in
      * the aforementioned message
+     *
      * @param message message received from an aircraft
      * @throws IOException if there is an input/output error
      */
-    public void updateWithMessage(Message message) throws
-                                                   IOException {
+    public void updateWithMessage( Message message ) throws
+            IOException {
 
         lastUpdatedTimeStampNs = message.timeStampNs();
         IcaoAddress icaoAddress = message.icaoAddress();
@@ -67,10 +70,9 @@ public final class AircraftStateManager {
             if ( aircraftState.getPosition() != null ) {
                 knownStates.add( aircraftState );
             }
-        }
-        else {
+        } else {
             ObservableAircraftState aircraftState = new ObservableAircraftState( icaoAddress,
-                                                                                 aircraftDatabase.get( icaoAddress ) );
+                    aircraftDatabase.get( icaoAddress ) );
             AircraftStateAccumulator<ObservableAircraftState> newStateAccumulator = new AircraftStateAccumulator<>(
                     aircraftState );
             newStateAccumulator.update( message );
@@ -87,9 +89,6 @@ public final class AircraftStateManager {
         knownStates.removeIf(
                 state -> lastUpdatedTimeStampNs - ONE_MINUTE_IN_NANOSECONDS > state.getLastMessageTimeStampNs() );
 
-        //TODO also remove from received state   (how???)
-        //        for ( AircraftStateAccumulator<ObservableAircraftState> aircraftState : receivedStates.values() ) {
-        //            receivedStates.remove(  )
-        //        }
+        receivedStates.entrySet().removeIf( state -> lastUpdatedTimeStampNs - ONE_MINUTE_IN_NANOSECONDS > state.getValue().stateSetter().getLastMessageTimeStampNs() );
     }
 }

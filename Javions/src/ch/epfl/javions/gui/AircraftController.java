@@ -26,6 +26,7 @@ import java.util.Objects;
 
 /**
  * Manages the view of the aircrafts
+ *
  * @author Eva Mangano 345375
  */
 public final class AircraftController {
@@ -74,6 +75,16 @@ public final class AircraftController {
         } );
     }
 
+    private static void applyColour( double currentAltitude, double nextAltitude, double startX, double startY, double endX, double endY, Line line ) {
+        if ( Double.compare( currentAltitude, nextAltitude ) == 0 ) {
+            line.setStroke( ColorRamp.PLASMA.at( Math.pow( currentAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
+        } else {
+            Stop color1 = new Stop( 0, ColorRamp.PLASMA.at( Math.pow( currentAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
+            Stop color2 = new Stop( 1, ColorRamp.PLASMA.at( Math.pow( nextAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
+            LinearGradient gradient = new LinearGradient( startX, startY, endX, endY, true, CycleMethod.NO_CYCLE, color1, color2 );
+            line.setStroke( gradient );
+        }
+    }
 
     /**
      * Getter for the pane of the aircrafts' view
@@ -84,31 +95,29 @@ public final class AircraftController {
         return pane;
     }
 
-
     private void createAircraftGroup( ObservableAircraftState addedAircraft ) {
         Group aircrafGroup = new Group();
         aircrafGroup.setId( addedAircraft.getIcaoAddress()
                 .string() );
         aircrafGroup.viewOrderProperty()
-                    .bind( addedAircraft.altitudeProperty()
-                                        .negate() );
+                .bind( addedAircraft.altitudeProperty()
+                        .negate() );
         aircrafGroup.setOnMouseClicked( event -> {
             selectedAircraftState.set( addedAircraft );
         } );
         pane.getChildren()
-            .add( aircrafGroup );
+                .add( aircrafGroup );
 
         createTrajectoryGroup( aircrafGroup, addedAircraft );
         createIconAndLabelGroup( aircrafGroup, addedAircraft );
     }
 
-
-    private void createIconAndLabelGroup(Group aircrafGroup, ObservableAircraftState addedAircraft) {
+    private void createIconAndLabelGroup( Group aircrafGroup, ObservableAircraftState addedAircraft ) {
 
         Group iconAndLabelGroup = new Group();
 
         aircrafGroup.getChildren()
-                    .add( iconAndLabelGroup );
+                .add( iconAndLabelGroup );
 
         bindPositionToLayout( addedAircraft, iconAndLabelGroup );
 
@@ -116,118 +125,115 @@ public final class AircraftController {
         createIcon( iconAndLabelGroup, addedAircraft );
     }
 
-
-    private void createLabelGroup(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
+    private void createLabelGroup( Group iconAndLabelGroup, ObservableAircraftState addedAircraft ) {
         Group labelGroup = new Group();
         labelGroup.getStyleClass()
-                  .add( "label" );
+                .add( "label" );
 
         iconAndLabelGroup.getChildren()
-                         .add( labelGroup );
+                .add( labelGroup );
 
         Rectangle labelBase = new Rectangle();
         Text labelText = new Text();
 
         labelGroup.getChildren()
-                  .add( labelBase );
+                .add( labelBase );
         labelGroup.getChildren()
-                  .add( labelText );
+                .add( labelText );
 
         labelBase.widthProperty()
-                 .bind( labelText.layoutBoundsProperty()
-                                 .map( text -> text.getWidth() + LABEL_MARGIN ) );
+                .bind( labelText.layoutBoundsProperty()
+                        .map( text -> text.getWidth() + LABEL_MARGIN ) );
         labelBase.heightProperty()
-                 .bind( labelText.layoutBoundsProperty()
-                                 .map( text -> text.getHeight() + LABEL_MARGIN ) );
+                .bind( labelText.layoutBoundsProperty()
+                        .map( text -> text.getHeight() + LABEL_MARGIN ) );
         labelGroup.visibleProperty()
-                  .bind( Bindings.createBooleanBinding( () -> ( addedAircraft.equals( selectedAircraftState.get() ) || mapParameters.zoomProperty()
-                                                                                                                                    .get()
-                                                                                                                       >= MIN_ZOOM_LEVEL_FOR_VISIBLE_LABELS ),
-                                                        selectedAircraftState,
-                                                        mapParameters.zoomProperty() ) );
+                .bind( Bindings.createBooleanBinding( () -> ( addedAircraft.equals( selectedAircraftState.get() ) || mapParameters.zoomProperty()
+                                .get()
+                                >= MIN_ZOOM_LEVEL_FOR_VISIBLE_LABELS ),
+                        selectedAircraftState,
+                        mapParameters.zoomProperty() ) );
 
         String aircraftID = addedAircraft.getAircraftData() != null && addedAircraft.getAircraftData()
-                                                                                    .registration() != null
-                            ? addedAircraft.getAircraftData()
-                                           .registration()
-                                           .string()
-                            : ( addedAircraft.getCallSign() != null
-                                ? addedAircraft.getCallSign()
-                                               .string()
-                                : addedAircraft.getIcaoAddress()
-                                               .string() );
+                .registration() != null
+                ? addedAircraft.getAircraftData()
+                .registration()
+                .string()
+                : ( addedAircraft.getCallSign() != null
+                ? addedAircraft.getCallSign()
+                .string()
+                : addedAircraft.getIcaoAddress()
+                .string() );
 
         labelText.textProperty()
-                 .bind( Bindings.format( "%s\n%s km/h\u2002%s m",
-                                         aircraftID,
-                                         addedAircraft.velocityProperty()
-                                                      .map( velocity -> !Double.isNaN( velocity.doubleValue() )
-                                                                        ? (int)Units.convertTo( velocity.intValue(), Units.Speed.KILOMETER_PER_HOUR )
-                                                                        : STRING_FOR_UNKNOWN_VALUE ),
-                                         addedAircraft.altitudeProperty()
-                                                      .map( altitude -> !Double.isNaN( altitude.doubleValue() )
-                                                                        ? (int)Units.convertTo( altitude.doubleValue(), Units.Length.METER )
-                                                                        : STRING_FOR_UNKNOWN_VALUE ) ) );
+                .bind( Bindings.format( "%s\n%s km/h\u2002%s m",
+                        aircraftID,
+                        addedAircraft.velocityProperty()
+                                .map( velocity -> !Double.isNaN( velocity.doubleValue() )
+                                        ? (int) Units.convertTo( velocity.intValue(), Units.Speed.KILOMETER_PER_HOUR )
+                                        : STRING_FOR_UNKNOWN_VALUE ),
+                        addedAircraft.altitudeProperty()
+                                .map( altitude -> !Double.isNaN( altitude.doubleValue() )
+                                        ? (int) Units.convertTo( altitude.doubleValue(), Units.Length.METER )
+                                        : STRING_FOR_UNKNOWN_VALUE ) ) );
     }
 
-
-    private void createIcon(Group iconAndLabelGroup, ObservableAircraftState addedAircraft) {
+    private void createIcon( Group iconAndLabelGroup, ObservableAircraftState addedAircraft ) {
         SVGPath iconPath = new SVGPath();
         AircraftData data = addedAircraft.getAircraftData();
         boolean dataIsNull = data == null;
         AircraftTypeDesignator typeDesignator = dataIsNull
-                                                ? new AircraftTypeDesignator( "" )
-                                                : data.typeDesignator();
+                ? new AircraftTypeDesignator( "" )
+                : data.typeDesignator();
         AircraftDescription description = dataIsNull
-                                          ? new AircraftDescription( "" )
-                                          : data.description();
+                ? new AircraftDescription( "" )
+                : data.description();
         WakeTurbulenceCategory wakeTurbulenceCategory = dataIsNull
-                                                        ? WakeTurbulenceCategory.of( "" )
-                                                        : data.wakeTurbulenceCategory();
+                ? WakeTurbulenceCategory.of( "" )
+                : data.wakeTurbulenceCategory();
 
         AircraftIcon icon = AircraftIcon.iconFor( typeDesignator,
-                                                  description,
-                                                  addedAircraft.categoryProperty()
-                                                               .get(),
-                                                  wakeTurbulenceCategory );
+                description,
+                addedAircraft.categoryProperty()
+                        .get(),
+                wakeTurbulenceCategory );
 
         iconPath.contentProperty()
                 .bind( addedAircraft.categoryProperty()
-                                    .map( aircraft -> icon.svgPath() ) );
+                        .map( aircraft -> icon.svgPath() ) );
 
         iconPath.rotateProperty()
                 .bind( addedAircraft.trackOrHeadingProperty()
-                                    .map( trackOrHeading -> icon.canRotate()
-                                                            ? ( Units.convertTo( addedAircraft.trackOrHeadingProperty()
-                                                                                              .get(), Units.Angle.DEGREE ) )
-                                                            : 0 ) );
+                        .map( trackOrHeading -> icon.canRotate()
+                                ? ( Units.convertTo( addedAircraft.trackOrHeadingProperty()
+                                .get(), Units.Angle.DEGREE ) )
+                                : 0 ) );
 
         iconPath.fillProperty()
                 .bind( addedAircraft.altitudeProperty()
-                                    .map( altitude -> ColorRamp.PLASMA.at( Math.pow( (Double)altitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) ) );
+                        .map( altitude -> ColorRamp.PLASMA.at( Math.pow( (Double) altitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) ) );
 
         iconPath.getStyleClass()
                 .add( "aircraft" );
         iconAndLabelGroup.getChildren()
-                         .add( iconPath );
+                .add( iconPath );
     }
 
-
-    private void createTrajectoryGroup(Group aircrafGroup, ObservableAircraftState addedAircraft) {
+    private void createTrajectoryGroup( Group aircrafGroup, ObservableAircraftState addedAircraft ) {
 
         Group trajectoryGroup = new Group();
         trajectoryGroup.getStyleClass()
-                       .add( "trajectory" );
+                .add( "trajectory" );
         trajectoryGroup.visibleProperty()
-                       .bind( Bindings.createBooleanBinding( () -> addedAircraft.equals( selectedAircraftState.get() ), selectedAircraftState ) );
+                .bind( Bindings.createBooleanBinding( () -> addedAircraft.equals( selectedAircraftState.get() ), selectedAircraftState ) );
 
         aircrafGroup.getChildren()
-                    .add( trajectoryGroup );
+                .add( trajectoryGroup );
 
         bindPositionToLayout( addedAircraft, trajectoryGroup );
 
         ObservableList<ObservableAircraftState.AirbonePos> trajectory = addedAircraft.getUnmodifiableTrajectory();
-        trajectory.addListener( (ListChangeListener<? super ObservableAircraftState.AirbonePos>)change -> {
+        trajectory.addListener( (ListChangeListener<? super ObservableAircraftState.AirbonePos>) change -> {
             if ( trajectoryGroup.visibleProperty()
                     .get() ) {
                 createTrajectoryLines( trajectoryGroup, trajectory );
@@ -235,14 +241,13 @@ public final class AircraftController {
         } );
 
         mapParameters.zoomProperty()
-                     .addListener( change -> {
-                         if ( trajectoryGroup.visibleProperty()
-                                             .get() ) {
-                             createTrajectoryLines( trajectoryGroup, trajectory );
-                         }
-                     } );
+                .addListener( change -> {
+                    if ( trajectoryGroup.visibleProperty()
+                            .get() ) {
+                        createTrajectoryLines( trajectoryGroup, trajectory );
+                    }
+                } );
     }
-
 
     private void createTrajectoryLines( Group trajectoryGroup, ObservableList<ObservableAircraftState.AirbonePos> trajectory ) {
         trajectoryGroup.getChildren()
@@ -255,32 +260,32 @@ public final class AircraftController {
         double lastY = WebMercator.y( mapParameters.getZoom(),
                 trajectory.get( trajectory.size() - 1 )
                         .position()
-                                                .latitude() );
+                        .latitude() );
 
         ObservableAircraftState.AirbonePos currentAirbornePos = trajectory.get( 0 );
         ObservableAircraftState.AirbonePos nextAirbornePos;
 
-        for ( int i = 0 ; i < trajectory.size() - 1 ; i++ ) {
+        for ( int i = 0; i < trajectory.size() - 1; i++ ) {
             nextAirbornePos = trajectory.get( i + 1 );
 
             double currentAltitude = currentAirbornePos.altitude();
             double nextAltitude = nextAirbornePos.altitude();
 
             double startX = WebMercator.x( mapParameters.getZoom(),
-                                           currentAirbornePos.position()
-                                                             .longitude() ) - lastX;
+                    currentAirbornePos.position()
+                            .longitude() ) - lastX;
             double startY = WebMercator.y( mapParameters.getZoom(),
-                                           currentAirbornePos.position()
-                                                             .latitude() ) - lastY;
+                    currentAirbornePos.position()
+                            .latitude() ) - lastY;
             double endX = WebMercator.x( mapParameters.getZoom(),
-                                         nextAirbornePos.position()
-                                                        .longitude() ) - lastX;
+                    nextAirbornePos.position()
+                            .longitude() ) - lastX;
             double endY = WebMercator.y( mapParameters.getZoom(),
-                                         nextAirbornePos.position()
-                                                        .latitude() ) - lastY;
+                    nextAirbornePos.position()
+                            .latitude() ) - lastY;
             Line line = new Line( startX, startY, endX, endY );
             trajectoryGroup.getChildren()
-                           .add( line );
+                    .add( line );
 
             applyColour( currentAltitude, nextAltitude, startX, startY, endX, endY, line );
 
@@ -288,40 +293,26 @@ public final class AircraftController {
         }
     }
 
-
-    private void bindPositionToLayout(ObservableAircraftState addedAircraft, Group group) {
+    private void bindPositionToLayout( ObservableAircraftState addedAircraft, Group group ) {
         group.layoutXProperty()
-             .bind( Bindings.createDoubleBinding( () -> {
-                 double longitude = addedAircraft.positionProperty()
-                                                 .get()
-                                                 .longitude();
-                 double xPos = WebMercator.x( mapParameters.zoomProperty()
-                                                           .get(), longitude );
-                 return xPos - mapParameters.minXProperty()
-                                            .get();
-             }, addedAircraft.positionProperty(), mapParameters.minXProperty(), mapParameters.zoomProperty() ) );
+                .bind( Bindings.createDoubleBinding( () -> {
+                    double longitude = addedAircraft.positionProperty()
+                            .get()
+                            .longitude();
+                    double xPos = WebMercator.x( mapParameters.zoomProperty()
+                            .get(), longitude );
+                    return xPos - mapParameters.minXProperty()
+                            .get();
+                }, addedAircraft.positionProperty(), mapParameters.minXProperty(), mapParameters.zoomProperty() ) );
         group.layoutYProperty()
-             .bind( Bindings.createDoubleBinding( () -> {
-                 double latitude = addedAircraft.positionProperty()
-                                                .get()
-                                                .latitude();
-                 double yPos = WebMercator.y( mapParameters.zoomProperty()
-                                                           .get(), latitude );
-                 return yPos - mapParameters.minYProperty()
-                                            .get();
-             }, addedAircraft.positionProperty(), mapParameters.minYProperty(), mapParameters.zoomProperty() ) );
-    }
-
-
-    private static void applyColour(double currentAltitude, double nextAltitude, double startX, double startY, double endX, double endY, Line line) {
-        if ( Double.compare( currentAltitude, nextAltitude ) == 0 ) {
-            line.setStroke( ColorRamp.PLASMA.at( Math.pow( currentAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
-        }
-        else {
-            Stop color1 = new Stop( 0, ColorRamp.PLASMA.at( Math.pow( currentAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
-            Stop color2 = new Stop( 1, ColorRamp.PLASMA.at( Math.pow( nextAltitude * ALTITUDE_FACTOR, ALTITUDE_POWER ) ) );
-            LinearGradient gradient = new LinearGradient( startX, startY, endX, endY, true, CycleMethod.NO_CYCLE, color1, color2 );
-            line.setStroke( gradient );
-        }
+                .bind( Bindings.createDoubleBinding( () -> {
+                    double latitude = addedAircraft.positionProperty()
+                            .get()
+                            .latitude();
+                    double yPos = WebMercator.y( mapParameters.zoomProperty()
+                            .get(), latitude );
+                    return yPos - mapParameters.minYProperty()
+                            .get();
+                }, addedAircraft.positionProperty(), mapParameters.minYProperty(), mapParameters.zoomProperty() ) );
     }
 }
