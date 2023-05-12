@@ -53,15 +53,47 @@ public final class ColorRamp {
         this.colors = colors;
     }
 
+    /*
+
+    public Color at(double position) {
+        if (position <= 0) {
+            return colors[0];
+        } else if (position >= 1) {
+            return colors[colors.length - 1];
+        } else {
+            int index = (int) (position * (colors.length - 1));
+            double weight = (position - (double) index / (colors.length - 1)) * (colors.length - 1);
+            return colors[index].interpolate(colors[index + 1], weight);
+        }
+    }
+
+     */
+
 
     public Color at(double value) {
 
-        double val = Math2.clamp( MIN_VALUE, value, MAX_VALUE );
+        double position = Math2.clamp( MIN_VALUE, value, MAX_VALUE );
 
+        int index = (int) (position * (colors.length - 1));
+        double weight = (position - (double) index / (colors.length - 1)) * (colors.length - 1);
+        if (index < colors.length - 1) {
+            return colors[index].interpolate(colors[index + 1], weight);
+        } else {
+            return colors[index];
+        }
+
+
+        /*
         int i = (int)( val * ( colors.length - 1 ) );
         double location = ( val - i * 1.0 / ( colors.length - 1 ) ) * ( colors.length - MAX_VALUE );
 
         return colors[i - MAX_VALUE].interpolate( colors[i], location );
+
+         */
+
+
     }
+
+
 }
 

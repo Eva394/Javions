@@ -35,6 +35,7 @@ public class StatusLineController {
 
          */
 
+
         pane.setLeft(aircraftText);
         //pane.setRight(messageText);
 
