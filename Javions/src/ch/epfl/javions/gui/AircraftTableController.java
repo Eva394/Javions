@@ -48,6 +48,14 @@ public final class AircraftTableController {
     private static final int DECIMAL_DIGITS_ALT_VEL = 0;
     private static final NumberFormat POSITION_NUMBER_FORMAT = NumberFormat.getInstance();
     private static final NumberFormat ALT_VEL_NUMBER_FORMAT = NumberFormat.getInstance();
+    //private final ObservableSet<ObservableAircraftState> aircraftStates;
+    //private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
+    //private final TableView<ObservableAircraftState> pane;
+
+    static {
+        setNumberFormats();
+    }
+
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
     private final TableView<ObservableAircraftState> pane;
@@ -68,7 +76,7 @@ public final class AircraftTableController {
         pane.getColumns()
                 .addAll( createColumns() );
 
-        this.aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>) change -> {
+        aircraftStates.addListener( (SetChangeListener<? super ObservableAircraftState>) change -> {
             if ( change.wasAdded() ) {
                 pane.getItems()
                         .add( change.getElementAdded() );
@@ -80,7 +88,7 @@ public final class AircraftTableController {
             }
         } );
 
-        this.selectedAircraftState.addListener( ( observableState, previousState, newState ) -> {
+        selectedAircraftState.addListener( ( observableState, previousState, newState ) -> {
             if ( newState != null && !Objects.equals( previousState, newState ) ) {
                 pane.scrollTo( newState );
                 pane.getSelectionModel()
@@ -104,9 +112,15 @@ public final class AircraftTableController {
         ALT_VEL_NUMBER_FORMAT.setMaximumFractionDigits( DECIMAL_DIGITS_ALT_VEL );
     }
 
+    public TableView<ObservableAircraftState> pane() {
+        return pane;
+    }
+/*
     public TableView pane() {
         return pane;
     }
+
+ */
 
 
     public void setOnDoubleClick( Consumer<ObservableAircraftState> consumer ) {

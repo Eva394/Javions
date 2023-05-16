@@ -24,8 +24,8 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
     private final IcaoAddress icaoAddress;
     private final AircraftData aircraftData;
-    private final ObservableList<AirbonePos> trajectory;
-    private final ObservableList<AirbonePos> unmodifiableTrajectory;
+    private final ObservableList<AirbornePos> trajectory;
+    private final ObservableList<AirbornePos> unmodifiableTrajectory;
     private final LongProperty lastMessageTimeStampNs;
     private final IntegerProperty category;
     private final ObjectProperty<CallSign> callSign;
@@ -65,7 +65,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @return an unmodifiable wrapper list on top of observable list of trajectories <code>trajectory</code>
      */
-    public ObservableList<AirbonePos> getUnmodifiableTrajectory() {
+    public ObservableList<AirbornePos> getUnmodifiableTrajectory() {
         return unmodifiableTrajectory;
     }
 
@@ -303,16 +303,16 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         GeoPos geoPos = position.get();
         double alt = altitude.get();
 
-        AirbonePos airbonePos = new AirbonePos( geoPos, alt );
+        AirbornePos airbornePos = new AirbornePos( geoPos, alt );
 
         if ( !Double.isNaN( altitude.get() ) ) {
-            trajectory.add( airbonePos );
+            trajectory.add( airbornePos );
         }
         if ( !Objects.isNull( geoPos ) && !Double.isNaN( geoPos.longitude() ) && !Double.isNaN( geoPos.latitude() ) ) {
             if ( trajectory.isEmpty() ) {
-                trajectory.add( airbonePos );
+                trajectory.add( airbornePos );
             } else if ( lastTrajectoryUpdateTimeStampNs == lastMessageTimeStampNs.get() ) {
-                trajectory.set( trajectory.size() - 1, airbonePos );
+                trajectory.set( trajectory.size() - 1, airbornePos );
             }
         }
     }
@@ -324,7 +324,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param position longitude and latitude of the aircraft
      * @param altitude altitude of the aircraft
      */
-    public record AirbonePos(GeoPos position, double altitude) {
+    public record AirbornePos(GeoPos position, double altitude) {
     }
 }
 

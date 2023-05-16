@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
+/*
 public final class Main extends Application {
 
     private static final int INITIAL_ZOOM_LEVEL = 8;
@@ -139,3 +139,5 @@ public final class Main extends Application {
         }.start();
     }
 }
+
+ */
