@@ -21,12 +21,13 @@ import java.util.List;
 
 
 public final class AircraftControllerTest extends Application {
-    public static void main( String[] args ) {
+
+    public static void main(String[] args) {
         launch( args );
     }
 
-    static List<RawMessage> readAllMessages( String fileName ) throws
-            IOException {
+
+    static List<RawMessage> readAllMessages(String fileName) throws IOException {
         List<RawMessage> list = new ArrayList<>();
 
         int index = 0;
@@ -48,9 +49,9 @@ public final class AircraftControllerTest extends Application {
         return list;
     }
 
+
     @Override
-    public void start( Stage primaryStage ) throws
-            Exception {
+    public void start(Stage primaryStage) throws Exception {
         // … à compléter (voir TestBaseMapController)
         Path tileCache = Path.of( "tile-cache" );
         TileManager tileManager = new TileManager( tileCache, "tile.openstreetmap.org" );
@@ -89,7 +90,8 @@ public final class AircraftControllerTest extends Application {
                             }
                         }
                     }
-                } catch ( IOException e ) {
+                }
+                catch ( IOException e ) {
                     throw new UncheckedIOException( e );
                 }
             }
