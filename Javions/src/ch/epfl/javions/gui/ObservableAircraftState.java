@@ -15,8 +15,6 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.util.Objects;
-
 /**
  * Represents the state of an aircraft, which is observable
  */
@@ -42,7 +40,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param icaoAddress  the ICAO address of the aircraft
      * @param aircraftData the fixed data of the aircraft
      */
-    public ObservableAircraftState( IcaoAddress icaoAddress, AircraftData aircraftData ) {
+    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData aircraftData) {
         Preconditions.checkArgument( icaoAddress != null );
 
         this.icaoAddress = icaoAddress;
@@ -61,7 +59,8 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
 
     /**
-     * Getter for an unmodifiable wrapper list on top of the list <code>trajectory</code> (<code>unmodifiableTrajectory</code>)
+     * Getter for an unmodifiable wrapper list on top of the list <code>trajectory</code>
+     * (<code>unmodifiableTrajectory</code>)
      *
      * @return an unmodifiable wrapper list on top of observable list of trajectories <code>trajectory</code>
      */
@@ -85,7 +84,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param lastMessageTimeStampNs new horodatage in nanoseconds
      */
-    public void setLastMessageTimeStampNs( long lastMessageTimeStampNs ) {
+    public void setLastMessageTimeStampNs(long lastMessageTimeStampNs) {
         this.lastMessageTimeStampNs.set( lastMessageTimeStampNs );
     }
 
@@ -105,7 +104,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param category new category
      */
-    public void setCategory( int category ) {
+    public void setCategory(int category) {
         this.category.set( category );
     }
 
@@ -146,7 +145,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param callSign new call sign
      */
     @Override
-    public void setCallSign( CallSign callSign ) {
+    public void setCallSign(CallSign callSign) {
         this.callSign.set( callSign );
     }
 
@@ -167,9 +166,9 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param pos new position
      */
     @Override
-    public void setPosition( GeoPos pos ) {
+    public void setPosition(GeoPos pos) {
         position.set( pos );
-        updateTrajectory();
+        updateTrajectoryWithPosition();
     }
 
 
@@ -188,9 +187,9 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param alt new altitude
      */
-    public void setAltitude( double alt ) {
+    public void setAltitude(double alt) {
         this.altitude.set( alt );
-        updateTrajectory();
+        updateTrajectoryWithAltitude();
     }
 
 
@@ -209,7 +208,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param velocity new velocity
      */
-    public void setVelocity( double velocity ) {
+    public void setVelocity(double velocity) {
         this.velocity.set( velocity );
     }
 
@@ -229,7 +228,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param trackOrHeading new track or heading
      */
-    public void setTrackOrHeading( double trackOrHeading ) {
+    public void setTrackOrHeading(double trackOrHeading) {
         this.trackOrHeading.set( trackOrHeading );
     }
 
@@ -294,25 +293,49 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
 
+    /**
+     * Read-only getter for the call sign ({@linkplain ObservableAircraftState#callSign })
+     *
+     * @return the callsign
+     */
     public ReadOnlyObjectProperty<CallSign> callSignProperty() {
         return callSign;
     }
 
+    //    private void updateTrajectory() {
+    //        GeoPos geoPos = position.get();
+    //        double alt = altitude.get();
+    //
+    //        AirbornePos airbornePos = new AirbornePos( geoPos, alt );
+    //
+    //        if ( !Double.isNaN( altitude.get() ) ) {
+    //            trajectory.add( airbornePos );
+    //        }
+    //        if ( !Objects.isNull( geoPos ) && !Double.isNaN( geoPos.longitude() ) && !Double.isNaN( geoPos.latitude() ) ) {
+    //            if ( trajectory.isEmpty() ) {
+    //                trajectory.add( airbornePos );
+    //            }
+    //            else if ( lastTrajectoryUpdateTimeStampNs == lastMessageTimeStampNs.get() ) {
+    //                trajectory.set( trajectory.size() - 1, airbornePos );
+    //            }
+    //        }
+    //    }
 
-    private void updateTrajectory() {
-        GeoPos geoPos = position.get();
-        double alt = altitude.get();
 
-        AirbornePos airbornePos = new AirbornePos( geoPos, alt );
-
+    private void updateTrajectoryWithPosition() {
         if ( !Double.isNaN( altitude.get() ) ) {
-            trajectory.add( airbornePos );
+            trajectory.add( new AirbornePos( position.get(), altitude.get() ) );
         }
-        if ( !Objects.isNull( geoPos ) && !Double.isNaN( geoPos.longitude() ) && !Double.isNaN( geoPos.latitude() ) ) {
+    }
+
+
+    private void updateTrajectoryWithAltitude() {
+        if ( position.get() != null ) {
             if ( trajectory.isEmpty() ) {
-                trajectory.add( airbornePos );
-            } else if ( lastTrajectoryUpdateTimeStampNs == lastMessageTimeStampNs.get() ) {
-                trajectory.set( trajectory.size() - 1, airbornePos );
+                trajectory.add( new AirbornePos( position.get(), altitude.get() ) );
+            }
+            else if ( lastTrajectoryUpdateTimeStampNs == lastMessageTimeStampNs.get() ) {
+                trajectory.set( trajectory.size() - 1, new AirbornePos( position.get(), altitude.get() ) );
             }
         }
     }
@@ -325,6 +348,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param altitude altitude of the aircraft
      */
     public record AirbornePos(GeoPos position, double altitude) {
+
     }
 }
 

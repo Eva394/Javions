@@ -61,7 +61,7 @@ public final class AircraftControllerTest extends Application {
         URL dbUrl = getClass().getResource( "/aircraft.zip" );
         assert dbUrl != null;
         String f = Path.of( dbUrl.toURI() )
-                .toString();
+                       .toString();
         var db = new AircraftDatabase( f );
 
         AircraftStateManager asm = new AircraftStateManager( db );
@@ -71,16 +71,17 @@ public final class AircraftControllerTest extends Application {
         primaryStage.setScene( new Scene( root ) );
         primaryStage.show();
 
-        //var mi = readAllMessages( "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\messages_20230318_0915"
-                //+ ".bin" ).iterator();
-        var mi = readAllMessages("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\messages_20230318_0915.bin").iterator();
+        var mi = readAllMessages(
+                "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - BA2\\PROJET\\Javions\\resources\\messages_20230318_0915"
+                + ".bin" ).iterator();
+        //var mi = readAllMessages("C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\messages_20230318_0915.bin").iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {
             @Override
-            public void handle( long now ) {
+            public void handle(long now) {
                 try {
-                    for ( int i = 0; i < 10; i += 1 ) {
+                    for ( int i = 0 ; i < 10 ; i += 1 ) {
                         if ( mi.hasNext() ) {
                             Message m = MessageParser.parse( mi.next() );
                             if ( m != null ) {
