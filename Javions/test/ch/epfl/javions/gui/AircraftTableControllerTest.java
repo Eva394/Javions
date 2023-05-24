@@ -12,7 +12,6 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -25,8 +24,8 @@ public final class AircraftTableControllerTest extends Application {
 
 
     @Override
-    public void start(Stage primaryStage) throws
-                                          Exception {
+    public void start( Stage primaryStage ) throws
+            Exception {
         // … à compléter (voir TestBaseMapController)
         Path tileCache = Path.of( "tile-cache" );
         TileManager tileManager = new TileManager( tileCache, "tile.openstreetmap.org" );
@@ -37,7 +36,7 @@ public final class AircraftTableControllerTest extends Application {
         URL dbUrl = getClass().getResource( "/aircraft.zip" );
         assert dbUrl != null;
         String f = Path.of( dbUrl.toURI() )
-                       .toString();
+                .toString();
         var db = new AircraftDatabase( f );
 
         AircraftStateManager asm = new AircraftStateManager( db );
@@ -52,31 +51,31 @@ public final class AircraftTableControllerTest extends Application {
         AircraftTableController atc = new AircraftTableController( asm.states(), sap );
 
         StatusLineController slc = new StatusLineController();
-        slc.aircraftCountProperty().bind(Bindings.size(asm.states()));
+        slc.aircraftCountProperty().bind( Bindings.size( asm.states() ) );
 
         var root = new BorderPane();
-        root.setCenter(atc.pane());
-        root.setTop(slc.pane());
+        root.setCenter( atc.pane() );
+        root.setTop( slc.pane() );
         primaryStage.setScene( new Scene( root ) );
         primaryStage.show();
 
-        var mi = readAllMessages( "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\messages_20230318_0915.bin" ).iterator();
+        //var mi = readAllMessages( "C:\\Users\\nagyu\\IdeaProjects\\Javions\\Javions\\resources\\messages_20230318_0915.bin" ).iterator();
 
-        //var mi = readAllMessages( "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - "
-                               //   + "BA2\\PROJET\\Javions\\resources\\messages_20230318_0915.bin" ).iterator();
+        var mi = readAllMessages( "C:\\Users\\Eva Mangano\\OneDrive\\Documents\\EPFL\\4 - "
+                + "BA2\\PROJET\\Javions\\resources\\messages_20230318_0915.bin" ).iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {
             @Override
-            public void handle(long now) {
+            public void handle( long now ) {
                 try {
                     for ( int i = 0 ; i < 10 ; i += 1 ) {
                         if ( mi.hasNext() ) {
                             Message m = MessageParser.parse( mi.next() );
                             if ( m != null ) {
                                 asm.updateWithMessage( m );
-                                slc.messageCountProperty().set(slc.messageCountProperty().get() + 1);
-                                slc.aircraftCountProperty().bind(Bindings.size(asm.states()));
+                                slc.messageCountProperty().set( slc.messageCountProperty().get() + 1 );
+                                slc.aircraftCountProperty().bind( Bindings.size( asm.states() ) );
                             }
                         }
                     }
@@ -90,17 +89,17 @@ public final class AircraftTableControllerTest extends Application {
     }
 
 
-    public static void main(String[] args) {
+    public static void main( String[] args ) {
         launch( args );
     }
 
 
-    static List<RawMessage> readAllMessages(String fileName) throws
-                                                             IOException {
+    static List<RawMessage> readAllMessages( String fileName ) throws
+            IOException {
         List<RawMessage> list = new ArrayList<>();
 
         int index = 0;
-        byte[] bytes = new byte[RawMessage.LENGTH];
+        byte[] bytes = new byte[ RawMessage.LENGTH ];
         try ( DataInputStream s = new DataInputStream( new BufferedInputStream( new FileInputStream( fileName ) ) ) ) {
             while ( index < 1e5 + 1e4 + 1e3 + 1e2 + 1e1 + 1e0 ) {
                 index++;
