@@ -13,6 +13,8 @@ final class SignatureChecks_11 {
     ch.epfl.javions.gui.Main v01;
     java.lang.String[] v02;
     javafx.stage.Stage v03;
+
+
     private SignatureChecks_11() {
     }
 
