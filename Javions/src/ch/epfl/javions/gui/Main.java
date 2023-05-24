@@ -64,7 +64,10 @@ public final class Main extends Application {
         // Creation of the table view
         AircraftTableController table = new AircraftTableController( aircraftStateManager.states(),
                 selectedAircraftStateProperty );
-        table.setOnDoubleClick( observableAircraftState -> map.centerOn( observableAircraftState.getPosition() ) );
+        table.setOnDoubleClick( observableAircraftState -> {
+            map.centerOn( observableAircraftState.getPosition() );
+            System.out.println( "in lambda - centering on" );
+        } );
 
         // Creation of the status line view
         StatusLineController statusLine = new StatusLineController();
@@ -112,9 +115,6 @@ public final class Main extends Application {
                 try {
                     while ( !queue.isEmpty() ) {
                         Message message = queue.remove();
-                        System.out.println( "message.timeStampNs() = " + message.timeStampNs() );
-                        System.out.println( "now = " + now );
-
                         statusLine.messageCountProperty().set( statusLine.messageCountProperty().get() + 1 );
                         aircraftStateManager.updateWithMessage( message );
                     }
@@ -144,7 +144,6 @@ public final class Main extends Application {
             for ( RawMessage rawMessage : rawMessages ) {
                 try {
                     if ( ( message = MessageParser.parse( rawMessage ) ) != null ) {
-                        System.out.println( ( long ) ( ( message.timeStampNs() - lastMessageTimeStampNs ) * 1e-6 ) );
                         Thread.sleep( ( long ) ( ( message.timeStampNs() - lastMessageTimeStampNs ) * 1e-6 ) );
                         queue.add( message );
                         lastMessageTimeStampNs = message.timeStampNs();
