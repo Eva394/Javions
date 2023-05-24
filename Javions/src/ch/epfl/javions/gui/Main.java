@@ -41,6 +41,9 @@ public final class Main extends Application {
     private static final String AIRCRAFT_RESOURCES = "/aircraft.zip";
     private static final String CACHE_DIRECTORY = "tile-cache";
 
+
+    // TODO : the values in the table don't update, the latitude is false (conversion??)
+
     @Override
     public void start( Stage primaryStage ) throws Exception {
 

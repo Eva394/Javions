@@ -30,7 +30,7 @@ public final class BaseMapController {
     private static final int TILE_SIZE = 256;
     private boolean redrawNeeded;
     private final TileManager tileManager;
-    private final ObjectProperty<MapParameters> mapParameters;  //TODO idk if this is a property or not
+    private final MapParameters mapParameters;
     private final Canvas canvas;
     private final Pane pane;
     private final LongProperty minScrollTime;
@@ -45,7 +45,7 @@ public final class BaseMapController {
      */
     public BaseMapController( TileManager tileManager, MapParameters mapParameters ) {
         this.tileManager = tileManager;
-        this.mapParameters = new SimpleObjectProperty<>( mapParameters );
+        this.mapParameters = mapParameters;
         this.canvas = new Canvas();
         this.pane = new Pane();
         pane.getChildren()
@@ -81,11 +81,9 @@ public final class BaseMapController {
      * @param position the position to center the map on
      */
     public void centerOn( GeoPos position ) {
-        int currentZoomLevel = mapParameters.get()
-                .getZoom();
-        mapParameters.get()
-                .scroll( WebMercator.x( currentZoomLevel, position.longitude() ) - mapParameters.get().getMinX() - canvas.getWidth() / 2,
-                        WebMercator.y( currentZoomLevel, position.latitude() ) - mapParameters.get().getMinY() - canvas.getHeight() / 2 );
+        int currentZoomLevel = mapParameters.getZoom();
+        mapParameters.scroll( WebMercator.x( currentZoomLevel, position.longitude() ) - mapParameters.getMinX() - canvas.getWidth() / 2,
+                WebMercator.y( currentZoomLevel, position.latitude() ) - mapParameters.getMinY() - canvas.getHeight() / 2 );
     }
 
 
@@ -109,8 +107,7 @@ public final class BaseMapController {
         double yTranslation = lastMousePosition.get()
                 .getY() - newMousePosition.getY();
 
-        mapParameters.get()
-                .scroll( xTranslation, yTranslation );
+        mapParameters.scroll( xTranslation, yTranslation );
         storeMousePosition( newMousePosition );
     }
 
@@ -129,14 +126,11 @@ public final class BaseMapController {
         double posMouseX = event.getX();
         double posMouseY = event.getY();
 
-        mapParameters.get()
-                .scroll( posMouseX, posMouseY );
+        mapParameters.scroll( posMouseX, posMouseY );
 
-        mapParameters.get()
-                .changeZoomLevel( zoomDelta );
+        mapParameters.changeZoomLevel( zoomDelta );
 
-        mapParameters.get()
-                .scroll( -posMouseX, -posMouseY );
+        mapParameters.scroll( -posMouseX, -posMouseY );
 
         storeMousePosition( new Point2D( posMouseX, posMouseY ) );
     }
@@ -147,7 +141,6 @@ public final class BaseMapController {
                 .addListener( ( heightProperty, oldHeight, newHeight ) -> redrawOnNextPulse() );
         canvas.widthProperty()
                 .addListener( ( width, oldWidth, newWidth ) -> redrawOnNextPulse() );
-        //mapParameters.addListener( (parameter, oldParameter, newParameter) -> redrawOnNextPulse() );
     }
 
 
@@ -155,12 +148,9 @@ public final class BaseMapController {
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
         double width = canvas.getWidth();
         double height = canvas.getHeight();
-        double mapMinX = mapParameters.get()
-                .getMinX();
-        double mapMinY = mapParameters.get()
-                .getMinY();
-        int zoom = mapParameters.get()
-                .getZoom();
+        double mapMinX = mapParameters.getMinX();
+        double mapMinY = mapParameters.getMinY();
+        int zoom = mapParameters.getZoom();
 
         int firstRow = ( int ) mapMinX / TILE_SIZE;
         int firstColumn = ( int ) mapMinY / TILE_SIZE;
