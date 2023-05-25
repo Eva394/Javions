@@ -39,7 +39,7 @@ public final class Main extends Application {
     private static final int MIN_SCENE_HEIGHT = MIN_HEIGHT;
     private static final String SERVER_NAME = "tile.openstreetmap.org";
     private static final String AIRCRAFT_RESOURCES = "/aircraft.zip";
-    private static final String CACHE_DIRECTORY = "tile-cache";
+    private static final String CACHE_DIRECTORY = "Javions/tile-cache";
 
 
     // TODO : the values in the table don't update + test with other file

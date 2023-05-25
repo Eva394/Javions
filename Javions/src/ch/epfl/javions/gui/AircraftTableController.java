@@ -85,10 +85,13 @@ public final class AircraftTableController {
         } );
 
         selectedAircraftState.addListener( ( observableState, previousState, newState ) -> {
-            if ( newState != null && !Objects.equals( previousState, newState ) ) {
-                pane.scrollTo( newState );
+            if ( newState != null ) {
+                if ( !Objects.equals( pane.getSelectionModel().getSelectedItem(), newState ) ) {
+                    pane.scrollTo( newState );
+                }
                 pane.getSelectionModel()
                         .select( newState );
+
             }
         } );
 
