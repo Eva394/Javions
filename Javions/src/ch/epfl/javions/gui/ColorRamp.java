@@ -13,7 +13,6 @@ public final class ColorRamp {
     /**
      * The predefined color ramp representing the plasma spectrum.
      */
-
     public static final ColorRamp PLASMA = new ColorRamp( Color.valueOf( "0x0d0887ff" ),
             Color.valueOf( "0x220690ff" ),
             Color.valueOf( "0x320597ff" ),
@@ -57,8 +56,6 @@ public final class ColorRamp {
      * @param colors the array of colors defining the ramp
      * @throws IllegalArgumentException if the number of colors is less than 2
      */
-
-
     public ColorRamp( Color... colors ) {
 
         Preconditions.checkArgument( colors.length >= MIN_NUMBER_COLOURS );
@@ -70,8 +67,6 @@ public final class ColorRamp {
      *  @param value the position in the ramp, between 0.0 and 1.0 (inclusive)
      *  @return the interpolated color at the specified position in the ramp
      */
-
-
     public Color at( double value ) {
 
         if ( value <= MIN_VALUE ) {
@@ -91,9 +86,5 @@ public final class ColorRamp {
             return colors[index];
         }
     }
-
-
-
-
 }
 

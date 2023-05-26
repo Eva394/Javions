@@ -1,8 +1,4 @@
 package ch.epfl.javions.gui;
-/*
- *  Author :        Mangano Eva
- *  Date :          17/04/2023
- */
 
 
 import ch.epfl.javions.GeoPos;
@@ -17,9 +13,13 @@ import javafx.collections.ObservableList;
 
 /**
  * Represents the state of an aircraft, which is observable
+ *
+ * @author Eva Mangano 345375
+ * @author Nagyung Kim (339628)
  */
 public final class ObservableAircraftState implements AircraftStateSetter {
 
+    private long lastTrajectoryUpdateTimeStampNs;
     private final IcaoAddress icaoAddress;
     private final AircraftData aircraftData;
     private final ObservableList<AirbornePos> trajectory;
@@ -31,7 +31,6 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private final DoubleProperty altitude;
     private final DoubleProperty velocity;
     private final DoubleProperty trackOrHeading;
-    private long lastTrajectoryUpdateTimeStampNs;
 
 
     /**
@@ -40,7 +39,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param icaoAddress  the ICAO address of the aircraft
      * @param aircraftData the fixed data of the aircraft
      */
-    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData aircraftData) {
+    public ObservableAircraftState( IcaoAddress icaoAddress, AircraftData aircraftData ) {
         Preconditions.checkArgument( icaoAddress != null );
 
         this.icaoAddress = icaoAddress;
@@ -55,6 +54,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         altitude = new SimpleDoubleProperty( Double.NaN );
         velocity = new SimpleDoubleProperty( Double.NaN );
         trackOrHeading = new SimpleDoubleProperty( Double.NaN );
+        lastTrajectoryUpdateTimeStampNs = 0L;
     }
 
 
@@ -84,7 +84,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param lastMessageTimeStampNs new horodatage in nanoseconds
      */
-    public void setLastMessageTimeStampNs(long lastMessageTimeStampNs) {
+    public void setLastMessageTimeStampNs( long lastMessageTimeStampNs ) {
         this.lastMessageTimeStampNs.set( lastMessageTimeStampNs );
     }
 
@@ -104,7 +104,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param category new category
      */
-    public void setCategory(int category) {
+    public void setCategory( int category ) {
         this.category.set( category );
     }
 
@@ -145,7 +145,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param callSign new call sign
      */
     @Override
-    public void setCallSign(CallSign callSign) {
+    public void setCallSign( CallSign callSign ) {
         this.callSign.set( callSign );
     }
 
@@ -166,8 +166,9 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param pos new position
      */
     @Override
-    public void setPosition(GeoPos pos) {
+    public void setPosition( GeoPos pos ) {
         position.set( pos );
+        lastTrajectoryUpdateTimeStampNs = getLastMessageTimeStampNs();
         updateTrajectoryWithPosition();
     }
 
@@ -187,7 +188,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param alt new altitude
      */
-    public void setAltitude(double alt) {
+    public void setAltitude( double alt ) {
         this.altitude.set( alt );
         updateTrajectoryWithAltitude();
     }
@@ -208,7 +209,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param velocity new velocity
      */
-    public void setVelocity(double velocity) {
+    public void setVelocity( double velocity ) {
         this.velocity.set( velocity );
     }
 
@@ -228,7 +229,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      *
      * @param trackOrHeading new track or heading
      */
-    public void setTrackOrHeading(double trackOrHeading) {
+    public void setTrackOrHeading( double trackOrHeading ) {
         this.trackOrHeading.set( trackOrHeading );
     }
 
@@ -302,25 +303,6 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         return callSign;
     }
 
-    //    private void updateTrajectory() {
-    //        GeoPos geoPos = position.get();
-    //        double alt = altitude.get();
-    //
-    //        AirbornePos airbornePos = new AirbornePos( geoPos, alt );
-    //
-    //        if ( !Double.isNaN( altitude.get() ) ) {
-    //            trajectory.add( airbornePos );
-    //        }
-    //        if ( !Objects.isNull( geoPos ) && !Double.isNaN( geoPos.longitude() ) && !Double.isNaN( geoPos.latitude() ) ) {
-    //            if ( trajectory.isEmpty() ) {
-    //                trajectory.add( airbornePos );
-    //            }
-    //            else if ( lastTrajectoryUpdateTimeStampNs == lastMessageTimeStampNs.get() ) {
-    //                trajectory.set( trajectory.size() - 1, airbornePos );
-    //            }
-    //        }
-    //    }
-
 
     private void updateTrajectoryWithPosition() {
         if ( !Double.isNaN( altitude.get() ) ) {
@@ -347,7 +329,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
      * @param position longitude and latitude of the aircraft
      * @param altitude altitude of the aircraft
      */
-    public record AirbornePos(GeoPos position, double altitude) {
+    public record AirbornePos( GeoPos position, double altitude ) {
 
     }
 }

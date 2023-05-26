@@ -24,7 +24,9 @@ import java.io.IOException;
 
 /**
  * Represents the base of the map. Manages the display and the interactions with the background.
+ *
  * @author Eva Mangano 345375
+ * @author Nagyung Kim (339628)
  */
 public final class BaseMapController {
 

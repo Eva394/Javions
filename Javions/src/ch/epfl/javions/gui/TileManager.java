@@ -1,9 +1,4 @@
 package ch.epfl.javions.gui;
-/*
- *  Author :        Mangano Eva
- *  Date :          20/04/2023
- */
-
 
 import ch.epfl.javions.Preconditions;
 import javafx.scene.image.Image;
@@ -18,6 +13,9 @@ import java.util.Map;
 
 /**
  * Represents an OpenStreetMap tile manager. Obtains and stores the tiles in cache
+ *
+ * @author Eva Mangano 345375
+ * @author Nagyung Kim (339628)
  */
 public final class TileManager {
     private final static int MEMORY_CACHE_SIZE = 100;
