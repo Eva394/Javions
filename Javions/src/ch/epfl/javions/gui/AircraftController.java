@@ -36,6 +36,8 @@ public final class AircraftController {
     private static final int MIN_ZOOM_LEVEL_FOR_VISIBLE_LABELS = 11;
     private static final int LABEL_MARGIN = 4;
     private static final String AIRCRAFT_CSS = "aircraft.css";
+    private static final int APPROX_HIGHEST_ALTITUDE = 12000;
+    private static final double ROOT_POWER = 1.0 / 3;
     private final MapParameters mapParameters;
     private final ObservableSet<ObservableAircraftState> aircraftStates;
     private final ObjectProperty<ObservableAircraftState> selectedAircraftState;
@@ -48,6 +50,8 @@ public final class AircraftController {
      * @param mapParameters         parameters for the map
      * @param aircraftStates        set of aircraft states (<code>ObservableAircraftState</code>)
      * @param selectedAircraftState state of the selected aircraft
+     * @author Eva Mangano 345375
+     * @author Nagyung Kim (339628)
      */
     public AircraftController( MapParameters mapParameters, ObservableSet<ObservableAircraftState> aircraftStates,
                                ObjectProperty<ObservableAircraftState> selectedAircraftState ) {
@@ -79,6 +83,16 @@ public final class AircraftController {
      */
     public Pane pane() {
         return pane;
+    }
+
+    /**
+     * Maps the altitude to the corresponding value in the interval [0, 1]
+     *
+     * @param altitude altitude of the aircraft
+     * @return the value corresponding to the altitude
+     */
+    public static double correspondingColor( double altitude ) {
+        return Math.pow( altitude / APPROX_HIGHEST_ALTITUDE, ROOT_POWER );
     }
 
     private void createAircraftGroup( ObservableAircraftState addedAircraft ) {
@@ -289,58 +303,6 @@ public final class AircraftController {
                             .get();
                 }, addedAircraft.positionProperty(), mapParameters.minYProperty(), mapParameters.zoomProperty() ) );
     }
-
-    public static double correspondingColor( double altitude ) {
-        return Math.pow( altitude / 12000, 1.0 / 3 );
-    }
-
-/*
-    private void createTrajectoryLines( Group trajectoryGroup, ObservableList<ObservableAircraftState.AirbornePos> trajectory ) {
-        trajectoryGroup.getChildren()
-                .clear();
-
-        double lastX = WebMercator.x( mapParameters.getZoom(),
-                trajectory.get( trajectory.size() - 1 )
-                        .position()
-                        .longitude() );
-        double lastY = WebMercator.y( mapParameters.getZoom(),
-                trajectory.get( trajectory.size() - 1 )
-                        .position()
-                        .latitude() );
-
-        ObservableAircraftState.AirbornePos currentAirbornePos = trajectory.get( 0 );
-        ObservableAircraftState.AirbornePos nextAirbornePos;
-
-
-        for ( int i = 0; i < trajectory.size() - 1; i++ ) {
-            nextAirbornePos = trajectory.get( i + 1 );
-
-            double currentAltitude = currentAirbornePos.altitude();
-            double nextAltitude = nextAirbornePos.altitude();
-
-            double startX = WebMercator.x( mapParameters.getZoom(),
-                    currentAirbornePos.position()
-                            .longitude() ) - lastX;
-            double startY = WebMercator.y( mapParameters.getZoom(),
-                    currentAirbornePos.position()
-                            .latitude() ) - lastY;
-            double endX = WebMercator.x( mapParameters.getZoom(),
-                    nextAirbornePos.position()
-                            .longitude() ) - lastX;
-            double endY = WebMercator.y( mapParameters.getZoom(),
-                    nextAirbornePos.position()
-                            .latitude() ) - lastY;
-            Line line = new Line( startX, startY, endX, endY );
-            trajectoryGroup.getChildren()
-                    .add( line );
-
-            applyColor( currentAltitude, nextAltitude, startX, startY, endX, endY, line );
-
-            currentAirbornePos = nextAirbornePos;
-        }
-    }
-
- */
 
     private static void applyColor( double currentAltitude, double nextAltitude, double startX, double startY,
                                     double endX, double endY, Line line ) {
