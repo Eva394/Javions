@@ -22,8 +22,6 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class Main extends Application {
@@ -140,24 +138,38 @@ public final class Main extends Application {
         Message message;
         fileName = getParameters().getRaw()
                 .get( 0 );
-        List<RawMessage> rawMessages = readAllMessages( fileName );
 
         // the messages come from a file
         if ( fileName != null ) {
-            for ( RawMessage rawMessage : rawMessages ) {
-                try {
-                    if ( ( message = MessageParser.parse( rawMessage ) ) != null ) {
+//            List<RawMessage> rawMessages = readAllMessages( fileName );
+
+            byte[] bytes = new byte[ RawMessage.LENGTH ];
+
+            try ( DataInputStream s = new DataInputStream( new BufferedInputStream( new FileInputStream( fileName ) ) ) ) {
+                while ( true ) {
+                    long timeStampNs = s.readLong();
+                    int bytesRead = s.readNBytes( bytes, 0, bytes.length );
+                    assert bytesRead == RawMessage.LENGTH;
+
+                    ByteString messageByteString = new ByteString( bytes );
+                    assert messageByteString != null;
+
+                    RawMessage rawMessage;
+                    if ( ( rawMessage = RawMessage.of( timeStampNs, bytes ) ) != null && ( message = MessageParser.parse( rawMessage ) ) != null ) {
                         Thread.sleep( ( long ) ( ( message.timeStampNs() - lastMessageTimeStampNs ) * 1e-6 ) );
                         queue.add( message );
                         lastMessageTimeStampNs = message.timeStampNs();
                     }
                     else {
+                        System.out.println( "queue.size() = " + queue.size() );
                         break;
                     }
                 }
-                catch ( InterruptedException e ) {
-                    throw new Error( e );
-                }
+            }
+            catch ( IOException ignored ) {
+            }
+            catch ( InterruptedException e ) {
+                throw new Error( e );
             }
         }
         // the messages come from the radio
@@ -176,25 +188,29 @@ public final class Main extends Application {
         Application.launch( args );
     }
 
-    private static List<RawMessage> readAllMessages( String fileName ) {
-        List<RawMessage> list = new ArrayList<>();
-
-        byte[] bytes = new byte[ RawMessage.LENGTH ];
-
-        try ( DataInputStream s = new DataInputStream( new BufferedInputStream( new FileInputStream( fileName ) ) ) ) {
-            while ( true ) {
-                long timeStampNs = s.readLong();
-                int bytesRead = s.readNBytes( bytes, 0, bytes.length );
-                assert bytesRead == RawMessage.LENGTH;
-
-                ByteString messageByteString = new ByteString( bytes );
-                assert messageByteString != null;
-
-                list.add( RawMessage.of( timeStampNs, bytes ) );
-            }
-        }
-        catch ( IOException ignored ) {
-            return list;
-        }
-    }
+//    private static List<RawMessage> readAllMessages( String fileName ) {
+//        List<RawMessage> list = new ArrayList<>();
+//
+//        byte[] bytes = new byte[ RawMessage.LENGTH ];
+//
+//        try ( DataInputStream s = new DataInputStream( new BufferedInputStream( new FileInputStream( fileName ) ) ) ) {
+//            while ( true ) {
+//                long timeStampNs = s.readLong();
+//                int bytesRead = s.readNBytes( bytes, 0, bytes.length );
+//                assert bytesRead == RawMessage.LENGTH;
+//
+//                ByteString messageByteString = new ByteString( bytes );
+//                assert messageByteString != null;
+//
+//                RawMessage rawMessage;
+//                if ( ( rawMessage = RawMessage.of( timeStampNs, bytes ) ) != null && ) {
+//                    list.add( rawMessage );
+//                }
+//            }
+//        }
+//        catch ( IOException ignored ) {
+//            System.out.println( "list.size() = " + list.size() );
+//            return list;
+//        }
+//    }
 }

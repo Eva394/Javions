@@ -91,7 +91,6 @@ public final class AircraftTableController {
                 }
                 pane.getSelectionModel()
                         .select( newState );
-
             }
         } );
 
@@ -201,15 +200,8 @@ public final class AircraftTableController {
                 return 0;
             }
         } );
-        column.setCellValueFactory( state -> {
-            Double value = function.apply( state.getValue() )
-                    .getValue();
-            if ( state.getValue().getIcaoAddress().string().equals( "3C4DC8" ) ) {
-                System.out.println( "updating value : " + numberFormat.format( Units.convertTo( value, unit ) ) );
-            }
-            return new ReadOnlyStringWrapper(
-                    !Double.isNaN( value ) ? numberFormat.format( Units.convertTo( value, unit ) ) : "" );
-        } );
+        column.setCellValueFactory( state ->
+                function.apply( state.getValue() ).map( number -> !Double.isNaN( number.doubleValue() ) ? numberFormat.format( Units.convertTo( number.doubleValue(), unit ) ) : "" ) );
 
         return column;
     }
