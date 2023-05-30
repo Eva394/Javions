@@ -1,8 +1,4 @@
 package ch.epfl.javions.adsb;
-/*
- *  Author :        Mangano Eva
- *  Date :          21/03/2023
- */
 
 
 import ch.epfl.javions.Bits;
@@ -14,6 +10,7 @@ import java.util.Objects;
 
 /**
  * Represents an airborne position ADS-B message
+ *
  * @param timeStampNs horodatage, in nanoseconds
  * @param icaoAddress the ICAO address of the sender of the message
  * @param altitude    altitude of the aircraft at the moment of sending the message, in meters
@@ -22,10 +19,10 @@ import java.util.Objects;
  * @param y           local and normalized latitude at the moment of sending the message
  * @author Eva Mangano 345375
  */
-public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x,
-                                      double y) implements Message {
-
-    private static final int[] ALT_BITS_ORDER = new int[]{2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7};
+public record AirbornePositionMessage( long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x,
+                                       double y ) implements Message {
+    
+    private static final int[] ALT_BITS_ORDER = new int[]{ 2, 0, 10, 8, 6, 5, 3, 1, 11, 9, 7 };
     private static final int ALT_START = 36;
     private static final int ALT_SIZE = 12;
     private static final int Q_START = 40;
@@ -48,10 +45,11 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
     private static final int LSB0_START = 0;
     private static final int LSB0_SIZE = 3;
     private static final int CPR_SIZE = -17;
-
-
+    
+    
     /**
      * Constructor. Builds an instance of <code>AirbornePositionMessage</code>
+     *
      * @param timeStampNs horodatage, in nanoseconds
      * @param icaoAddress ICAO address of the sender of the message
      * @param altitude    altitude of the aircraft at the moment of sending the message, in meters
@@ -70,46 +68,47 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
         Preconditions.checkArgument( x >= 0 && x < 1 );
         Preconditions.checkArgument( y >= 0 && y < 1 );
     }
-
-
+    
+    
     /**
      * Builds an instance of <code>AirbornePositionMessage</code> from a <code>RawMessage</code>
+     *
      * @param rawMessage the ADS-B message
      * @return an instance of <code>AirbornePositionMessage</code> as given by the <code>RawMessage</code>, null if the
      * altitude is invalid
      * @author Eva Mangano 345375
      * @author Nagyung Kim (339628)
      */
-    public static AirbornePositionMessage of(RawMessage rawMessage) {
-
+    public static AirbornePositionMessage of( RawMessage rawMessage ) {
+        
         long payload = rawMessage.payload();
         double alt = computeAltitude( payload );
         if ( Double.isNaN( alt ) ) {
             return null;
         }
-
+        
         long timeStampsNs = rawMessage.timeStampNs();
-
+        
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
-
+        
         int parity = Bits.extractUInt( payload, PARITY_START, PARITY_SIZE );
-
+        
         double longitude = Bits.extractUInt( payload, LONGITUDE_START, LONGITUDE_SIZE );
         longitude = normalize( longitude );
-
+        
         double latitude = Bits.extractUInt( payload, LATITUDE_START, LATITUDE_SIZE );
         latitude = normalize( latitude );
-
+        
         return new AirbornePositionMessage( timeStampsNs, icaoAddress, alt, parity, longitude, latitude );
     }
-
-
-    private static double computeAltitude(long rawMessagePayload) {
+    
+    
+    private static double computeAltitude( long rawMessagePayload ) {
         double alt;
         int attributeALT = Bits.extractUInt( rawMessagePayload, ALT_START, ALT_SIZE );
-
+        
         int q = Bits.extractUInt( rawMessagePayload, Q_START, Q_SIZE );
-
+        
         if ( q == 1 ) {
             alt = computeQ1Altitude( attributeALT );
         }
@@ -117,7 +116,7 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
             int untangled = untangle( attributeALT );
             int msBits = computeMSBorLSB( untangled, MSB0_START, MSB0_SIZE );
             int lsBits = computeMSBorLSB( untangled, LSB0_START, LSB0_SIZE );
-
+            
             switch ( lsBits ) {
                 case 0, 5, 6 -> {
                     return Double.NaN;
@@ -126,63 +125,63 @@ public record AirbornePositionMessage(long timeStampNs, IcaoAddress icaoAddress,
                     lsBits = 5;
                 }
             }
-
+            
             if ( msBits % 2 != 0 ) {
                 lsBits = mirrorBits( lsBits );
             }
-
+            
             alt = BASE_ALTITUDE_0 + lsBits * 100L + msBits * 500L;
         }
-
+        
         return Units.convertFrom( alt, Units.Length.FOOT );
     }
-
-
-    private static double computeQ1Altitude(int untangledAlt) {
+    
+    
+    private static double computeQ1Altitude( int untangledAlt ) {
         double alt;
         int msBits = Bits.extractUInt( untangledAlt, MSB1_START, MSB1_SIZE );
         int lsBits = Bits.extractUInt( untangledAlt, LSB1_START, LSB1_SIZE );
         int multipleOf25 = lsBits | ( msBits << LSB1_SIZE );
-
+        
         alt = BASE_ALTITUDE_1 + multipleOf25 * 25L;
-
+        
         return alt;
     }
-
-
-    private static int untangle(int attributeALT) {
+    
+    
+    private static int untangle( int attributeALT ) {
         int untangled = 0;
         for ( int i = 0 ; i < ALT_BITS_ORDER.length ; i++ ) {
-            untangled |= ( Bits.extractUInt( attributeALT, ALT_BITS_ORDER[i], 1 ) << ( ME_SIZE - 2 - i ) );
+            untangled |= ( Bits.extractUInt( attributeALT, ALT_BITS_ORDER[ i ], 1 ) << ( ME_SIZE - 2 - i ) );
         }
         return untangled;
     }
-
-
-    private static int computeMSBorLSB(int attributeALT, int start, int size) {
+    
+    
+    private static int computeMSBorLSB( int attributeALT, int start, int size ) {
         int bits = Bits.extractUInt( attributeALT, start, size );
         bits = decodeGray( bits, size );
         return bits;
     }
-
-
-    private static int decodeGray(int value, int n) {
+    
+    
+    private static int decodeGray( int value, int n ) {
         int binaryValue = value;
-
+        
         for ( int i = 1 ; i < n ; i++ ) {
             binaryValue = binaryValue ^ ( value >> i );
         }
-
+        
         return binaryValue;
     }
-
-
-    private static int mirrorBits(int bits) {
+    
+    
+    private static int mirrorBits( int bits ) {
         return 6 - bits;
     }
-
-
-    private static double normalize(double value) {
+    
+    
+    private static double normalize( double value ) {
         return Math.scalb( value, CPR_SIZE );
     }
 }

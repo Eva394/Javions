@@ -7,16 +7,17 @@ import java.util.regex.Pattern;
 
 /**
  * call sign of an aircraft
+ *
  * @author Nagyung Kim (339628)
  */
-
-public record CallSign(String string) {
-
-    public static final Pattern CALL_SIGN = Pattern.compile( "[A-Z0-9 ]{0,8}" );
-
-
+public record CallSign( String string ) {
+    
+    private static final Pattern CALL_SIGN = Pattern.compile( "[A-Z0-9 ]{0,8}" );
+    
+    
     /**
      * Builds an instance of call sign
+     *
      * @param string string of the callsign
      * @throws IllegalArgumentException if the string is not the valid type of call sign
      */

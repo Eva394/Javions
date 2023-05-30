@@ -1,8 +1,4 @@
 package ch.epfl.javions.adsb;
-/*
- *  Author :        Mangano Eva
- *  Date :          14/03/2023
- */
 
 
 import ch.epfl.javions.aircraft.IcaoAddress;
@@ -13,8 +9,8 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  * @author Eva Mangano 345375
  */
 public interface Message {
-
-
+    
+    
     /**
      * gives the horodatage of the ADS-B message
      *
@@ -22,8 +18,8 @@ public interface Message {
      * @author Eva Mangano 345375
      */
     public abstract long timeStampNs();
-
-
+    
+    
     /**
      * gives the ICAO address of the sender of the ADS-B message
      *

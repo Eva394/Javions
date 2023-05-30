@@ -24,6 +24,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * Main class for Javions
+ *
+ * @author Eva Mangano 345375
+ */
 public final class Main extends Application {
 	
 	private static final int MIN_WIDTH = 800;
@@ -111,10 +116,10 @@ public final class Main extends Application {
 				try {
 					while ( !queue.isEmpty() ) {
 						Message message = queue.remove();
+						aircraftStateManager.updateWithMessage( message );
 						statusLine.messageCountProperty()
 						          .set( statusLine.messageCountProperty()
 						                          .get() + 1L );
-						aircraftStateManager.updateWithMessage( message );
 					}
 					if ( now - lastPurgeTimeStampNs >= ONE_SECOND_IN_NANOSECONDS ) {
 						aircraftStateManager.purge();
@@ -129,6 +134,11 @@ public final class Main extends Application {
 		} ).start();
 	}
 	
+	/**
+	 * Launches the Javions application
+	 *
+	 * @param args name of the file where the messages are read or null if the samples come from the radio
+	 */
 	public static void main( String[] args ) {
 		Application.launch( args );
 	}
