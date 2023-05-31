@@ -12,19 +12,19 @@ import java.util.regex.Pattern;
  * @author Eva Mangano 345375
  */
 public record AircraftDescription( String string ) {
-    
-    private static final Pattern DESCRIPTION_PATTERN = Pattern.compile( "[ABDGHLPRSTV-][0123468][EJPT-]" );
-    
-    
-    /**
-     * Constructor. Builds an instance of AircraftDescription
-     *
-     * @param string textual representation of the description
-     * @throws IllegalArgumentException if the string is not a valid description
-     * @author Eva Mangano 345375
-     */
-    public AircraftDescription {
-        Preconditions.checkArgument( DESCRIPTION_PATTERN.matcher( string )
-                                                        .matches() || string.isEmpty() );
-    }
+	
+	private static final Pattern DESCRIPTION_PATTERN = Pattern.compile( "[ABDGHLPRSTV-][0123468][EJPT-]" );
+	
+	
+	/**
+	 * Constructor. Builds an instance of AircraftDescription
+	 *
+	 * @param string textual representation of the description
+	 * @throws IllegalArgumentException if the string is not a valid description
+	 * @author Eva Mangano 345375
+	 */
+	public AircraftDescription {
+		Preconditions.checkArgument( DESCRIPTION_PATTERN.matcher( string )
+		                                                .matches() || string.isEmpty() );
+	}
 }
